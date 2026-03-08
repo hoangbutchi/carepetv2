@@ -25,6 +25,7 @@ import ProfilePage from './pages/ProfilePage';
 import DoctorsPage from './pages/DoctorsPage';
 import NewsPage from './pages/NewsPage';
 import ChatPage from './pages/ChatPage';
+import PaymentResultPage from './pages/PaymentResultPage';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -72,10 +73,33 @@ const ThemedToaster = () => {
 
 // Main App content
 const AppContent = () => {
+    const { isDark } = useTheme();
     return (
         <Router>
             <ScrollToTop />
-            <div className="min-h-screen flex flex-col bg-theme transition-colors duration-300">
+            <div className={`min-h-screen flex flex-col ${isDark ? 'bg-theme' : 'bg-transparent'} transition-colors duration-300 relative`}>
+                
+                {/* Global Light Mode Organic Background */}
+                {!isDark && (
+                    <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+                        {/* Porcelain White to Mint to Sky Blue Gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white via-[#f0fdf4] to-[#f0f9ff] opacity-90"></div>
+                        
+                        {/* Abstract floating pastel circles */}
+                        <div className="absolute top-[10%] left-[60%] w-[50vw] max-w-[600px] h-[50vw] max-h-[600px] rounded-full bg-emerald-100/60 blur-[100px] animate-pulse-slow"></div>
+                        <div className="absolute top-[60%] left-[10%] w-[60vw] max-w-[800px] h-[60vw] max-h-[800px] rounded-full bg-sky-200/50 blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+                        
+                        {/* High blur Monstera / Leaves in corners */}
+                        <div 
+                            className="absolute -top-[10%] -left-[5%] w-[40vw] max-w-[500px] h-[40vw] max-h-[500px] rounded-full mix-blend-multiply opacity-30 blur-[12px] transform rotate-12"
+                            style={{ backgroundImage: 'url("https://images.pexels.com/photos/3125132/pexels-photo-3125132.jpeg?auto=compress&cs=tinysrgb&w=800")', backgroundSize: 'cover' }}
+                        ></div>
+                        <div 
+                            className="absolute -bottom-[10%] -right-[5%] w-[50vw] max-w-[600px] h-[50vw] max-h-[600px] rounded-full mix-blend-multiply opacity-25 blur-[16px] transform -rotate-15"
+                            style={{ backgroundImage: 'url("https://images.pexels.com/photos/3125132/pexels-photo-3125132.jpeg?auto=compress&cs=tinysrgb&w=800")', backgroundSize: 'cover' }}
+                        ></div>
+                    </div>
+                )}
                 <Navbar />
                 <main className="flex-grow">
                     <Routes>
@@ -94,6 +118,7 @@ const AppContent = () => {
                         <Route path="/news" element={<NewsPage />} />
                         <Route path="/news/:id" element={<NewsPage />} />
                         <Route path="/chat" element={<ChatPage />} />
+                        <Route path="/payment-result" element={<PaymentResultPage />} />
                     </Routes>
                 </main>
                 <Footer />

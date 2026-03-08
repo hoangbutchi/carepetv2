@@ -4,6 +4,7 @@ import { FiGrid, FiList, FiShoppingCart, FiHeart, FiSearch, FiChevronDown, FiX, 
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCart } from '../context/CartContext';
 import { productAPI } from '../services/api';
+import { useTheme } from '../context/ThemeContext';
 import toast from 'react-hot-toast';
 
 const categories = [
@@ -17,6 +18,7 @@ const categories = [
 
 const ShopPage = () => {
     const { t, language } = useLanguage();
+    const { isDark } = useTheme();
     const { addToCart } = useCart();
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -44,18 +46,22 @@ const ShopPage = () => {
         } catch (error) {
             console.error('Error fetching products:', error);
             const allProducts = [
-                { _id: '1', name: language === 'en' ? 'Royal Canin Adult Dog Food 10kg' : 'Thức ăn cho chó trưởng thành Royal Canin 10kg', category: 'food', price: 450000, originalPrice: 500000, stock: 50, isFeatured: true, images: [] },
-                { _id: '2', name: language === 'en' ? 'Whiskas Cat Food Tuna Flavor' : 'Thức ăn cho mèo Whiskas vị cá ngừ', category: 'food', price: 180000, stock: 100, images: [] },
-                { _id: '3', name: language === 'en' ? 'Premium Leather Dog Collar' : 'Vòng cổ da cao cấp cho chó', category: 'accessory', price: 150000, stock: 30, isFeatured: true, images: [] },
-                { _id: '4', name: language === 'en' ? 'Cat Scratching Post Tower' : 'Tháp cào móng cho mèo', category: 'accessory', price: 450000, originalPrice: 550000, stock: 15, images: [] },
-                { _id: '5', name: language === 'en' ? 'Interactive Dog Ball Toy' : 'Bóng đồ chơi tương tác cho chó', category: 'toy', price: 85000, stock: 60, isFeatured: true, images: [] },
-                { _id: '6', name: language === 'en' ? 'Feather Wand Cat Toy Set' : 'Bộ đồ chơi gậy lông vũ cho mèo', category: 'toy', price: 55000, stock: 80, images: [] },
-                { _id: '7', name: language === 'en' ? 'Flea & Tick Prevention Drops' : 'Thuốc nhỏ gáy trị ve bọ chét', category: 'medicine', price: 220000, stock: 40, images: [] },
-                { _id: '8', name: language === 'en' ? 'Gentle Pet Shampoo 500ml' : 'Dầu gội dịu nhẹ cho thú cưng 500ml', category: 'hygiene', price: 95000, stock: 45, isFeatured: true, images: [] },
-                { _id: '9', name: language === 'en' ? 'Dog Dental Chew Treats' : 'Bánh thưởng làm sạch răng cho chó', category: 'food', price: 120000, stock: 70, images: [] },
-                { _id: '10', name: language === 'en' ? 'Cat Litter Premium 10L' : 'Cát vệ sinh cao cấp cho mèo 10L', category: 'hygiene', price: 250000, stock: 35, images: [] },
-                { _id: '11', name: language === 'en' ? 'Dog Raincoat Jacket' : 'Áo mưa cho chó', category: 'accessory', price: 180000, originalPrice: 220000, stock: 25, images: [] },
-                { _id: '12', name: language === 'en' ? 'Pet Vitamin Supplement' : 'Vitamin bổ sung cho thú cưng', category: 'medicine', price: 350000, stock: 20, isFeatured: true, images: [] },
+                { _id: '1', name: 'Thức ăn hạt cho chó Poodle trưởng thành 1.5kg', category: 'food', price: 250000, originalPrice: 280000, stock: 45, isFeatured: true, images: ['https://loremflickr.com/400/400/dog,food,bowl?lock=1'] },
+                { _id: '2', name: 'Pate hỗn hợp cá mòi và cá ngừ cho mèo', category: 'food', price: 25000, stock: 120, images: ['https://loremflickr.com/400/400/cat,food,bowl?lock=2'] },
+                { _id: '3', name: 'Sữa bột bổ sung dinh dưỡng cho chó mèo sơ sinh', category: 'food', price: 180000, stock: 30, images: ['https://loremflickr.com/400/400/puppy,milk,bottle?lock=3'] },
+                { _id: '4', name: 'Vòng cổ da bò có khắc tên cho chó lớn', category: 'accessory', price: 195000, stock: 25, isFeatured: true, images: ['https://loremflickr.com/400/400/dog,collar,leather?lock=4'] },
+                { _id: '5', name: 'Balo phi hành gia vận chuyển thú cưng', category: 'accessory', price: 320000, originalPrice: 400000, stock: 15, images: ['https://loremflickr.com/400/400/cat,carrier,backpack?lock=5'] },
+                { _id: '6', name: 'Giường nệm oval lót lông cừu ấm áp', category: 'accessory', price: 260000, stock: 40, images: ['https://loremflickr.com/400/400/dog,bed,sleeping?lock=6'] },
+                { _id: '7', name: 'Nhà cây cào móng 3 tầng có võng cho mèo', category: 'accessory', price: 680000, originalPrice: 850000, stock: 10, isFeatured: true, images: ['https://loremflickr.com/400/400/cat,tree,scratch?lock=7'] },
+                { _id: '8', name: 'Đồ chơi cần câu mèo lông vũ gắn chuông', category: 'toy', price: 45000, stock: 80, images: ['https://loremflickr.com/400/400/cat,toy,feather?lock=8'] },
+                { _id: '9', name: 'Đồ chơi xương gặm cao su sạch răng chó', category: 'toy', price: 85000, stock: 60, isFeatured: true, images: ['https://loremflickr.com/400/400/bone,toy,dog?lock=9'] },
+                { _id: '10', name: 'Sữa tắm khử mùi chuyên dụng cho chó', category: 'hygiene', price: 150000, stock: 35, images: ['https://loremflickr.com/400/400/dog,bath,shampoo?lock=10'] },
+                { _id: '11', name: 'Cát vệ sinh đất sét vón cục mạnh cho mèo 8L', category: 'hygiene', price: 110000, stock: 150, isFeatured: true, images: ['https://loremflickr.com/400/400/cat,litter,sand?lock=11'] },
+                { _id: '12', name: 'Lược chải lông rụng giảm gãy rụng tới 90%', category: 'hygiene', price: 140000, stock: 50, images: ['https://loremflickr.com/400/400/dog,brush,grooming?lock=12'] },
+                { _id: '13', name: 'Bỉm tã lót siêu thấm hút size M (Bịch 10 miếng)', category: 'hygiene', price: 90000, stock: 80, images: ['https://loremflickr.com/400/400/puppy,diaper?lock=13'] },
+                { _id: '14', name: 'Thuốc nhỏ gáy đặc trị ve, rận rệp cho chó 10-20kg', category: 'medicine', price: 185000, stock: 25, images: ['https://loremflickr.com/400/400/dog,flea,medicine?lock=14'] },
+                { _id: '15', name: 'Gel uống tiêu búi lông cho mèo', category: 'medicine', price: 160000, stock: 45, isFeatured: true, images: ['https://loremflickr.com/400/400/cat,medicine?lock=15'] },
+                { _id: '16', name: 'Khay vệ sinh có thành cao cho mèo lớn', category: 'hygiene', price: 210000, originalPrice: 250000, stock: 20, images: ['https://loremflickr.com/400/400/cat,litter,box?lock=16'] }
             ];
             setProducts(allProducts.filter(p => activeCategory === 'all' || p.category === activeCategory));
         } finally {
@@ -92,8 +98,26 @@ const ShopPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-dark-300 pt-24 pb-12">
-            <div className="container-custom">
+        <div className="min-h-screen bg-theme pt-24 pb-12 transition-colors duration-300 relative overflow-hidden">
+            {/* Background elements */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+                {/* Light mode gradient */}
+                {!isDark && <div className="absolute inset-0 bg-gradient-to-br from-white via-green-50/40 to-emerald-50/30 opacity-70"></div>}
+                {/* Dark mode gradient */}
+                {isDark && <div className="absolute inset-0 bg-gradient-to-br from-dark-300 via-dark-200 to-emerald-900/10 opacity-80"></div>}
+                
+                {/* Decorative Background Pet Icons */}
+                <div className={`absolute inset-0 pointer-events-none overflow-hidden mix-blend-overlay ${isDark ? 'opacity-60' : 'opacity-40'}`}>
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute top-32 left-[10%] w-24 h-24 rounded-full object-cover transform rotate-12 animate-float shadow-lg" />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-1/4 right-[15%] w-20 h-20 rounded-full object-cover transform -rotate-12 animate-float shadow-lg" style={{ animationDelay: '2s' }} />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute bottom-40 right-[10%] w-28 h-28 rounded-full object-cover transform -rotate-45 animate-float shadow-lg" style={{ animationDelay: '1s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute bottom-1/3 left-[5%] w-24 h-24 rounded-full object-cover transform rotate-15 animate-float shadow-lg flex" style={{ animationDelay: '3s' }} />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute top-1/2 left-[30%] w-16 h-16 rounded-full object-cover transform rotate-90 animate-float shadow-lg" style={{ animationDelay: '1.5s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute bottom-10 left-[40%] w-20 h-20 rounded-full object-cover transform rotate-180 animate-float shadow-lg" style={{ animationDelay: '2.5s' }} />
+                </div>
+            </div>
+
+            <div className="container-custom relative z-10">
                 {/* Header */}
                 <div className="text-center mb-12 animate-fade-in-up">
                     <span className="badge-primary mb-4">{language === 'en' ? 'Pet Shop' : 'Cửa hàng'}</span>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FiStar, FiAward, FiBriefcase, FiMessageCircle, FiCalendar, FiMapPin, FiClock } from 'react-icons/fi';
 import { useLanguage } from '../i18n/LanguageContext';
 import { authAPI } from '../services/api';
+import { useTheme } from '../context/ThemeContext';
 
 // Placeholder images for doctors
 const doctorImages = [
@@ -21,6 +22,7 @@ const specializations = {
 
 const DoctorsPage = () => {
     const { language } = useLanguage();
+    const { isDark } = useTheme();
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -85,8 +87,26 @@ const DoctorsPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-dark-300 pt-24 pb-12">
-            <div className="container-custom">
+        <div className="min-h-screen bg-theme pt-24 pb-12 transition-colors duration-300 relative overflow-hidden">
+
+            {/* Background elements */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+                {/* Light mode gradient */}
+                {!isDark && <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/30 opacity-70"></div>}
+                {/* Dark mode gradient */}
+                {isDark && <div className="absolute inset-0 bg-gradient-to-br from-dark-300 via-dark-200 to-indigo-900/10 opacity-80"></div>}
+
+                {/* Decorative Background Pet Icons */}
+                <div className={`absolute inset-0 pointer-events-none overflow-hidden mix-blend-overlay ${isDark ? 'opacity-60' : 'opacity-40'}`}>
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-20 right-[15%] w-24 h-24 rounded-full object-cover transform rotate-45 animate-float shadow-lg" />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute bottom-40 left-[10%] w-28 h-28 rounded-full object-cover transform -rotate-12 animate-float shadow-lg" style={{ animationDelay: '1s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-1/3 left-[20%] w-20 h-20 rounded-full object-cover transform -rotate-45 animate-float shadow-lg" style={{ animationDelay: '2s' }} />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute top-1/2 right-[10%] w-32 h-32 rounded-full object-cover transform -rotate-15 animate-float shadow-lg flex" style={{ animationDelay: '3s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute -bottom-10 right-[35%] w-16 h-16 rounded-full object-cover transform rotate-180 animate-float shadow-lg" style={{ animationDelay: '1.5s' }} />
+                </div>
+            </div>
+
+            <div className="container-custom relative z-10">
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
                     <span className="badge-primary mb-4">{language === 'en' ? 'Our Team' : 'Đội ngũ'}</span>
@@ -231,8 +251,12 @@ const DoctorsPage = () => {
                 <div className="mt-20 animate-fade-in-up">
                     <div className="relative rounded-3xl overflow-hidden">
                         {/* Background */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 animate-gradient" />
-                        <div className="absolute inset-0 bg-dark-300/20" />
+                        <div
+                            className="absolute inset-0 bg-cover bg-center opacity-10"
+                            style={{ backgroundImage: 'url("https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg")' }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/40 via-secondary-900/40 to-accent-900/40 mix-blend-overlay" />
+                        <div className="absolute inset-0 bg-dark-500/20" />
 
                         <div className="relative p-8 md:p-16 text-center">
                             <span className="text-5xl mb-4 block">💬</span>

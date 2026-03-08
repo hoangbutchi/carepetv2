@@ -46,7 +46,7 @@ const OrderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['bank_transfer', 'e_wallet', 'cod'],
+        enum: ['bank_transfer', 'e_wallet', 'cod', 'vnpay'],
         required: true
     },
     paymentStatus: {

@@ -7,12 +7,12 @@ import { productAPI } from '../services/api';
 
 // Service data with icons and colors
 const servicesData = [
-    { id: 'grooming', icon: '✂️', color: 'from-pink-500 to-rose-600', price: '150.000₫' },
-    { id: 'vaccination', icon: '💉', color: 'from-cyan-500 to-blue-600', price: '200.000₫' },
-    { id: 'checkup', icon: '🩺', color: 'from-green-500 to-emerald-600', price: '100.000₫' },
-    { id: 'surgery', icon: '🏥', color: 'from-purple-500 to-violet-600', price: '500.000₫+' },
-    { id: 'boarding', icon: '🏠', color: 'from-orange-500 to-amber-600', price: '80.000₫/ngày' },
-    { id: 'training', icon: '🎓', color: 'from-indigo-500 to-blue-600', price: '300.000₫' },
+    { id: 'grooming', icon: <img src="https://images.pexels.com/photos/6131569/pexels-photo-6131569.jpeg" alt="Grooming" className="w-full h-full object-cover rounded-2xl" />, color: 'from-pink-500 to-rose-600', price: '150.000₫' },
+    { id: 'vaccination', icon: <img src="https://images.pexels.com/photos/7469213/pexels-photo-7469213.jpeg" alt="Vaccination" className="w-full h-full object-cover rounded-2xl" />, color: 'from-cyan-500 to-blue-600', price: '200.000₫' },
+    { id: 'checkup', icon: <img src="https://images.pexels.com/photos/6816836/pexels-photo-6816836.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Checkup" className="w-full h-full object-cover rounded-2xl" />, color: 'from-green-500 to-emerald-600', price: '100.000₫' },
+    { id: 'surgery', icon: <img src="https://images.pexels.com/photos/18726828/pexels-photo-18726828.jpeg" alt="Surgery" className="w-full h-full object-cover rounded-2xl" />, color: 'from-purple-500 to-violet-600', price: '500.000₫+' },
+    { id: 'boarding', icon: <img src="https://images.pexels.com/photos/6821106/pexels-photo-6821106.jpeg" alt="Boarding" className="w-full h-full object-cover rounded-2xl" />, color: 'from-orange-500 to-amber-600', price: '80.000₫/ngày' },
+    { id: 'training', icon: <img src="https://images.pexels.com/photos/15322829/pexels-photo-15322829.jpeg" alt="Training" className="w-full h-full object-cover rounded-2xl" />, color: 'from-indigo-500 to-blue-600', price: '300.000₫' },
 ];
 
 const whyUsData = [
@@ -80,12 +80,20 @@ const HomePage = () => {
             <Particles />
 
             {/* ==================== HERO SECTION ==================== */}
-            <section className="relative min-h-screen flex items-center overflow-hidden hero-gradient">
-                {/* Gradient orbs */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-primary-500/20 blur-[100px] animate-pulse-slow" />
-                    <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-secondary-500/20 blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent-500/10 blur-[120px]" />
+            <section className="relative min-h-screen flex items-center overflow-hidden">
+                {/* Background Image */}
+                <div
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                    style={{ backgroundImage: 'url("https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&cs=tinysrgb&w=1920&q=80")' }}
+                >
+                    {/* Dark gradient overlay for text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-dark-300/90 via-dark-300/70 to-dark-300/40"></div>
+                </div>
+
+                {/* Animated Gradient Orbs */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50">
+                    <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-primary-500/20 blur-[120px] animate-pulse-slow" />
+                    <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-secondary-500/20 blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
                 </div>
 
                 <div className="container-custom relative z-10 pt-24 pb-16">
@@ -150,9 +158,8 @@ const HomePage = () => {
                             <div className="relative w-full aspect-square max-w-lg mx-auto">
                                 {/* Main visual */}
                                 <div className="absolute inset-0 rounded-[3rem] bg-gradient-to-br from-primary-500/30 to-secondary-500/30 backdrop-blur-sm border border-white/10 flex items-center justify-center">
-                                    <div className="text-center">
-                                        <span className="text-9xl animate-float">🐕</span>
-                                        <span className="text-8xl animate-float" style={{ animationDelay: '1s' }}>🐈</span>
+                                    <div className="w-full h-full flex items-center justify-center p-8">
+                                        <img src="https://images.pexels.com/photos/46024/pexels-photo-46024.jpeg" alt="Happy pets" className="w-full h-full object-cover rounded-[2rem] shadow-2xl animate-float" />
                                     </div>
                                 </div>
 
@@ -194,8 +201,19 @@ const HomePage = () => {
             </section>
 
             {/* ==================== SERVICES SECTION ==================== */}
-            <section className="section relative">
-                <div className="container-custom">
+            <section className="section relative overflow-hidden">
+                {/* Decorative Background Pet Icons */}
+                <div className="absolute inset-0 pointer-events-none opacity-50 dark:opacity-60 overflow-hidden mix-blend-overlay">
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute top-10 left-[5%] w-20 h-20 rounded-full object-cover transform -rotate-12 animate-float shadow-lg" />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-40 right-[10%] w-16 h-16 rounded-full object-cover transform rotate-45 animate-float shadow-lg" style={{ animationDelay: '1s' }} />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute bottom-20 left-[20%] w-24 h-24 rounded-full object-cover transform rotate-12 animate-float shadow-lg" style={{ animationDelay: '2s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute -bottom-10 right-[5%] w-32 h-32 rounded-full object-cover transform -rotate-15 animate-float shadow-lg flex" style={{ animationDelay: '3s' }} />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute top-1/2 left-[2%] w-14 h-14 rounded-full object-cover transform rotate-90 animate-float shadow-lg" style={{ animationDelay: '1.5s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-1/3 right-[30%] w-20 h-20 rounded-full object-cover transform -rotate-45 animate-float shadow-lg" style={{ animationDelay: '0.5s' }} />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute bottom-10 left-[45%] w-16 h-16 rounded-full object-cover transform rotate-180 animate-float shadow-lg" style={{ animationDelay: '2.5s' }} />
+                </div>
+
+                <div className="container-custom relative z-10">
                     <div className="text-center max-w-3xl mx-auto mb-16">
                         <span className="badge-primary mb-4">{language === 'en' ? 'Our Services' : 'Dịch vụ'}</span>
                         <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
@@ -237,8 +255,17 @@ const HomePage = () => {
             </section>
 
             {/* ==================== PRODUCTS SECTION ==================== */}
-            <section className="section relative bg-dark-200/50">
-                <div className="container-custom">
+            <section className="section relative bg-dark-200/50 overflow-hidden">
+                {/* Decorative Background Pet Icons */}
+                <div className="absolute inset-0 pointer-events-none opacity-50 dark:opacity-60 overflow-hidden mix-blend-overlay">
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-20 right-[5%] w-20 h-20 rounded-full object-cover transform rotate-12 animate-float shadow-lg" />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute bottom-40 left-[10%] w-16 h-16 rounded-full object-cover transform -rotate-45 animate-float shadow-lg" style={{ animationDelay: '1s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-1/2 left-[20%] w-24 h-24 rounded-full object-cover transform rotate-12 animate-float shadow-lg" style={{ animationDelay: '2s' }} />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute top-1/4 right-[25%] w-14 h-14 rounded-full object-cover transform -rotate-90 animate-float shadow-lg" style={{ animationDelay: '1.5s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute bottom-20 right-[15%] w-32 h-32 rounded-full object-cover transform -rotate-15 animate-float shadow-lg flex" style={{ animationDelay: '3s' }} />
+                </div>
+
+                <div className="container-custom relative z-10">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
                         <div>
                             <span className="badge-primary mb-4">{language === 'en' ? 'Shop' : 'Cửa hàng'}</span>
@@ -307,6 +334,15 @@ const HomePage = () => {
                 {/* Background gradient */}
                 <div className="absolute inset-0 bg-gradient-to-b from-dark-300 via-primary-900/20 to-dark-300" />
 
+                {/* Decorative Background Pet Icons */}
+                <div className="absolute inset-0 pointer-events-none opacity-70 dark:opacity-80 overflow-hidden mix-blend-overlay">
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-10 right-[25%] w-24 h-24 rounded-full object-cover transform rotate-45 animate-float shadow-lg" />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute bottom-20 left-[5%] w-20 h-20 rounded-full object-cover transform -rotate-12 animate-float shadow-lg" style={{ animationDelay: '1s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-1/3 left-[15%] w-16 h-16 rounded-full object-cover transform -rotate-45 animate-float shadow-lg" style={{ animationDelay: '2s' }} />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute top-1/2 right-[10%] w-32 h-32 rounded-full object-cover transform -rotate-15 animate-float shadow-lg flex" style={{ animationDelay: '3s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute bottom-10 right-[35%] w-14 h-14 rounded-full object-cover transform rotate-180 animate-float shadow-lg" style={{ animationDelay: '1.5s' }} />
+                </div>
+
                 <div className="container-custom relative z-10">
                     <div className="text-center mb-16">
                         <span className="badge-primary mb-4">{language === 'en' ? 'Why Us' : 'Tại sao chọn chúng tôi'}</span>
@@ -338,8 +374,48 @@ const HomePage = () => {
             </section>
 
             {/* ==================== TESTIMONIALS ==================== */}
-            <section className="section bg-dark-200/50">
-                <div className="container-custom">
+            <section className="section overflow-hidden relative" style={{ backgroundColor: '#0B0D17' }}>
+                {/* Background Details */}
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-teal-500/5 rounded-full blur-[120px]"></div>
+                    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-lime-400/5 rounded-full blur-[120px]"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/10 via-transparent to-transparent"></div>
+
+                    {/* Bioluminescent mushroom/vein image background */}
+                    <div className="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-screen" style={{ backgroundImage: 'url("https://images.pexels.com/photos/1054366/pexels-photo-1054366.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2")', filter: 'contrast(1.2) sepia(100%) hue-rotate(150deg) saturate(300%) blur(4px)' }}></div>
+
+                    {/* Decorative Background Pet Icons */}
+                    <div className="absolute inset-0 pointer-events-none opacity-50 dark:opacity-60 overflow-hidden mix-blend-overlay">
+                        <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute top-10 left-[10%] w-16 h-16 rounded-full object-cover transform rotate-12 animate-float shadow-lg" />
+                        <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-1/4 right-[15%] w-24 h-24 rounded-full object-cover transform -rotate-12 animate-float shadow-lg" style={{ animationDelay: '2s' }} />
+                        <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute bottom-20 right-[5%] w-20 h-20 rounded-full object-cover transform -rotate-45 animate-float shadow-lg" style={{ animationDelay: '1s' }} />
+                        <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute bottom-1/3 left-[5%] w-32 h-32 rounded-full object-cover transform rotate-15 animate-float shadow-lg flex" style={{ animationDelay: '3s' }} />
+                        <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute top-1/2 left-[30%] w-14 h-14 rounded-full object-cover transform rotate-90 animate-float shadow-lg" style={{ animationDelay: '1.5s' }} />
+                        <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute bottom-10 left-[45%] w-16 h-16 rounded-full object-cover transform rotate-180 animate-float shadow-lg" style={{ animationDelay: '2.5s' }} />
+                    </div>
+
+                    {/* Bokeh lights */}
+                    <div className="particles-container">
+                        {[...Array(15)].map((_, i) => (
+                            <div
+                                key={`bokeh-${i}`}
+                                className="absolute rounded-full bg-teal-200"
+                                style={{
+                                    left: `${Math.random() * 100}%`,
+                                    top: `${Math.random() * 100}%`,
+                                    width: `${Math.random() * 6 + 2}px`,
+                                    height: `${Math.random() * 6 + 2}px`,
+                                    animation: `particle-float ${Math.random() * 20 + 20}s linear infinite`,
+                                    animationDelay: `${Math.random() * -30}s`,
+                                    opacity: Math.random() * 0.4 + 0.1,
+                                    boxShadow: '0 0 10px 2px rgba(45, 212, 191, 0.4)'
+                                }}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                <div className="container-custom relative z-10">
                     <div className="text-center mb-16">
                         <span className="badge-primary mb-4">{language === 'en' ? 'Testimonials' : 'Đánh giá'}</span>
                         <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
@@ -351,7 +427,7 @@ const HomePage = () => {
                         {testimonials.map((testimonial, index) => (
                             <div
                                 key={index}
-                                className="card p-8 hover-lift animate-fade-in-up"
+                                className="card-glass-frosted p-8 hover-lift animate-fade-in-up glow-sm"
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
                                 {/* Stars */}

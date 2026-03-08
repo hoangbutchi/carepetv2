@@ -198,7 +198,7 @@ exports.getAllUsers = async (req, res) => {
 // @access  Private
 exports.getStaff = async (req, res) => {
     try {
-        const staff = await User.find({ role: { $in: ['staff', 'admin'] } }).select('name email role avatar');
+        const staff = await User.find({ role: 'staff' }).select('name email role avatar');
 
         res.status(200).json({
             success: true,
@@ -218,7 +218,7 @@ exports.getStaff = async (req, res) => {
 // @access  Public
 exports.getDoctors = async (req, res) => {
     try {
-        const doctors = await User.find({ role: { $in: ['staff', 'admin'] } })
+        const doctors = await User.find({ role: 'staff' })
             .select('name email role avatar specialization experience bio certificates');
 
         res.status(200).json({

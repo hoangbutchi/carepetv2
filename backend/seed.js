@@ -76,6 +76,136 @@ const seedData = async () => {
             avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop'
         });
 
+        const doctor3 = await User.create({
+            name: 'BS. Lê Minh Hoàng',
+            email: 'doctor3@petcare.com',
+            password: plainPassword,
+            role: 'staff',
+            phone: '0901234570',
+            address: '101 Đường Cộng Hòa, Tân Bình, TP.HCM',
+            specialization: 'Da liễu thú cưng',
+            experience: 6,
+            bio: 'Chuyên gia về các bệnh ngoài da và nấm rụng lông chi tiết ở thú cưng',
+            avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&h=200&fit=crop'
+        });
+
+        const doctor4 = await User.create({
+            name: 'BS. Phạm Thị Dung',
+            email: 'doctor4@petcare.com',
+            password: plainPassword,
+            role: 'staff',
+            phone: '0901234571',
+            address: '22 Thảo Điền, Quận 2, TP.HCM',
+            specialization: 'Nha khoa thú cưng',
+            experience: 9,
+            bio: 'Chăm sóc răng miệng và làm sạch cao răng với kỹ thuật cao',
+            avatar: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop'
+        });
+
+        const doctor5 = await User.create({
+            name: 'BS. Vũ Đức Khang',
+            email: 'doctor5@petcare.com',
+            password: plainPassword,
+            role: 'staff',
+            phone: '0901234572',
+            address: '89 Phan Đăng Lưu, Phú Nhuận, TP.HCM',
+            specialization: 'Cấp cứu & Hồi sức',
+            experience: 15,
+            bio: 'Giàu kinh nghiệm xử lý các ca cấp cứu và điều trị tích cực',
+            avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=200&h=200&fit=crop'
+        });
+
+        const doctor6 = await User.create({
+            name: 'BS. Hồ Thanh Trúc',
+            email: 'doctor6@petcare.com',
+            password: plainPassword,
+            role: 'staff',
+            phone: '0901234573',
+            address: '45 Lê Duẩn, Quận 1, TP.HCM',
+            specialization: 'Dinh dưỡng & Tiêm phòng',
+            experience: 5,
+            bio: 'Tư vấn chế độ dinh dưỡng và lịch tiêm phòng khoa học cho từng giống thú cưng',
+            avatar: 'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=200&h=200&fit=crop'
+        });
+
+        const doctor7 = await User.create({
+            name: 'BS. Lê Thị Tú Anh',
+            email: 'doctor7@petcare.com',
+            password: plainPassword,
+            role: 'staff',
+            phone: '0901234574',
+            address: '15 Nguyễn Ảnh Thủ, Hóc Môn, TP.HCM',
+            specialization: 'Chăm sóc răng miệng',
+            experience: 4,
+            bio: 'Tư vấn nhiệt tình và tận tâm đối với sức khỏe vòm miệng của thú cưng',
+            avatar: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop'
+        });
+
+        const doctor8 = await User.create({
+            name: 'BS. Ngô Minh Nhật',
+            email: 'doctor8@petcare.com',
+            password: plainPassword,
+            role: 'staff',
+            phone: '0901234575',
+            address: '22 Trần Não, Quận 2, TP.HCM',
+            specialization: 'Khám tổng quát',
+            experience: 7,
+            bio: 'Có nhiều năm kinh nghiệm khám bệnh và kê đơn thuốc an toàn',
+            avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&h=200&fit=crop'
+        });
+
+        const doctor9 = await User.create({
+            name: 'BS. Trần Phúc',
+            email: 'doctor9@petcare.com',
+            password: plainPassword,
+            role: 'staff',
+            phone: '0901234576',
+            address: '8B Điện Biên Phủ, Bình Thạnh, TP.HCM',
+            specialization: 'Xét nghiệm thú y',
+            experience: 11,
+            bio: 'Chuyên khoa về các vấn đề nội tiết tố và xét nghiệm máu',
+            avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=200&h=200&fit=crop'
+        });
+
+        const doctor10 = await User.create({
+            name: 'BS. Đào Thu Hương',
+            email: 'doctor10@petcare.com',
+            password: plainPassword,
+            role: 'staff',
+            phone: '0901234577',
+            address: '77 Nguyễn Văn Cừ, Quận 5, TP.HCM',
+            specialization: 'Nhãn khoa thú cưng',
+            experience: 8,
+            bio: 'Phục hồi và phẫu thuật các vấn đề nghiêm trọng ở mắt',
+            avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop'
+        });
+
+        const doctor11 = await User.create({
+            name: 'BS. Lương Tuấn Anh',
+            email: 'doctor11@petcare.com',
+            password: plainPassword,
+            role: 'staff',
+            phone: '0901234578',
+            address: '9 Lãnh Binh Thăng, Quận 11, TP.HCM',
+            specialization: 'Thú y chim cảnh',
+            experience: 6,
+            bio: 'Chăm sóc và điều trị chuyên biệt cho các dòng chim và vẹt',
+            avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop'
+        });
+
+        const doctor12 = await User.create({
+            name: 'BS. Nguyễn Bảo Ngọc',
+            email: 'doctor12@petcare.com',
+            password: plainPassword,
+            role: 'staff',
+            phone: '0901234579',
+            address: '40 Hoàng Hoa Thám, Tân Bình, TP.HCM',
+            specialization: 'Tai mũi họng',
+            experience: 5,
+            bio: 'Điều trị tận gốc các bệnh viêm nhiễm tai và các chứng ho sổ mũi',
+            avatar: 'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=200&h=200&fit=crop'
+        });
+
         const customer1 = await User.create({
             name: 'Nguyễn Minh Châu',
             email: 'customer1@gmail.com',
@@ -146,75 +276,142 @@ const seedData = async () => {
         console.log('Creating products...');
         const products = await Product.insertMany([
             {
-                name: 'Thức ăn cho chó trưởng thành Royal Canin 10kg',
-                description: 'Thức ăn cao cấp cho chó trưởng thành, giàu dinh dưỡng và dễ tiêu hóa',
-                price: 450000,
-                originalPrice: 500000,
+                name: 'Thức ăn hạt cho chó Poodle trưởng thành 1.5kg',
+                description: 'Thức ăn hạt dòng Poodle Adult cao cấp, kích thước hạt nhỏ dễ nhai.',
+                price: 250000,
+                originalPrice: 280000,
                 category: 'food',
-                stock: 50,
+                stock: 45,
                 isFeatured: true,
-                images: ['https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400&h=400&fit=crop']
+                images: ['https://loremflickr.com/400/400/dog,food,bowl?lock=1']
             },
             {
-                name: 'Thức ăn cho mèo Whiskas vị cá ngừ',
-                description: 'Thức ăn hạt cho mèo với hương vị cá ngừ thơm ngon',
+                name: 'Pate hỗn hợp cá mòi và cá ngừ cho mèo',
+                description: 'Pate thịt thật mềm mịn, không độn tinh bột, dưỡng lông mượt mà.',
+                price: 25000,
+                category: 'food',
+                stock: 120,
+                images: ['https://loremflickr.com/400/400/cat,food,bowl?lock=2']
+            },
+            {
+                name: 'Sữa bột bổ sung dinh dưỡng cho chó mèo sơ sinh',
+                description: 'Công thức gần giống sữa mẹ, dễ tiêu hoá cho thú cưng dưới 1 tháng tuổi.',
                 price: 180000,
                 category: 'food',
-                stock: 100,
-                images: ['https://images.unsplash.com/photo-1600279475050-b08e95e81b1a?w=400&h=400&fit=crop']
-            },
-            {
-                name: 'Vòng cổ da cao cấp cho chó',
-                description: 'Vòng cổ da thật, bền đẹp, phù hợp với chó cỡ vừa và lớn',
-                price: 150000,
-                category: 'accessory',
                 stock: 30,
-                isFeatured: true,
-                images: ['https://images.unsplash.com/photo-1599839619722-0bba4a32abab?w=400&h=400&fit=crop']
+                images: ['https://loremflickr.com/400/400/puppy,milk,bottle?lock=3']
             },
             {
-                name: 'Tháp cào móng cho mèo',
-                description: 'Tháp cào móng cao cấp với nhiều tầng cho mèo leo trèo',
-                price: 450000,
-                originalPrice: 550000,
+                name: 'Vòng cổ da bò có khắc tên cho chó lớn',
+                description: 'Da thật 100%, đinh tán chắc chắn, kèm dịch vụ khắc tên và số điện thoại.',
+                price: 195000,
+                category: 'accessory',
+                stock: 25,
+                isFeatured: true,
+                images: ['https://loremflickr.com/400/400/dog,collar,leather?lock=4']
+            },
+            {
+                name: 'Balo phi hành gia vận chuyển thú cưng',
+                description: 'Balo mặt kính trong suốt, có lỗ thông hơi siêu thoáng mát.',
+                price: 320000,
+                originalPrice: 400000,
                 category: 'accessory',
                 stock: 15,
-                images: ['https://images.unsplash.com/photo-1545249390-6bdfa286032f?w=400&h=400&fit=crop']
+                images: ['https://loremflickr.com/400/400/cat,carrier,backpack?lock=5']
             },
             {
-                name: 'Bóng đồ chơi tương tác cho chó',
-                description: 'Bóng cao su bền, an toàn cho chó chơi và cắn',
+                name: 'Giường nệm oval lót lông cừu ấm áp',
+                description: 'Nệm gòn dày dặn, có thể tháo rời vỏ để giặt giũ dễ dàng.',
+                price: 260000,
+                category: 'accessory',
+                stock: 40,
+                images: ['https://loremflickr.com/400/400/dog,bed,sleeping?lock=6']
+            },
+            {
+                name: 'Nhà cây cào móng 3 tầng có võng cho mèo',
+                description: 'Trụ cào móng bọc dây thừng gai, kết hợp võng nghỉ ngơi thoải mái.',
+                price: 680000,
+                originalPrice: 850000,
+                category: 'accessory',
+                stock: 10,
+                isFeatured: true,
+                images: ['https://loremflickr.com/400/400/cat,tree,scratch?lock=7']
+            },
+            {
+                name: 'Đồ chơi cần câu mèo lông vũ gắn chuông',
+                description: 'Cần câu dẻo dai kèm lông vũ và chuông bạc thu hút sự chú ý của mèo.',
+                price: 45000,
+                category: 'toy',
+                stock: 80,
+                images: ['https://loremflickr.com/400/400/cat,toy,feather?lock=8']
+            },
+            {
+                name: 'Đồ chơi xương gặm cao su sạch răng chó',
+                description: 'Xương cao su TPR siêu bền, có gai massage nướu và làm sạch mảng bám.',
                 price: 85000,
                 category: 'toy',
                 stock: 60,
                 isFeatured: true,
-                images: ['https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=400&h=400&fit=crop']
+                images: ['https://loremflickr.com/400/400/bone,toy,dog?lock=9']
             },
             {
-                name: 'Dầu gội dịu nhẹ cho thú cưng 500ml',
-                description: 'Dầu gội thảo mộc an toàn, không gây kích ứng da',
-                price: 95000,
+                name: 'Sữa tắm khử mùi chuyên dụng cho chó',
+                description: 'Hương thơm dễ chịu lưu hương lâu, công thức dịu nhẹ làm mượt lông.',
+                price: 150000,
                 category: 'hygiene',
+                stock: 35,
+                images: ['https://loremflickr.com/400/400/dog,bath,shampoo?lock=10']
+            },
+            {
+                name: 'Cát vệ sinh đất sét vón cục mạnh cho mèo 8L',
+                description: 'Vón cục tức thì, khử mùi cực tốt với hương cà phê khử khuẩn.',
+                price: 110000,
+                category: 'hygiene',
+                stock: 150,
+                isFeatured: true,
+                images: ['https://loremflickr.com/400/400/cat,litter,sand?lock=11']
+            },
+            {
+                name: 'Lược chải lông rụng giảm gãy rụng tới 90%',
+                description: 'Thiết kế thông minh loại bỏ lông tơ và lông chết một cách dễ dàng.',
+                price: 140000,
+                category: 'hygiene',
+                stock: 50,
+                images: ['https://loremflickr.com/400/400/dog,brush,grooming?lock=12']
+            },
+            {
+                name: 'Bỉm tã lót siêu thấm hút size M (Bịch 10 miếng)',
+                description: 'Bỉm mặc chống tràn dành cho chó đi dạo hoặc trong kỳ salo.',
+                price: 90000,
+                category: 'hygiene',
+                stock: 80,
+                images: ['https://loremflickr.com/400/400/puppy,diaper?lock=13']
+            },
+            {
+                name: 'Thuốc nhỏ gáy đặc trị ve, rận rệp cho chó 10-20kg',
+                description: 'Một tuýp hiệu quả kéo dài 30 ngày, an toàn khuếch tán qua da.',
+                price: 185000,
+                category: 'medicine',
+                stock: 25,
+                images: ['https://loremflickr.com/400/400/dog,flea,medicine?lock=14']
+            },
+            {
+                name: 'Gel uống tiêu búi lông cho mèo',
+                description: 'Gel bôi trơn hệ tiêu hoá, ngăn chặn tắc ruột do búi lông.',
+                price: 160000,
+                category: 'medicine',
                 stock: 45,
                 isFeatured: true,
-                images: ['https://images.unsplash.com/photo-1512438248247-f0f2a5a8b7f0?w=400&h=400&fit=crop']
+                images: ['https://loremflickr.com/400/400/cat,medicine?lock=15']
             },
             {
-                name: 'Thuốc nhỏ gáy trị ve bọ chét',
-                description: 'Hiệu quả trong 30 ngày, an toàn cho chó mèo trên 2 tháng tuổi',
-                price: 220000,
-                category: 'medicine',
-                stock: 40,
-                images: ['https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&h=400&fit=crop']
-            },
-            {
-                name: 'Vitamin bổ sung cho thú cưng',
-                description: 'Bổ sung vitamin và khoáng chất cần thiết cho sức khỏe thú cưng',
-                price: 350000,
-                category: 'medicine',
+                name: 'Khay vệ sinh có thành cao cho mèo lớn',
+                description: 'Thành cao chống văng cát hiệu quả, kèm khay hứng cát rơi dãi.',
+                price: 210000,
+                originalPrice: 250000,
+                category: 'hygiene',
                 stock: 20,
-                isFeatured: true,
-                images: ['https://images.unsplash.com/photo-1550831107-1553da8c8464?w=400&h=400&fit=crop']
+                images: ['https://loremflickr.com/400/400/cat,litter,box?lock=16']
             }
         ]);
 
@@ -340,6 +537,16 @@ const seedData = async () => {
         console.log('  Admin: admin@petcare.com / 123456');
         console.log('  Bác sĩ 1: doctor1@petcare.com / 123456');
         console.log('  Bác sĩ 2: doctor2@petcare.com / 123456');
+        console.log('  Bác sĩ 3: doctor3@petcare.com / 123456');
+        console.log('  Bác sĩ 4: doctor4@petcare.com / 123456');
+        console.log('  Bác sĩ 5: doctor5@petcare.com / 123456');
+        console.log('  Bác sĩ 6: doctor6@petcare.com / 123456');
+        console.log('  Bác sĩ 7: doctor7@petcare.com / 123456');
+        console.log('  Bác sĩ 8: doctor8@petcare.com / 123456');
+        console.log('  Bác sĩ 9: doctor9@petcare.com / 123456');
+        console.log('  Bác sĩ 10: doctor10@petcare.com / 123456');
+        console.log('  Bác sĩ 11: doctor11@petcare.com / 123456');
+        console.log('  Bác sĩ 12: doctor12@petcare.com / 123456');
         console.log('  Khách hàng 1: customer1@gmail.com / 123456');
         console.log('  Khách hàng 2: customer2@gmail.com / 123456');
         console.log('========================================\n');

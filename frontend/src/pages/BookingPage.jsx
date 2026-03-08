@@ -4,16 +4,17 @@ import { FiCheck, FiChevronLeft, FiChevronRight, FiCalendar, FiClock, FiUser } f
 import { format, addDays } from 'date-fns';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { petAPI, appointmentAPI, authAPI } from '../services/api';
 import toast from 'react-hot-toast';
 
 const services = [
-    { id: 'grooming', icon: '✂️', price: 150000, color: 'from-pink-500 to-rose-600' },
-    { id: 'vaccination', icon: '💉', price: 200000, color: 'from-cyan-500 to-blue-600' },
-    { id: 'checkup', icon: '🩺', price: 100000, color: 'from-green-500 to-emerald-600' },
-    { id: 'surgery', icon: '🏥', price: 500000, color: 'from-purple-500 to-violet-600' },
-    { id: 'boarding', icon: '🏠', price: 80000, color: 'from-orange-500 to-amber-600' },
-    { id: 'training', icon: '🎓', price: 300000, color: 'from-indigo-500 to-blue-600' },
+    { id: 'grooming', icon: <img src="https://images.pexels.com/photos/6131569/pexels-photo-6131569.jpeg" alt="Grooming" className="w-full h-full object-cover rounded-xl" />, price: 150000, color: 'from-pink-500 to-rose-600' },
+    { id: 'vaccination', icon: <img src="https://images.pexels.com/photos/7469213/pexels-photo-7469213.jpeg" alt="Vaccination" className="w-full h-full object-cover rounded-xl" />, price: 200000, color: 'from-cyan-500 to-blue-600' },
+    { id: 'checkup', icon: <img src="https://images.pexels.com/photos/6816836/pexels-photo-6816836.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Checkup" className="w-full h-full object-cover rounded-xl" />, price: 100000, color: 'from-green-500 to-emerald-600' },
+    { id: 'surgery', icon: <img src="https://images.pexels.com/photos/18726828/pexels-photo-18726828.jpeg" alt="Surgery" className="w-full h-full object-cover rounded-xl" />, price: 500000, color: 'from-purple-500 to-violet-600' },
+    { id: 'boarding', icon: <img src="https://images.pexels.com/photos/6821106/pexels-photo-6821106.jpeg" alt="Boarding" className="w-full h-full object-cover rounded-xl" />, price: 80000, color: 'from-orange-500 to-amber-600' },
+    { id: 'training', icon: <img src="https://images.pexels.com/photos/15322829/pexels-photo-15322829.jpeg" alt="Training" className="w-full h-full object-cover rounded-xl" />, price: 300000, color: 'from-indigo-500 to-blue-600' },
 ];
 
 const timeSlots = [
@@ -25,6 +26,7 @@ const BookingPage = () => {
     const { t, language } = useLanguage();
     const { isAuthenticated } = useAuth();
     const [searchParams] = useSearchParams();
+    const { isDark } = useTheme();
     const navigate = useNavigate();
 
     const [step, setStep] = useState(1);
@@ -38,7 +40,7 @@ const BookingPage = () => {
         pet: '',
         date: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
         timeSlot: '',
-        staff: '',
+        staff: searchParams.get('staff') || '',
         notes: '',
     });
 

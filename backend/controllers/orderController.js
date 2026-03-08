@@ -7,8 +7,11 @@ const Product = require('../models/Product');
 exports.createOrder = async (req, res) => {
     try {
         const { items, shippingAddress, paymentMethod } = req.body;
+        
+        console.log("Create Order Payload Check:", { items, shippingAddress, paymentMethod });
 
         if (!items || items.length === 0) {
+            console.error("Order Creation Failed: No order items", req.body);
             return res.status(400).json({
                 success: false,
                 message: 'No order items'
@@ -23,6 +26,7 @@ exports.createOrder = async (req, res) => {
             const product = await Product.findById(item.product);
 
             if (!product) {
+                console.error(`Order Creation Failed: Product not found: ${item.product}`);
                 return res.status(404).json({
                     success: false,
                     message: `Product not found: ${item.product}`
@@ -30,6 +34,7 @@ exports.createOrder = async (req, res) => {
             }
 
             if (product.stock < item.quantity) {
+                console.error(`Order Creation Failed: Insufficient stock for ${product.name}. Requested ${item.quantity}, have ${product.stock}`);
                 return res.status(400).json({
                     success: false,
                     message: `Insufficient stock for ${product.name}`
@@ -64,6 +69,7 @@ exports.createOrder = async (req, res) => {
             order
         });
     } catch (error) {
+        console.error("Order Creation Fatal Error:", error);
         res.status(500).json({
             success: false,
             message: error.message

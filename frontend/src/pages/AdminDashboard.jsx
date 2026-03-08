@@ -77,6 +77,16 @@ const AdminDashboard = () => {
                     setDoctors([
                         { _id: '1', name: 'BS. Nguyễn Văn An', email: 'doctor1@petcare.com', phone: '0901234568', specialization: 'Nội khoa thú cưng', experience: 8 },
                         { _id: '2', name: 'BS. Trần Thị Bình', email: 'doctor2@petcare.com', phone: '0901234569', specialization: 'Phẫu thuật thú cưng', experience: 12 },
+                        { _id: '3', name: 'BS. Lê Minh Hoàng', email: 'doctor3@petcare.com', phone: '0901234570', specialization: 'Da liễu thú cưng', experience: 6 },
+                        { _id: '4', name: 'BS. Phạm Thị Dung', email: 'doctor4@petcare.com', phone: '0901234571', specialization: 'Nha khoa thú cưng', experience: 9 },
+                        { _id: '5', name: 'BS. Vũ Đức Khang', email: 'doctor5@petcare.com', phone: '0901234572', specialization: 'Cấp cứu & Hồi sức', experience: 15 },
+                        { _id: '6', name: 'BS. Hồ Thanh Trúc', email: 'doctor6@petcare.com', phone: '0901234573', specialization: 'Dinh dưỡng & Tiêm phòng', experience: 5 },
+                        { _id: '7', name: 'BS. Lê Thị Tú Anh', email: 'doctor7@petcare.com', phone: '0901234574', specialization: 'Chăm sóc răng miệng', experience: 4 },
+                        { _id: '8', name: 'BS. Ngô Minh Nhật', email: 'doctor8@petcare.com', phone: '0901234575', specialization: 'Khám tổng quát', experience: 7 },
+                        { _id: '9', name: 'BS. Trần Phúc', email: 'doctor9@petcare.com', phone: '0901234576', specialization: 'Xét nghiệm thú y', experience: 11 },
+                        { _id: '10', name: 'BS. Đào Thu Hương', email: 'doctor10@petcare.com', phone: '0901234577', specialization: 'Nhãn khoa thú cưng', experience: 8 },
+                        { _id: '11', name: 'BS. Lương Tuấn Anh', email: 'doctor11@petcare.com', phone: '0901234578', specialization: 'Thú y chim cảnh', experience: 6 },
+                        { _id: '12', name: 'BS. Nguyễn Bảo Ngọc', email: 'doctor12@petcare.com', phone: '0901234579', specialization: 'Tai mũi họng', experience: 5 }
                     ]);
                 }
             }
@@ -120,6 +130,16 @@ const AdminDashboard = () => {
         setDoctors([
             { _id: '1', name: 'BS. Nguyễn Văn An', email: 'doctor1@petcare.com', phone: '0901234568', specialization: 'Nội khoa thú cưng', experience: 8 },
             { _id: '2', name: 'BS. Trần Thị Bình', email: 'doctor2@petcare.com', phone: '0901234569', specialization: 'Phẫu thuật thú cưng', experience: 12 },
+            { _id: '3', name: 'BS. Lê Minh Hoàng', email: 'doctor3@petcare.com', phone: '0901234570', specialization: 'Da liễu thú cưng', experience: 6 },
+            { _id: '4', name: 'BS. Phạm Thị Dung', email: 'doctor4@petcare.com', phone: '0901234571', specialization: 'Nha khoa thú cưng', experience: 9 },
+            { _id: '5', name: 'BS. Vũ Đức Khang', email: 'doctor5@petcare.com', phone: '0901234572', specialization: 'Cấp cứu & Hồi sức', experience: 15 },
+            { _id: '6', name: 'BS. Hồ Thanh Trúc', email: 'doctor6@petcare.com', phone: '0901234573', specialization: 'Dinh dưỡng & Tiêm phòng', experience: 5 },
+            { _id: '7', name: 'BS. Lê Thị Tú Anh', email: 'doctor7@petcare.com', phone: '0901234574', specialization: 'Chăm sóc răng miệng', experience: 4 },
+            { _id: '8', name: 'BS. Ngô Minh Nhật', email: 'doctor8@petcare.com', phone: '0901234575', specialization: 'Khám tổng quát', experience: 7 },
+            { _id: '9', name: 'BS. Trần Phúc', email: 'doctor9@petcare.com', phone: '0901234576', specialization: 'Xét nghiệm thú y', experience: 11 },
+            { _id: '10', name: 'BS. Đào Thu Hương', email: 'doctor10@petcare.com', phone: '0901234577', specialization: 'Nhãn khoa thú cưng', experience: 8 },
+            { _id: '11', name: 'BS. Lương Tuấn Anh', email: 'doctor11@petcare.com', phone: '0901234578', specialization: 'Thú y chim cảnh', experience: 6 },
+            { _id: '12', name: 'BS. Nguyễn Bảo Ngọc', email: 'doctor12@petcare.com', phone: '0901234579', specialization: 'Tai mũi họng', experience: 5 }
         ]);
     };
 
@@ -183,7 +203,7 @@ const AdminDashboard = () => {
     };
 
     const getServiceIcon = (service) => {
-        const icons = { grooming: '✂️', vaccination: '💉', checkup: '🩺', surgery: '🏥', boarding: '🏠', training: '🎓' };
+        const icons = { grooming: <img src="https://images.pexels.com/photos/6131569/pexels-photo-6131569.jpeg" alt="Grooming" className="w-full h-full object-cover rounded-xl" />, vaccination: <img src="https://images.pexels.com/photos/7469213/pexels-photo-7469213.jpeg" alt="Vaccination" className="w-full h-full object-cover rounded-xl" />, checkup: <img src="https://images.pexels.com/photos/6816836/pexels-photo-6816836.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Checkup" className="w-full h-full object-cover rounded-xl" />, surgery: <img src="https://images.pexels.com/photos/18726828/pexels-photo-18726828.jpeg" alt="Surgery" className="w-full h-full object-cover rounded-xl" />, boarding: <img src="https://images.pexels.com/photos/6821106/pexels-photo-6821106.jpeg" alt="Boarding" className="w-full h-full object-cover rounded-xl" />, training: <img src="https://images.pexels.com/photos/15322829/pexels-photo-15322829.jpeg" alt="Training" className="w-full h-full object-cover rounded-xl" /> };
         return icons[service] || '📋';
     };
 

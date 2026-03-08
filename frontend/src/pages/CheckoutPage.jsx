@@ -4,13 +4,23 @@ import { FiCreditCard, FiTruck, FiCheck, FiShield, FiLock } from 'react-icons/fi
 import { useLanguage } from '../i18n/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { orderAPI } from '../services/api';
+import { orderAPI, momoAPI, vnpayAPI } from '../services/api';
 import { FormInput, FormTextarea } from '../components/common/UI';
 import toast from 'react-hot-toast';
 
 const paymentMethods = [
-    { id: 'bank_transfer', icon: '🏦', color: 'from-blue-500 to-blue-600' },
-    { id: 'e_wallet', icon: '📱', color: 'from-purple-500 to-purple-600' },
+    {
+        id: 'e_wallet',
+        icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZcQPC-zWVyFOu9J2OGl0j2D220D49D0Z7BQ&s" alt="MoMo" className="w-full h-full object-cover rounded-lg" />,
+        color: 'from-white to-gray-100',
+        name: 'Ví MoMo'
+    },
+    {
+        id: 'vnpay',
+        icon: <img src="https://yt3.googleusercontent.com/JM1m2wng0JQUgSg9ZSEvz7G4Rwo7pYb4QBYip4PAhvGRyf1D_YTbL2DdDjOy0qOXssJPdz2r7Q=s900-c-k-c0x00ffffff-no-rj" alt="VNPAY" className="w-full h-full object-contain rounded-lg p-1" />,
+        color: 'from-white to-gray-100',
+        name: 'VNPAY'
+    },
     { id: 'cod', icon: '💵', color: 'from-green-500 to-green-600' },
 ];
 
@@ -58,9 +68,58 @@ const CheckoutPage = () => {
             };
 
             const response = await orderAPI.create(orderData);
-            setOrderNumber(response.data.order?.orderNumber || 'PMS' + Date.now());
-            setShowSuccess(true);
-            clearCart();
+            const orderNumber = response.data.order?._id;
+
+            if (paymentMethod === 'e_wallet') {
+                try {
+                    const momoResponse = await momoAPI.createPayment({
+                        orderId: orderNumber,
+                        amount: total,
+                        orderInfo: `Thanh toán đơn hàng PetCare ${orderNumber}`
+                    });
+
+                    if (momoResponse.data && momoResponse.data.payUrl) {
+                        clearCart();
+                        window.open(momoResponse.data.payUrl, '_blank');
+                        // Show success message on the original tab while they pay in the new one
+                        setOrderNumber(orderNumber);
+                        setShowSuccess(true);
+                        return;
+                    } else {
+                        toast.error(language === 'en' ? 'Failed to initiate MoMo payment' : 'Lỗi khởi tạo thanh toán MoMo');
+                    }
+                } catch (momoError) {
+                    const errorMsg = momoError.response?.data?.message || (language === 'en' ? 'MoMo Payment Error' : 'Lỗi kết nối ví MoMo');
+                    toast.error(`MoMo: ${errorMsg}`);
+                    console.error('MoMo error:', momoError);
+                }
+            } else if (paymentMethod === 'vnpay') {
+                try {
+                    const vnpayResponse = await vnpayAPI.createPayment({
+                        orderId: orderNumber,
+                        amount: total,
+                        language: language === 'en' ? 'en' : 'vn'
+                    });
+
+                    if (vnpayResponse.data && vnpayResponse.data.payUrl) {
+                        clearCart();
+                        window.open(vnpayResponse.data.payUrl, '_blank');
+                        setOrderNumber(orderNumber);
+                        setShowSuccess(true);
+                        return;
+                    } else {
+                        toast.error(language === 'en' ? 'Failed to initiate VNPAY payment' : 'Lỗi khởi tạo thanh toán VNPAY');
+                    }
+                } catch (vnpayError) {
+                    const errorMsg = vnpayError.response?.data?.message || (language === 'en' ? 'VNPAY Payment Error' : 'Lỗi kết nối VNPAY');
+                    toast.error(`VNPAY: ${errorMsg}`);
+                    console.error('VNPAY error:', vnpayError);
+                }
+            } else {
+                setOrderNumber(response.data.order?.orderNumber || 'PMS' + Date.now());
+                setShowSuccess(true);
+                clearCart();
+            }
         } catch (error) {
             toast.error(error.response?.data?.message || t('common.error'));
         } finally {
@@ -90,21 +149,6 @@ const CheckoutPage = () => {
                         {language === 'en' ? 'Order Number:' : 'Mã đơn hàng:'}
                     </p>
                     <p className="text-2xl font-bold text-gradient mb-6">{orderNumber}</p>
-
-                    {paymentMethod === 'bank_transfer' && (
-                        <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-6 mb-6 text-left">
-                            <h3 className="font-semibold text-blue-400 mb-3">
-                                {language === 'en' ? 'Bank Transfer Information' : 'Thông tin chuyển khoản'}
-                            </h3>
-                            <div className="space-y-2 text-sm text-blue-300">
-                                <p><strong>{language === 'en' ? 'Bank:' : 'Ngân hàng:'}</strong> Vietcombank</p>
-                                <p><strong>{language === 'en' ? 'Account:' : 'Số TK:'}</strong> 1234567890</p>
-                                <p><strong>{language === 'en' ? 'Name:' : 'Chủ TK:'}</strong> PET CARE PRO CO., LTD</p>
-                                <p><strong>{language === 'en' ? 'Content:' : 'Nội dung:'}</strong> {orderNumber}</p>
-                                <p><strong>{language === 'en' ? 'Amount:' : 'Số tiền:'}</strong> {formatPrice(total)}</p>
-                            </div>
-                        </div>
-                    )}
 
                     {paymentMethod === 'e_wallet' && (
                         <div className="bg-purple-500/10 border border-purple-500/20 rounded-2xl p-6 mb-6">
@@ -209,8 +253,8 @@ const CheckoutPage = () => {
                                         <label
                                             key={method.id}
                                             className={`flex items-center p-4 rounded-xl cursor-pointer transition-all duration-300 ${paymentMethod === method.id
-                                                    ? 'bg-gradient-primary shadow-glow-sm'
-                                                    : 'bg-white/5 border border-white/10 hover:bg-white/10'
+                                                ? 'bg-gradient-primary shadow-glow-sm'
+                                                : 'bg-white/5 border border-white/10 hover:bg-white/10'
                                                 }`}
                                         >
                                             <input
@@ -224,7 +268,7 @@ const CheckoutPage = () => {
                                             <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${method.color} flex items-center justify-center text-xl mr-4`}>
                                                 {method.icon}
                                             </div>
-                                            <span className="font-medium text-white">{t(`checkout.${method.id.replace('_', '')}`) || t(`checkout.${method.id}`)}</span>
+                                            <span className="font-medium text-white">{method.name || t(`checkout.${method.id.replace('_', '')}`) || t(`checkout.${method.id}`)}</span>
                                             {paymentMethod === method.id && (
                                                 <FiCheck className="ml-auto text-white" />
                                             )}

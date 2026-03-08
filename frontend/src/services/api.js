@@ -110,3 +110,10 @@ export const newsAPI = {
     reject: (id, reason) => api.put(`/news/${id}/reject`, { reason }),
 };
 
+export const momoAPI = {
+    createPayment: (data) => api.post('/momo/payment', data),
+};
+
+export const vnpayAPI = {
+    createPayment: (data) => api.post('/vnpay/payment', data),
+};

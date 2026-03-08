@@ -228,8 +228,23 @@ const NewsPage = () => {
     // News detail view
     if (id && selectedNews) {
         return (
-            <div className="min-h-screen bg-theme pt-24 pb-12 transition-colors duration-300">
-                <div className="container-custom max-w-4xl">
+            <div className="min-h-screen bg-theme pt-24 pb-12 transition-colors duration-300 relative overflow-hidden">
+                {/* Background elements */}
+                <div className="absolute inset-0 pointer-events-none z-0">
+                    {/* Light mode gradient */}
+                    {!isDark && <div className="absolute inset-0 bg-gradient-to-br from-white via-indigo-50/40 to-blue-50/30 opacity-70"></div>}
+                    {/* Dark mode gradient */}
+                    {isDark && <div className="absolute inset-0 bg-gradient-to-br from-dark-300 via-dark-200 to-indigo-900/10 opacity-80"></div>}
+                    
+                    {/* Decorative Background Pet Icons */}
+                    <div className={`absolute inset-0 pointer-events-none overflow-hidden mix-blend-overlay ${isDark ? 'opacity-60' : 'opacity-40'}`}>
+                        <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-20 right-[25%] w-24 h-24 rounded-full object-cover transform rotate-45 animate-float shadow-lg" />
+                        <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute bottom-20 left-[5%] w-20 h-20 rounded-full object-cover transform -rotate-12 animate-float shadow-lg" style={{ animationDelay: '1s' }} />
+                        <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-1/3 left-[15%] w-16 h-16 rounded-full object-cover transform -rotate-45 animate-float shadow-lg" style={{ animationDelay: '2s' }} />
+                    </div>
+                </div>
+
+                <div className="container-custom max-w-4xl relative z-10">
                     <Link
                         to="/news"
                         className="inline-flex items-center text-primary-400 hover:text-primary-300 mb-6 transition-colors"
@@ -288,8 +303,25 @@ const NewsPage = () => {
 
     // News list view
     return (
-        <div className="min-h-screen bg-theme pt-24 pb-12 transition-colors duration-300">
-            <div className="container-custom">
+        <div className="min-h-screen bg-theme pt-24 pb-12 transition-colors duration-300 relative overflow-hidden">
+            {/* Background elements */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+                {/* Light mode gradient */}
+                {!isDark && <div className="absolute inset-0 bg-gradient-to-br from-white via-indigo-50/40 to-blue-50/30 opacity-70"></div>}
+                {/* Dark mode gradient */}
+                {isDark && <div className="absolute inset-0 bg-gradient-to-br from-dark-300 via-dark-200 to-indigo-900/10 opacity-80"></div>}
+                
+                {/* Decorative Background Pet Icons */}
+                <div className={`absolute inset-0 pointer-events-none overflow-hidden mix-blend-overlay ${isDark ? 'opacity-60' : 'opacity-40'}`}>
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-1/4 right-[25%] w-24 h-24 rounded-full object-cover transform rotate-45 animate-float shadow-lg" />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute bottom-1/3 left-[15%] w-20 h-20 rounded-full object-cover transform -rotate-12 animate-float shadow-lg" style={{ animationDelay: '1s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-10 left-[15%] w-16 h-16 rounded-full object-cover transform -rotate-45 animate-float shadow-lg" style={{ animationDelay: '2s' }} />
+                    <img src="https://images.pexels.com/photos/208834/pexels-photo-208834.jpeg" alt="" className="absolute bottom-10 right-[35%] w-24 h-24 rounded-full object-cover transform rotate-15 animate-float shadow-lg flex" style={{ animationDelay: '3s' }} />
+                    <img src="https://images.pexels.com/photos/460797/pexels-photo-460797.jpeg" alt="" className="absolute top-1/2 right-[10%] w-14 h-14 rounded-full object-cover transform rotate-90 animate-float shadow-lg" style={{ animationDelay: '1.5s' }} />
+                </div>
+            </div>
+
+            <div className="container-custom relative z-10">
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in-up">
                     <span className="badge-primary mb-4">
