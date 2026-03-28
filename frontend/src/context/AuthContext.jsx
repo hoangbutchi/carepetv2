@@ -5,7 +5,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(() => localStorage.getItem('token'));
+    const [token, setToken] = useState(() => sessionStorage.getItem('token'));
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
                     setUser(response.data.user);
                 } catch (error) {
                     console.error('Auth init error:', error);
-                    localStorage.removeItem('token');
+                    sessionStorage.removeItem('token');
                     setToken(null);
                 }
             }
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
             const response = await api.post('/auth/login', { email, password });
             const { token: newToken, user: userData } = response.data;
 
-            localStorage.setItem('token', newToken);
+            sessionStorage.setItem('token', newToken);
             setToken(newToken);
             setUser(userData);
 
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
         const response = await api.post('/auth/register', userData);
         const { token: newToken, user: newUser } = response.data;
 
-        localStorage.setItem('token', newToken);
+        sessionStorage.setItem('token', newToken);
         setToken(newToken);
         setUser(newUser);
 
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
         setToken(null);
         setUser(null);
     };
@@ -72,8 +72,9 @@ export const AuthProvider = ({ children }) => {
 
     const isAuthenticated = !!user;
     const isAdmin = user?.role === 'admin';
-    const isStaff = user?.role === 'staff' || user?.role === 'admin';
+    const isStaff = user?.role === 'staff' || user?.role === 'doctor' || user?.role === 'admin';
     const isCustomer = user?.role === 'customer' || !user?.role;
+    const isDoctor = user?.role === 'doctor';
 
     return (
         <AuthContext.Provider value={{

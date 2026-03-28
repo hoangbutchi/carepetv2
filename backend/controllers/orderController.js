@@ -127,6 +127,12 @@ exports.getOrders = async (req, res) => {
 // @access  Private
 exports.getOrder = async (req, res) => {
     try {
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid order ID format'
+            });
+        }
         const order = await Order.findById(req.params.id)
             .populate('customer', 'name email phone')
             .populate('items.product', 'name images price');
@@ -166,6 +172,12 @@ exports.getOrder = async (req, res) => {
 // @access  Private/Staff/Admin
 exports.updateOrderStatus = async (req, res) => {
     try {
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid order ID format'
+            });
+        }
         const { orderStatus, paymentStatus } = req.body;
 
         const order = await Order.findById(req.params.id);
@@ -207,6 +219,12 @@ exports.updateOrderStatus = async (req, res) => {
 // @access  Private
 exports.processPayment = async (req, res) => {
     try {
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid order ID format'
+            });
+        }
         const { paymentMethod, transactionId } = req.body;
 
         const order = await Order.findById(req.params.id);
@@ -268,6 +286,12 @@ exports.processPayment = async (req, res) => {
 // @access  Private
 exports.cancelOrder = async (req, res) => {
     try {
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid order ID format'
+            });
+        }
         const order = await Order.findById(req.params.id);
 
         if (!order) {

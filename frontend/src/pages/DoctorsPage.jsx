@@ -7,12 +7,18 @@ import { useTheme } from '../context/ThemeContext';
 
 // Placeholder images for doctors
 const doctorImages = [
-    'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&h=400&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&h=400&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=400&h=400&fit=crop&crop=face'
+    'https://images.pexels.com/photos/14438788/pexels-photo-14438788.jpeg',
+    'https://images.pexels.com/photos/14438787/pexels-photo-14438787.jpeg',
+    'https://images.pexels.com/photos/29995617/pexels-photo-29995617.jpeg',
+    'https://images.pexels.com/photos/19601385/pexels-photo-19601385.jpeg',
+    'https://images.pexels.com/photos/14628069/pexels-photo-14628069.jpeg',
+    'https://images.pexels.com/photos/15962798/pexels-photo-15962798.jpeg',
+    'https://images.pexels.com/photos/15641080/pexels-photo-15641080.jpeg',
+    'https://images.pexels.com/photos/15641079/pexels-photo-15641079.jpeg',
+    'https://images.pexels.com/photos/14628045/pexels-photo-14628045.jpeg',
+    'https://images.pexels.com/photos/32254667/pexels-photo-32254667.jpeg',
+    'https://images.pexels.com/photos/19438566/pexels-photo-19438566.jpeg',
+    'https://images.pexels.com/photos/14628046/pexels-photo-14628046.jpeg'
 ];
 
 const specializations = {
@@ -168,7 +174,7 @@ const DoctorsPage = () => {
                                     <img
                                         src={doctor.avatar}
                                         alt={doctor.name}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                        className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-500"
                                         onError={(e) => {
                                             e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&size=400&background=06b6d4&color=fff`;
                                         }}

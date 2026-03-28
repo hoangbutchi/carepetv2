@@ -60,7 +60,7 @@ const seedData = async () => {
             specialization: 'Nội khoa thú cưng',
             experience: 8,
             bio: 'Chuyên gia về nội khoa và chẩn đoán bệnh cho chó mèo',
-            avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/14438788/pexels-photo-14438788.jpeg'
         });
 
         const doctor2 = await User.create({
@@ -73,7 +73,7 @@ const seedData = async () => {
             specialization: 'Phẫu thuật thú cưng',
             experience: 12,
             bio: 'Chuyên gia phẫu thuật và chăm sóc sau phẫu thuật',
-            avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/14438787/pexels-photo-14438787.jpeg'
         });
 
         const doctor3 = await User.create({
@@ -86,7 +86,7 @@ const seedData = async () => {
             specialization: 'Da liễu thú cưng',
             experience: 6,
             bio: 'Chuyên gia về các bệnh ngoài da và nấm rụng lông chi tiết ở thú cưng',
-            avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/29995617/pexels-photo-29995617.jpeg'
         });
 
         const doctor4 = await User.create({
@@ -99,7 +99,7 @@ const seedData = async () => {
             specialization: 'Nha khoa thú cưng',
             experience: 9,
             bio: 'Chăm sóc răng miệng và làm sạch cao răng với kỹ thuật cao',
-            avatar: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/19601385/pexels-photo-19601385.jpeg'
         });
 
         const doctor5 = await User.create({
@@ -112,7 +112,7 @@ const seedData = async () => {
             specialization: 'Cấp cứu & Hồi sức',
             experience: 15,
             bio: 'Giàu kinh nghiệm xử lý các ca cấp cứu và điều trị tích cực',
-            avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/14628069/pexels-photo-14628069.jpeg'
         });
 
         const doctor6 = await User.create({
@@ -125,7 +125,7 @@ const seedData = async () => {
             specialization: 'Dinh dưỡng & Tiêm phòng',
             experience: 5,
             bio: 'Tư vấn chế độ dinh dưỡng và lịch tiêm phòng khoa học cho từng giống thú cưng',
-            avatar: 'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/15962798/pexels-photo-15962798.jpeg'
         });
 
         const doctor7 = await User.create({
@@ -138,20 +138,7 @@ const seedData = async () => {
             specialization: 'Chăm sóc răng miệng',
             experience: 4,
             bio: 'Tư vấn nhiệt tình và tận tâm đối với sức khỏe vòm miệng của thú cưng',
-            avatar: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop'
-        });
-
-        const doctor8 = await User.create({
-            name: 'BS. Ngô Minh Nhật',
-            email: 'doctor8@petcare.com',
-            password: plainPassword,
-            role: 'staff',
-            phone: '0901234575',
-            address: '22 Trần Não, Quận 2, TP.HCM',
-            specialization: 'Khám tổng quát',
-            experience: 7,
-            bio: 'Có nhiều năm kinh nghiệm khám bệnh và kê đơn thuốc an toàn',
-            avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/15641080/pexels-photo-15641080.jpeg'
         });
 
         const doctor9 = await User.create({
@@ -164,7 +151,7 @@ const seedData = async () => {
             specialization: 'Xét nghiệm thú y',
             experience: 11,
             bio: 'Chuyên khoa về các vấn đề nội tiết tố và xét nghiệm máu',
-            avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/14628045/pexels-photo-14628045.jpeg'
         });
 
         const doctor10 = await User.create({
@@ -177,7 +164,7 @@ const seedData = async () => {
             specialization: 'Nhãn khoa thú cưng',
             experience: 8,
             bio: 'Phục hồi và phẫu thuật các vấn đề nghiêm trọng ở mắt',
-            avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/32254667/pexels-photo-32254667.jpeg'
         });
 
         const doctor11 = await User.create({
@@ -190,7 +177,7 @@ const seedData = async () => {
             specialization: 'Thú y chim cảnh',
             experience: 6,
             bio: 'Chăm sóc và điều trị chuyên biệt cho các dòng chim và vẹt',
-            avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/19438566/pexels-photo-19438566.jpeg'
         });
 
         const doctor12 = await User.create({
@@ -203,7 +190,7 @@ const seedData = async () => {
             specialization: 'Tai mũi họng',
             experience: 5,
             bio: 'Điều trị tận gốc các bệnh viêm nhiễm tai và các chứng ho sổ mũi',
-            avatar: 'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=200&h=200&fit=crop'
+            avatar: 'https://images.pexels.com/photos/14628046/pexels-photo-14628046.jpeg'
         });
 
         const customer1 = await User.create({

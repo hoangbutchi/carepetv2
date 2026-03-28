@@ -8,6 +8,8 @@ import { useTheme } from '../context/ThemeContext';
 import { messageAPI } from '../services/api';
 import { Spinner, EmptyState } from '../components/common/UI';
 import toast from 'react-hot-toast';
+import ChatBotWidget from '../components/chatBot/ChatBotWidget';
+
 
 const ChatPage = () => {
     const { t, language } = useLanguage();
@@ -366,6 +368,8 @@ const ChatPage = () => {
                     </div>
                 </div>
             </div>
+            
+            <ChatBotWidget />
         </div>
     );
 };

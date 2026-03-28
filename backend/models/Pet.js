@@ -64,6 +64,10 @@ const PetSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    notes: {
+        type: String,
+        maxlength: [500, 'Notes cannot be more than 500 characters']
+    },
     medicalHistory: [MedicalRecordSchema],
     createdAt: {
         type: Date,

@@ -37,7 +37,7 @@ const BookingPage = () => {
 
     const [booking, setBooking] = useState({
         service: searchParams.get('service') || '',
-        pet: '',
+        pet: searchParams.get('petId') || '',
         date: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
         timeSlot: '',
         staff: searchParams.get('staff') || '',
@@ -333,7 +333,6 @@ const BookingPage = () => {
                     <div className="flex justify-between items-center py-4 border-b border-white/10">
                         <span className="text-gray-400">{t('booking.selectService')}</span>
                         <span className="font-semibold text-white flex items-center">
-                            <span className="mr-2">{selectedService?.icon}</span>
                             {t(`services.${booking.service}`)}
                         </span>
                     </div>

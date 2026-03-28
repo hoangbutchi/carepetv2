@@ -26,6 +26,7 @@ import DoctorsPage from './pages/DoctorsPage';
 import NewsPage from './pages/NewsPage';
 import ChatPage from './pages/ChatPage';
 import PaymentResultPage from './pages/PaymentResultPage';
+import MyAppointmentsPage from './pages/MyAppointmentsPage';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -119,6 +120,7 @@ const AppContent = () => {
                         <Route path="/news/:id" element={<NewsPage />} />
                         <Route path="/chat" element={<ChatPage />} />
                         <Route path="/payment-result" element={<PaymentResultPage />} />
+                        <Route path="/my-appointments" element={<MyAppointmentsPage />} />
                     </Routes>
                 </main>
                 <Footer />
