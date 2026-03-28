@@ -51,6 +51,9 @@ const MyPetsPage = () => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [showMedicalModal, setShowMedicalModal] = useState(false);
     const [activeTab, setActiveTab] = useState('info');
+    const [selectedAppointment, setSelectedAppointment] = useState(null);
+    const [showRatingModal, setShowRatingModal] = useState(false);
+    const [ratingForm, setRatingForm] = useState({ rating: 5, feedback: '' });
 
     const [petForm, setPetForm] = useState({
         name: '',
@@ -59,7 +62,8 @@ const MyPetsPage = () => {
         age: '',
         weight: '',
         gender: 'male',
-        avatar: ''
+        avatar: '',
+        notes: ''
     });
 
     const [editPetForm, setEditPetForm] = useState({
@@ -69,7 +73,8 @@ const MyPetsPage = () => {
         age: '',
         weight: '',
         gender: 'male',
-        avatar: ''
+        avatar: '',
+        notes: ''
     });
 
     const [medicalForm, setMedicalForm] = useState({
@@ -133,7 +138,7 @@ const MyPetsPage = () => {
             await petAPI.create(petForm);
             toast.success(language === 'en' ? 'Pet added successfully!' : 'Thêm thú cưng thành công!');
             setShowAddModal(false);
-            setPetForm({ name: '', species: 'dog', breed: '', age: '', weight: '', gender: 'male', avatar: '' });
+            setPetForm({ name: '', species: 'dog', breed: '', age: '', weight: '', gender: 'male', avatar: '', notes: '' });
             fetchPets();
         } catch (error) {
             toast.error(error.response?.data?.message || t('common.error'));
@@ -165,7 +170,8 @@ const MyPetsPage = () => {
                 age: selectedPet.age || '',
                 weight: selectedPet.weight || '',
                 gender: selectedPet.gender || 'male',
-                avatar: selectedPet.avatar || ''
+                avatar: selectedPet.avatar || '',
+                notes: selectedPet.notes || ''
             });
             setShowEditModal(true);
         }
@@ -185,6 +191,24 @@ const MyPetsPage = () => {
             setMedicalForm({ type: 'vaccination', description: '', veterinarian: '', nextDueDate: '', notes: '' });
             fetchPets();
             fetchReminders();
+        } catch (error) {
+            toast.error(error.response?.data?.message || t('common.error'));
+        }
+    };
+
+    const handleRateAppointment = async (e) => {
+        e.preventDefault();
+        if (!selectedAppointment) return;
+
+        try {
+            await appointmentAPI.update(selectedAppointment._id, {
+                ...ratingForm,
+                status: 'rated' // Mark as rated
+            });
+            toast.success(language === 'en' ? 'Thank you for your feedback!' : 'Cảm ơn bác đã đánh giá!');
+            setShowRatingModal(false);
+            setSelectedAppointment(null); // Close the detail modal too
+            fetchPetAppointments(selectedPet._id);
         } catch (error) {
             toast.error(error.response?.data?.message || t('common.error'));
         }
@@ -402,6 +426,12 @@ const MyPetsPage = () => {
                                                 <p className="text-sm text-gray-500">{t('pets.species')}</p>
                                                 <p className="text-xl font-semibold text-white capitalize">{selectedPet.species}</p>
                                             </div>
+                                            {selectedPet.notes && (
+                                                <div className="col-span-full bg-white/5 rounded-xl p-4 border border-white/10">
+                                                    <p className="text-sm text-gray-500 mb-1">{language === 'en' ? 'Notes / Special Care' : 'Ghi chú / Lưu ý đặc biệt'}</p>
+                                                    <p className="text-white italic">"{selectedPet.notes}"</p>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
 
@@ -471,7 +501,7 @@ const MyPetsPage = () => {
                                                     <FiCalendar className="mr-2 text-primary-400" />
                                                     {language === 'en' ? 'Service History' : 'Lịch sử dịch vụ'}
                                                 </h3>
-                                                <Link to="/booking" className="btn-primary text-sm">
+                                                <Link to={`/booking?petId=${selectedPet._id}`} className="btn-primary text-sm">
                                                     <FiPlus className="mr-1" /> {language === 'en' ? 'Book Service' : 'Đặt dịch vụ'}
                                                 </Link>
                                             </div>
@@ -479,24 +509,48 @@ const MyPetsPage = () => {
                                             {petAppointments.length > 0 ? (
                                                 <div className="space-y-4">
                                                     {petAppointments.map((apt) => (
-                                                        <div key={apt._id} className="bg-white/5 border border-white/10 rounded-xl p-4">
+                                                        <div 
+                                                            key={apt._id} 
+                                                            onClick={() => setSelectedAppointment(apt)}
+                                                            className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all cursor-pointer group"
+                                                        >
                                                             <div className="flex flex-wrap justify-between items-start gap-2 mb-2">
                                                                 <div>
-                                                                    <p className="font-semibold text-white capitalize">{apt.service}</p>
-                                                                    <p className="text-sm text-gray-400">
+                                                                    <p className="font-semibold text-white capitalize flex items-center">
+                                                                        {apt.service}
+                                                                        {apt.status === 'completed' && (
+                                                                            <span className="ml-2 text-xs text-primary-400 bg-primary-400/10 px-2 py-0.5 rounded cursor-pointer hover:bg-primary-400/20" 
+                                                                                onClick={(e) => { 
+                                                                                    e.stopPropagation(); 
+                                                                                    setSelectedAppointment(apt);
+                                                                                    setRatingForm({ rating: apt.rating || 5, feedback: apt.feedback || '' });
+                                                                                    setShowRatingModal(true); 
+                                                                                }}>
+                                                                                {apt.rating ? '⭐ ' + apt.rating : '+ ' + (language === 'en' ? 'Rate' : 'Đánh giá')}
+                                                                            </span>
+                                                                        )}
+                                                                    </p>
+                                                                    <p className="text-sm text-theme-secondary">
                                                                         {apt.date ? format(new Date(apt.date), 'dd/MM/yyyy') : ''} - {apt.timeSlot}
                                                                     </p>
                                                                 </div>
                                                                 {getStatusBadge(apt.status)}
                                                             </div>
-                                                            {apt.staff && (
-                                                                <p className="text-sm text-gray-400">
-                                                                    {language === 'en' ? 'Staff:' : 'Nhân viên:'} {apt.staff.name}
-                                                                </p>
-                                                            )}
-                                                            {apt.notes && (
-                                                                <p className="text-sm text-gray-500 mt-1 italic">{apt.notes}</p>
-                                                            )}
+                                                            <div className="flex justify-between items-end">
+                                                                <div>
+                                                                    {apt.staff && (
+                                                                        <p className="text-sm text-gray-400">
+                                                                            {language === 'en' ? 'Staff:' : 'Nhân viên:'} {apt.staff.name || apt.staff}
+                                                                        </p>
+                                                                    )}
+                                                                    {apt.notes && (
+                                                                        <p className="text-sm text-gray-500 mt-1 italic line-clamp-1">{apt.notes}</p>
+                                                                    )}
+                                                                </div>
+                                                                <span className="text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                    {language === 'en' ? 'Click for detail' : 'Bấn để xem chi tiết'} →
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -506,7 +560,7 @@ const MyPetsPage = () => {
                                                     title={language === 'en' ? 'No services booked' : 'Chưa có dịch vụ'}
                                                     description={language === 'en' ? 'Book grooming, checkup or other services' : 'Đặt dịch vụ grooming, khám bệnh...'}
                                                     action={
-                                                        <Link to="/booking" className="btn-primary">
+                                                        <Link to={`/booking?petId=${selectedPet._id}`} className="btn-primary">
                                                             {language === 'en' ? 'Book Now' : 'Đặt ngay'}
                                                         </Link>
                                                     }
@@ -588,10 +642,15 @@ const MyPetsPage = () => {
                     </div>
 
                     <FormInput
-                        label={language === 'en' ? 'Photo URL' : 'URL ảnh'}
-                        value={petForm.avatar}
-                        onChange={(e) => setPetForm({ ...petForm, avatar: e.target.value })}
                         placeholder="https://example.com/pet.jpg"
+                    />
+
+                    <FormTextarea
+                        label={language === 'en' ? 'Notes & Special Care' : 'Ghi chú & Lưu ý đặc biệt'}
+                        value={petForm.notes}
+                        onChange={(e) => setPetForm({ ...petForm, notes: e.target.value })}
+                        placeholder={language === 'en' ? 'Allergies, personality, or special needs...' : 'Các lưu ý về dị ứng, tính cách hoặc nhu cầu đặc biệt...'}
+                        rows={3}
                     />
 
                     <div className="flex space-x-3 pt-4">
@@ -672,6 +731,14 @@ const MyPetsPage = () => {
                         placeholder="https://example.com/pet.jpg"
                     />
 
+                    <FormTextarea
+                        label={language === 'en' ? 'Notes & Special Care' : 'Ghi chú & Lưu ý đặc biệt'}
+                        value={editPetForm.notes}
+                        onChange={(e) => setEditPetForm({ ...editPetForm, notes: e.target.value })}
+                        placeholder={language === 'en' ? 'Allergies, personality, or special needs...' : 'Các lưu ý về dị ứng, tính cách hoặc nhu cầu đặc biệt...'}
+                        rows={3}
+                    />
+
                     {editPetForm.avatar && (
                         <div className="flex justify-center">
                             <img
@@ -745,6 +812,160 @@ const MyPetsPage = () => {
                         </button>
                         <button type="submit" className="btn-primary flex-1">
                             {t('common.save')}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
+            {/* Appointment Detail Modal */}
+            <Modal
+                isOpen={!!selectedAppointment && !showRatingModal}
+                onClose={() => setSelectedAppointment(null)}
+                title={language === 'en' ? 'Service Detail' : 'Chi tiết dịch vụ'}
+                size="md"
+            >
+                {selectedAppointment && (
+                    <div className="space-y-6">
+                        <div className="flex items-center space-x-6 p-4 rounded-2xl bg-white/5 border border-white/10">
+                            <div className="w-20 h-20 rounded-2xl bg-gradient-primary flex items-center justify-center text-4xl shadow-glow-sm">
+                                {selectedAppointment.service === 'grooming' ? '✂️' : 
+                                 selectedAppointment.service === 'vaccination' ? '💉' : 
+                                 selectedAppointment.service === 'checkup' ? '🩺' : 
+                                 selectedAppointment.service === 'surgery' ? '🏥' : '📋'}
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-white mb-1 capitalize">
+                                    {selectedAppointment.service}
+                                </h3>
+                                {getStatusBadge(selectedAppointment.status)}
+                            </div>
+                        </div>
+
+                        {/* Pet Info */}
+                        <div className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 flex items-center space-x-4">
+                            <div className="w-12 h-12 rounded-lg bg-primary-500/20 flex items-center justify-center text-2xl">
+                                {selectedAppointment.pet?.species === 'dog' ? '🐕' : '🐈'}
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-400 mb-0.5">{language === 'en' ? 'Pet Name' : 'Tên thú cưng'}</p>
+                                <p className="font-semibold text-white">
+                                    {selectedAppointment.pet?.name || selectedPet?.name} ({selectedAppointment.pet?.species || selectedPet?.species})
+                                </p>
+                                <p className="text-xs text-primary-400">
+                                    {selectedAppointment.pet?.age || selectedPet?.age} {language === 'en' ? 'years' : 'tuổi'} • 
+                                    {selectedAppointment.pet?.weight || selectedPet?.weight}kg • 
+                                    {(selectedAppointment.pet?.gender || selectedPet?.gender) === 'male' ? (language === 'en' ? 'Male' : 'Đực') : (language === 'en' ? 'Female' : 'Cái')}
+                                </p>
+                            </div>
+                        </div>
+
+                        {selectedAppointment.pet?.notes && (
+                            <div className="p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
+                                <p className="text-sm text-yellow-400 mb-1">{language === 'en' ? 'Pet Special Notes' : 'Lưu ý đặc biệt'}</p>
+                                <p className="text-gray-300 italic text-sm">"{selectedAppointment.pet.notes}"</p>
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Date' : 'Ngày'}</p>
+                                <p className="font-semibold text-white">
+                                    {selectedAppointment.date ? format(new Date(selectedAppointment.date), 'dd/MM/yyyy') : '---'}
+                                </p>
+                            </div>
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Time' : 'Giờ'}</p>
+                                <p className="font-semibold text-white">{selectedAppointment.timeSlot}</p>
+                            </div>
+                        </div>
+
+                        {selectedAppointment.staff && (
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Staff/Doctor' : 'Nhân viên/Bác sĩ'}</p>
+                                <p className="font-semibold text-white">{selectedAppointment.staff.name || selectedAppointment.staff}</p>
+                            </div>
+                        )}
+
+                        {selectedAppointment.notes && (
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Customer Notes' : 'Ghi chú của bạn'}</p>
+                                <p className="text-gray-200">{selectedAppointment.notes}</p>
+                            </div>
+                        )}
+
+                        {selectedAppointment.rating && (
+                            <div className="p-4 rounded-xl bg-primary-500/10 border border-primary-500/20">
+                                <div className="flex items-center justify-between mb-2">
+                                    <p className="text-sm text-primary-400 font-medium">{language === 'en' ? 'Your Rating' : 'Đánh giá của bạn'}</p>
+                                    <div className="flex text-yellow-400">
+                                        {[...Array(5)].map((_, i) => (
+                                            <span key={i}>{i < selectedAppointment.rating ? '★' : '☆'}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                                {selectedAppointment.feedback && (
+                                    <p className="text-gray-200 italic">"{selectedAppointment.feedback}"</p>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="flex justify-end pt-4 border-t border-white/10">
+                            {selectedAppointment.status === 'completed' && !selectedAppointment.rating && (
+                                <button 
+                                    onClick={() => setShowRatingModal(true)}
+                                    className="btn-primary mr-3"
+                                >
+                                    {language === 'en' ? 'Rate Now' : 'Đánh giá ngay'}
+                                </button>
+                            )}
+                            <button
+                                onClick={() => setSelectedAppointment(null)}
+                                className="btn-ghost px-6"
+                            >
+                                {language === 'en' ? 'Close' : 'Đóng'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
+            {/* Rating Modal */}
+            <Modal
+                isOpen={showRatingModal}
+                onClose={() => setShowRatingModal(false)}
+                title={language === 'en' ? 'Rate Service' : 'Đánh giá dịch vụ'}
+                size="md"
+            >
+                <form onSubmit={handleRateAppointment} className="space-y-6">
+                    <div className="text-center">
+                        <p className="text-gray-400 mb-4">{language === 'en' ? 'How was your experience?' : 'Bác thấy dịch vụ thế nào?'}</p>
+                        <div className="flex justify-center space-x-2 text-4xl">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                    key={star}
+                                    type="button"
+                                    onClick={() => setRatingForm({ ...ratingForm, rating: star })}
+                                    className={`transition-all duration-200 ${ratingForm.rating >= star ? 'text-yellow-400 scale-110' : 'text-gray-600 hover:text-gray-500'}`}
+                                >
+                                    ★
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <FormTextarea
+                        label={language === 'en' ? 'Review & Feedback' : 'Nhận xét & Góp ý'}
+                        value={ratingForm.feedback}
+                        onChange={(e) => setRatingForm({ ...ratingForm, feedback: e.target.value })}
+                        placeholder={language === 'en' ? 'Tell us more about the service...' : 'Chia sẻ thêm về trải nghiệm của bác...'}
+                        rows={4}
+                    />
+
+                    <div className="flex space-x-3 pt-4">
+                        <button type="button" onClick={() => setShowRatingModal(false)} className="btn-outline flex-1">
+                            {t('common.cancel')}
+                        </button>
+                        <button type="submit" className="btn-primary flex-1 shadow-glow-sm">
+                            {language === 'en' ? 'Submit Feedback' : 'Gửi đánh giá'}
                         </button>
                     </div>
                 </form>

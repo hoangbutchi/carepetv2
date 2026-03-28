@@ -18,6 +18,7 @@ const translations = {
             doctors: 'Doctors',
             news: 'News',
             chat: 'Chat',
+            myAppointments: 'My Appointments',
         },
 
         // Homepage
@@ -222,6 +223,7 @@ const translations = {
             doctors: 'Bác sĩ',
             news: 'Tin tức',
             chat: 'Tin nhắn',
+            myAppointments: 'Lịch hẹn của tôi',
         },
 
         // Homepage

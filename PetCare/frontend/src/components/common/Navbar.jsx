@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiMenu, FiX, FiShoppingCart, FiChevronDown, FiGlobe, FiMessageCircle, FiUser, FiLogOut, FiHeart, FiSun, FiMoon } from 'react-icons/fi';
+import { FiMenu, FiX, FiShoppingCart, FiChevronDown, FiGlobe, FiMessageCircle, FiUser, FiLogOut, FiHeart, FiSun, FiMoon, FiCalendar } from 'react-icons/fi';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -103,17 +103,34 @@ const Navbar = () => {
                             </Link>
                         ))}
 
-                        {/* My Pets - only for customers */}
+                        {/* My Appointments & My Pets - only for customers */}
                         {isAuthenticated && !isStaff && (
-                            <Link
-                                to="/my-pets"
-                                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-pets')
-                                    ? 'text-primary-500'
-                                    : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
-                                    }`}
-                            >
-                                {t('nav.myPets')}
-                            </Link>
+                            <div className="flex items-center space-x-1">
+                                <Link
+                                    to="/my-appointments"
+                                    className={`relative px-4 py-2 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-appointments')
+                                        ? 'text-primary-500'
+                                        : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
+                                        }`}
+                                >
+                                    {t('nav.myAppointments')}
+                                    {isActiveLink('/my-appointments') && (
+                                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary-500" />
+                                    )}
+                                </Link>
+                                <Link
+                                    to="/my-pets"
+                                    className={`relative px-4 py-2 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-pets')
+                                        ? 'text-primary-500'
+                                        : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
+                                        }`}
+                                >
+                                    {t('nav.myPets')}
+                                    {isActiveLink('/my-pets') && (
+                                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary-500" />
+                                    )}
+                                </Link>
+                            </div>
                         )}
                     </div>
 
@@ -206,14 +223,24 @@ const Navbar = () => {
                                         </Link>
 
                                         {!isStaff && (
-                                            <Link
-                                                to="/my-pets"
-                                                onClick={() => setUserMenuOpen(false)}
-                                                className="flex items-center space-x-3 px-4 py-3 text-theme-secondary hover:text-theme hover:bg-theme-tertiary transition-colors"
-                                            >
-                                                <FiHeart className="w-4 h-4" />
-                                                <span>{t('nav.myPets')}</span>
-                                            </Link>
+                                            <>
+                                                <Link
+                                                    to="/my-appointments"
+                                                    onClick={() => setUserMenuOpen(false)}
+                                                    className="flex items-center space-x-3 px-4 py-3 text-theme-secondary hover:text-theme hover:bg-theme-tertiary transition-colors"
+                                                >
+                                                    <FiCalendar className="w-4 h-4" />
+                                                    <span>{t('nav.myAppointments')}</span>
+                                                </Link>
+                                                <Link
+                                                    to="/my-pets"
+                                                    onClick={() => setUserMenuOpen(false)}
+                                                    className="flex items-center space-x-3 px-4 py-3 text-theme-secondary hover:text-theme hover:bg-theme-tertiary transition-colors"
+                                                >
+                                                    <FiHeart className="w-4 h-4" />
+                                                    <span>{t('nav.myPets')}</span>
+                                                </Link>
+                                            </>
                                         )}
 
                                         <div className="border-t border-theme mt-2 pt-2">
@@ -277,14 +304,29 @@ const Navbar = () => {
                                 </Link>
                             ))}
 
-                            {isAuthenticated && !isStaff && (
-                                <Link
-                                    to="/my-pets"
-                                    onClick={() => setIsOpen(false)}
-                                    className="px-4 py-3 rounded-lg text-theme-secondary hover:text-theme hover:bg-theme-tertiary transition-all"
-                                >
-                                    {t('nav.myPets')}
-                                </Link>
+                             {isAuthenticated && !isStaff && (
+                                <>
+                                    <Link
+                                        to="/my-appointments"
+                                        onClick={() => setIsOpen(false)}
+                                        className={`px-4 py-3 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-appointments')
+                                            ? 'text-primary-500 bg-primary-500/10'
+                                            : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
+                                            }`}
+                                    >
+                                        {t('nav.myAppointments')}
+                                    </Link>
+                                    <Link
+                                        to="/my-pets"
+                                        onClick={() => setIsOpen(false)}
+                                        className={`px-4 py-3 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-pets')
+                                            ? 'text-primary-500 bg-primary-500/10'
+                                            : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
+                                            }`}
+                                    >
+                                        {t('nav.myPets')}
+                                    </Link>
+                                </>
                             )}
 
                             <div className="divider my-3" />

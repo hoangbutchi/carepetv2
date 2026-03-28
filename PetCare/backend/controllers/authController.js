@@ -198,7 +198,7 @@ exports.getAllUsers = async (req, res) => {
 // @access  Private
 exports.getStaff = async (req, res) => {
     try {
-        const staff = await User.find({ role: 'staff' }).select('name email role avatar');
+        const staff = await User.find({ role: { $in: ['staff', 'doctor'] } }).select('name email role avatar');
 
         res.status(200).json({
             success: true,
@@ -218,13 +218,64 @@ exports.getStaff = async (req, res) => {
 // @access  Public
 exports.getDoctors = async (req, res) => {
     try {
-        const doctors = await User.find({ role: 'staff' })
+        const doctors = await User.find({ role: { $in: ['doctor', 'staff'] } })
             .select('name email role avatar specialization experience bio certificates');
 
         res.status(200).json({
             success: true,
             count: doctors.length,
             doctors
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// @desc    Update user role (Admin only)
+// @route   PUT /api/auth/users/:id/role
+// @access  Private/Admin
+exports.updateUserRole = async (req, res) => {
+    try {
+        const { role } = req.body;
+
+        if (!['customer', 'staff', 'admin'].includes(role)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid role'
+            });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { role },
+            { new: true, runValidators: true }
+        );
+
+        res.status(200).json({
+            success: true,
+            user
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// @desc    Delete user (Admin only)
+// @route   DELETE /api/auth/users/:id
+// @access  Private/Admin
+exports.deleteUser = async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            message: 'User deleted successfully'
         });
     } catch (error) {
         res.status(500).json({

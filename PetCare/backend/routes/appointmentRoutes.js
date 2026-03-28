@@ -16,8 +16,8 @@ const { protect, authorize } = require('../middleware/authMiddleware');
 router.use(protect);
 
 router.get('/available-slots', getAvailableSlots);
-router.get('/today', authorize('staff', 'admin'), getTodayAppointments);
-router.get('/by-date', authorize('staff', 'admin'), getAppointmentsByDate);
+router.get('/today', authorize('staff', 'admin', 'doctor'), getTodayAppointments);
+router.get('/by-date', authorize('staff', 'admin', 'doctor'), getAppointmentsByDate);
 
 router.route('/')
     .get(getAppointments)

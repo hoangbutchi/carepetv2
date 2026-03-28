@@ -7,7 +7,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { appointmentAPI, orderAPI, authAPI } from '../services/api';
-import { Badge, Spinner, EmptyState } from '../components/common/UI';
+import { Badge, Spinner, EmptyState, Modal } from '../components/common/UI';
 import ProductManagement from '../components/admin/ProductManagement';
 import ArticleManagement from '../components/admin/ArticleManagement';
 import toast from 'react-hot-toast';
@@ -23,12 +23,17 @@ const AdminDashboard = () => {
     const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const [isDateFilterActive, setIsDateFilterActive] = useState(false); // Whether date filter is being used
     const [appointments, setAppointments] = useState([]);
+    const [todayAppointments, setTodayAppointments] = useState([]);
     const [orderStats, setOrderStats] = useState({ today: {}, month: {}, pending: 0 });
     const [recentOrders, setRecentOrders] = useState([]);
     const [allOrders, setAllOrders] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [appointmentStats, setAppointmentStats] = useState({ total: 0, pending: 0, confirmed: 0, completed: 0 });
+    const [todayStats, setTodayStats] = useState({ total: 0, pending: 0, confirmed: 0, completed: 0 });
     const [appointmentFilter, setAppointmentFilter] = useState('all'); // 'all' or 'pending'
+    const [selectedAppointment, setSelectedAppointment] = useState(null);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
         if (!isStaff) {
@@ -49,15 +54,23 @@ const AdminDashboard = () => {
                 // Fetch all appointments (no date filter)
                 appointmentsRes = await appointmentAPI.getAll();
             }
-            let filteredAppointments = appointmentsRes.data.appointments || [];
+            const fetchedAppointments = appointmentsRes.data.appointments || [];
+            setAppointments(fetchedAppointments);
+            setAppointmentStats(calculateStats(fetchedAppointments));
 
-            // Note: Backend already filters appointments by role (Staff sees their own, Admin sees all)
-            // No additional frontend filtering needed
+            // ALWAYS fetch today's appointments for the overview tab
+            const todayRes = await appointmentAPI.getToday();
+            setTodayAppointments(todayRes.data.appointments || []);
+            setTodayStats(calculateStats(todayRes.data.appointments || []));
+        } catch (error) {
+            console.error('Error fetching appointments:', error);
+            // Don't call setMockData() immediately if it's just a 404 or something, 
+            // but for now, we'll keep it as a fallback if the API fails
+            if (!appointments.length) setMockData();
+        }
 
-            setAppointments(filteredAppointments);
-            setAppointmentStats(calculateStats(filteredAppointments));
-
-            // Fetch orders
+        // Fetch orders & stats
+        try {
             const [statsRes, ordersRes] = await Promise.all([
                 orderAPI.getStats(),
                 orderAPI.getAll({ limit: 10 }),
@@ -65,45 +78,34 @@ const AdminDashboard = () => {
             setOrderStats(statsRes.data.stats || { today: {}, month: {}, pending: 0 });
             setRecentOrders(ordersRes.data.orders || []);
             setAllOrders(ordersRes.data.orders || []);
-
-            // Fetch doctors (admin only)
-            if (isAdmin) {
-                try {
-                    const doctorsRes = await authAPI.getDoctors();
-                    setDoctors(doctorsRes.data?.staff || doctorsRes.data?.doctors || doctorsRes.data || []);
-                } catch (err) {
-                    console.error('Error fetching doctors:', err);
-                    // Set mock doctors for demo
-                    setDoctors([
-                        { _id: '1', name: 'BS. Nguyễn Văn An', email: 'doctor1@petcare.com', phone: '0901234568', specialization: 'Nội khoa thú cưng', experience: 8 },
-                        { _id: '2', name: 'BS. Trần Thị Bình', email: 'doctor2@petcare.com', phone: '0901234569', specialization: 'Phẫu thuật thú cưng', experience: 12 },
-                        { _id: '3', name: 'BS. Lê Minh Hoàng', email: 'doctor3@petcare.com', phone: '0901234570', specialization: 'Da liễu thú cưng', experience: 6 },
-                        { _id: '4', name: 'BS. Phạm Thị Dung', email: 'doctor4@petcare.com', phone: '0901234571', specialization: 'Nha khoa thú cưng', experience: 9 },
-                        { _id: '5', name: 'BS. Vũ Đức Khang', email: 'doctor5@petcare.com', phone: '0901234572', specialization: 'Cấp cứu & Hồi sức', experience: 15 },
-                        { _id: '6', name: 'BS. Hồ Thanh Trúc', email: 'doctor6@petcare.com', phone: '0901234573', specialization: 'Dinh dưỡng & Tiêm phòng', experience: 5 },
-                        { _id: '7', name: 'BS. Lê Thị Tú Anh', email: 'doctor7@petcare.com', phone: '0901234574', specialization: 'Chăm sóc răng miệng', experience: 4 },
-                        { _id: '8', name: 'BS. Ngô Minh Nhật', email: 'doctor8@petcare.com', phone: '0901234575', specialization: 'Khám tổng quát', experience: 7 },
-                        { _id: '9', name: 'BS. Trần Phúc', email: 'doctor9@petcare.com', phone: '0901234576', specialization: 'Xét nghiệm thú y', experience: 11 },
-                        { _id: '10', name: 'BS. Đào Thu Hương', email: 'doctor10@petcare.com', phone: '0901234577', specialization: 'Nhãn khoa thú cưng', experience: 8 },
-                        { _id: '11', name: 'BS. Lương Tuấn Anh', email: 'doctor11@petcare.com', phone: '0901234578', specialization: 'Thú y chim cảnh', experience: 6 },
-                        { _id: '12', name: 'BS. Nguyễn Bảo Ngọc', email: 'doctor12@petcare.com', phone: '0901234579', specialization: 'Tai mũi họng', experience: 5 }
-                    ]);
-                }
-            }
         } catch (error) {
-            console.error('Error fetching dashboard data:', error);
-            // Use mock data for demo
-            setMockData();
-        } finally {
-            setLoading(false);
+            console.error('Error fetching order/stats data:', error);
+            // Non-critical error, just keep default stats
+            setOrderStats({ today: { orders: 0, revenue: 0 }, month: { orders: 0, revenue: 0 }, pending: 0 });
         }
+
+        // Fetch users (admin only)
+        if (isAdmin) {
+            try {
+                const [doctorsRes, usersRes] = await Promise.all([
+                    authAPI.getDoctors(),
+                    authAPI.getAllUsers()
+                ]);
+                setDoctors(doctorsRes.data?.staff || doctorsRes.data?.doctors || doctorsRes.data || []);
+                setUsers(usersRes.data?.users || []);
+            } catch (err) {
+                console.error('Error fetching admin data:', err);
+                setMockAdminData();
+            }
+        }
+        setLoading(false);
     };
 
     const setMockData = () => {
         const mockAppointments = [
-            { _id: '1', service: 'grooming', timeSlot: '09:00-10:00', status: 'confirmed', customer: { name: 'Nguyễn Văn A' }, pet: { name: 'Buddy', species: 'dog' }, staff: { _id: user?._id, name: 'BS. Nguyễn' }, date: selectedDate },
-            { _id: '2', service: 'vaccination', timeSlot: '10:00-11:00', status: 'pending', customer: { name: 'Trần Thị B' }, pet: { name: 'Mèo Mun', species: 'cat' }, staff: { _id: user?._id, name: 'BS. Nguyễn' }, date: selectedDate },
-            { _id: '3', service: 'checkup', timeSlot: '14:00-15:00', status: 'confirmed', customer: { name: 'Lê Văn C' }, pet: { name: 'Lucky', species: 'dog' }, staff: { _id: '999', name: 'BS. Trần' }, date: selectedDate },
+            { _id: '1', service: 'grooming', timeSlot: '09:00-10:00', status: 'confirmed', customer: { name: 'Nguyễn Văn A' }, pet: { name: 'Buddy', species: 'dog', avatar: 'https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg' }, staff: { _id: user?._id, name: 'BS. Nguyễn' }, date: selectedDate },
+            { _id: '2', service: 'vaccination', timeSlot: '10:00-11:00', status: 'pending', customer: { name: 'Trần Thị B' }, pet: { name: 'Mèo Mun', species: 'cat', avatar: 'https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg' }, staff: { _id: user?._id, name: 'BS. Nguyễn' }, date: selectedDate },
+            { _id: '3', service: 'checkup', timeSlot: '14:00-15:00', status: 'confirmed', customer: { name: 'Lê Văn C' }, pet: { name: 'Lucky', species: 'dog', avatar: '' }, staff: { _id: '999', name: 'BS. Trần' }, date: selectedDate },
         ];
 
         // Filter by role
@@ -122,24 +124,33 @@ const AdminDashboard = () => {
             { _id: '3', orderNumber: 'PMS2601003', totalAmount: 480000, orderStatus: 'shipping', paymentStatus: 'paid', customer: { name: 'Lê Văn C' }, createdAt: new Date() },
         ]);
         setAllOrders([
-            { _id: '1', orderNumber: 'PMS2601001', totalAmount: 650000, orderStatus: 'pending', paymentStatus: 'pending', customer: { name: 'Nguyễn Văn A' }, createdAt: new Date(), items: [] },
-            { _id: '2', orderNumber: 'PMS2601002', totalAmount: 320000, orderStatus: 'processing', paymentStatus: 'paid', customer: { name: 'Trần Thị B' }, createdAt: new Date(), items: [] },
-            { _id: '3', orderNumber: 'PMS2601003', totalAmount: 480000, orderStatus: 'shipping', paymentStatus: 'paid', customer: { name: 'Lê Văn C' }, createdAt: new Date(), items: [] },
-            { _id: '4', orderNumber: 'PMS2601004', totalAmount: 890000, orderStatus: 'delivered', paymentStatus: 'paid', customer: { name: 'Phạm Minh D' }, createdAt: new Date(), items: [] },
+            { _id: '1', orderNumber: 'PMS2601001', totalAmount: 650000, orderStatus: 'pending', paymentStatus: 'pending', customer: { name: 'Nguyễn Văn A', email: 'vana@gmail.com', phone: '0912345678' }, createdAt: new Date(), shippingAddress: { fullName: 'Nguyễn Văn A', phone: '0912345678', address: '123 Đường ABC', city: 'Quận 1, HCM', notes: 'Giao giờ hành chính' }, paymentMethod: 'cod', items: [{ product: { name: 'Thức ăn chó Royal Canin', images: ['https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg'] }, quantity: 2, price: 300000 }, { product: { name: 'Cát vệ sinh mèo', images: [] }, quantity: 1, price: 50000 }] },
+            { _id: '2', orderNumber: 'PMS2601002', totalAmount: 320000, orderStatus: 'processing', paymentStatus: 'paid', customer: { name: 'Trần Thị B', email: 'thib@gmail.com', phone: '0987654321' }, createdAt: new Date(), shippingAddress: { fullName: 'Trần Thị B', phone: '0987654321', address: '456 Đường XYZ', city: 'Quận 7, HCM' }, paymentMethod: 'vnpay', items: [{ product: { name: 'Sữa tắm thú cưng', images: [] }, quantity: 1, price: 320000 }] },
+            { _id: '3', orderNumber: 'PMS2601003', totalAmount: 480000, orderStatus: 'shipping', paymentStatus: 'paid', customer: { name: 'Lê Văn C', email: 'vanc@gmail.com', phone: '0933445566' }, createdAt: new Date(), shippingAddress: { fullName: 'Lê Văn C', phone: '0933445566', address: '789 Đường LMN', city: 'Quận 10, HCM' }, paymentMethod: 'cod', items: [{ product: { name: 'Đồ chơi xương gặm', images: [] }, quantity: 4, price: 120000 }] },
+            { _id: '4', orderNumber: 'PMS2601004', totalAmount: 890000, orderStatus: 'delivered', paymentStatus: 'paid', customer: { name: 'Phạm Minh D', email: 'minhd@gmail.com', phone: '0944556677' }, createdAt: new Date(), shippingAddress: { fullName: 'Phạm Minh D', phone: '0944556677', address: '101 Đường PQR', city: 'Quận Bình Thạnh, HCM' }, paymentMethod: 'vnpay', items: [{ product: { name: 'Chuồng chó lớn', images: [] }, quantity: 1, price: 890000 }] },
         ]);
         setDoctors([
             { _id: '1', name: 'BS. Nguyễn Văn An', email: 'doctor1@petcare.com', phone: '0901234568', specialization: 'Nội khoa thú cưng', experience: 8 },
             { _id: '2', name: 'BS. Trần Thị Bình', email: 'doctor2@petcare.com', phone: '0901234569', specialization: 'Phẫu thuật thú cưng', experience: 12 },
+        ]);
+        setUsers([
+            { _id: '1', name: 'Nguyễn Văn A', email: 'vana@gmail.com', role: 'customer' },
+            { _id: '2', name: 'Trần Thị B', email: 'thib@gmail.com', role: 'staff' },
+            { _id: '3', name: 'Admin User', email: 'admin@petcare.com', role: 'admin' },
+        ]);
+    };
+
+    const setMockAdminData = () => {
+        setDoctors([
+            { _id: '1', name: 'BS. Nguyễn Văn An', email: 'doctor1@petcare.com', phone: '0901234568', specialization: 'Nội khoa thú cưng', experience: 8 },
+            { _id: '2', name: 'BS. Trần Thị Bình', email: 'doctor2@petcare.com', phone: '0901234569', specialization: 'Phẫu thuật thú cưng', experience: 12 },
             { _id: '3', name: 'BS. Lê Minh Hoàng', email: 'doctor3@petcare.com', phone: '0901234570', specialization: 'Da liễu thú cưng', experience: 6 },
-            { _id: '4', name: 'BS. Phạm Thị Dung', email: 'doctor4@petcare.com', phone: '0901234571', specialization: 'Nha khoa thú cưng', experience: 9 },
-            { _id: '5', name: 'BS. Vũ Đức Khang', email: 'doctor5@petcare.com', phone: '0901234572', specialization: 'Cấp cứu & Hồi sức', experience: 15 },
-            { _id: '6', name: 'BS. Hồ Thanh Trúc', email: 'doctor6@petcare.com', phone: '0901234573', specialization: 'Dinh dưỡng & Tiêm phòng', experience: 5 },
-            { _id: '7', name: 'BS. Lê Thị Tú Anh', email: 'doctor7@petcare.com', phone: '0901234574', specialization: 'Chăm sóc răng miệng', experience: 4 },
-            { _id: '8', name: 'BS. Ngô Minh Nhật', email: 'doctor8@petcare.com', phone: '0901234575', specialization: 'Khám tổng quát', experience: 7 },
-            { _id: '9', name: 'BS. Trần Phúc', email: 'doctor9@petcare.com', phone: '0901234576', specialization: 'Xét nghiệm thú y', experience: 11 },
-            { _id: '10', name: 'BS. Đào Thu Hương', email: 'doctor10@petcare.com', phone: '0901234577', specialization: 'Nhãn khoa thú cưng', experience: 8 },
-            { _id: '11', name: 'BS. Lương Tuấn Anh', email: 'doctor11@petcare.com', phone: '0901234578', specialization: 'Thú y chim cảnh', experience: 6 },
-            { _id: '12', name: 'BS. Nguyễn Bảo Ngọc', email: 'doctor12@petcare.com', phone: '0901234579', specialization: 'Tai mũi họng', experience: 5 }
+        ]);
+        setUsers([
+            { _id: '1', name: 'Nguyễn Văn A', email: 'vana@gmail.com', role: 'customer' },
+            { _id: '2', name: 'Trần Thị B', email: 'thib@gmail.com', role: 'staff' },
+            { _id: '3', name: 'BS. Nguyễn Văn An', email: 'doctor1@petcare.com', role: 'staff' },
+            { _id: '4', name: 'Admin User', email: 'admin@petcare.com', role: 'admin' },
         ]);
     };
 
@@ -151,16 +162,43 @@ const AdminDashboard = () => {
     });
 
     const updateAppointmentStatus = async (id, status) => {
+        // Skip API for mock IDs
+        if (id.length < 20) {
+            setAppointments(prev => prev.map(apt =>
+                apt._id === id ? { ...apt, status } : apt
+            ));
+            toast.success(language === 'en' ? 'Status updated (Demo)' : 'Đã cập nhật (Demo)');
+            return;
+        }
+
         try {
             await appointmentAPI.update(id, { status });
             toast.success(language === 'en' ? 'Status updated!' : 'Đã cập nhật trạng thái!');
             fetchData();
         } catch (error) {
-            toast.error(t('common.error'));
+            console.error('Appointment update error:', error);
+            if (error.response?.status === 403) {
+                toast.error(language === 'en' ? 'Not authorized' : 'Không có quyền thực hiện');
+                return;
+            }
+            // Update locally for demo purposes
+            setAppointments(prev => prev.map(apt =>
+                apt._id === id ? { ...apt, status } : apt
+            ));
+            toast.success(language === 'en' ? 'Status updated (demo)' : 'Đã cập nhật trạng thái (demo)');
         }
     };
 
     const updateOrderStatus = async (id, newStatus) => {
+        // Skip API for mock IDs
+        if (id.length < 20) {
+            setAllOrders(prev => prev.map(order =>
+                order._id === id ? { ...order, orderStatus: newStatus } : order
+            ));
+            toast.success(language === 'en' ? 'Order status updated (Demo)' : 'Đã cập nhật đơn hàng (Demo)');
+            return;
+        }
+
         try {
             await orderAPI.updateStatus(id, { orderStatus: newStatus });
             toast.success(language === 'en' ? 'Order status updated!' : 'Đã cập nhật đơn hàng!');
@@ -175,25 +213,48 @@ const AdminDashboard = () => {
         }
     };
 
+    const updateUserRole = async (userId, newRole) => {
+        try {
+            await authAPI.updateUserRole(userId, newRole);
+            toast.success(language === 'en' ? 'Role updated successfully!' : 'Đã cập nhật quyền hạn!');
+            fetchData();
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Error updating role');
+        }
+    };
+
+    const deleteUser = async (userId) => {
+        if (!window.confirm(language === 'en' ? 'Are you sure you want to delete this account?' : 'Bạn có chắc chắn muốn xóa tài khoản này?')) return;
+        try {
+            await authAPI.deleteUser(userId);
+            toast.success(language === 'en' ? 'User deleted!' : 'Đã xóa người dùng!');
+            fetchData();
+        } catch (error) {
+            toast.error('Error deleting user');
+        }
+    };
+
     const formatPrice = (price) => new Intl.NumberFormat('vi-VN').format(price) + '₫';
 
     const getStatusBadge = (status) => {
         const variants = {
             pending: 'warning',
             confirmed: 'primary',
-            processing: 'primary',
+            processing: 'warning',
             completed: 'success',
             delivered: 'success',
             paid: 'success',
+            rated: 'primary',
             cancelled: 'danger',
             failed: 'danger',
             shipping: 'primary',
         };
         const labels = {
-            pending: language === 'en' ? 'Pending' : 'Chờ xử lý',
+            pending: language === 'en' ? 'Pending' : 'Chờ xác nhận',
             confirmed: language === 'en' ? 'Confirmed' : 'Đã xác nhận',
-            processing: language === 'en' ? 'Processing' : 'Đang xử lý',
+            processing: language === 'en' ? 'Processing' : 'Đang thực hiện',
             completed: language === 'en' ? 'Completed' : 'Hoàn thành',
+            rated: language === 'en' ? 'Rated' : 'Đã đánh giá',
             delivered: language === 'en' ? 'Delivered' : 'Đã giao',
             paid: language === 'en' ? 'Paid' : 'Đã thanh toán',
             cancelled: language === 'en' ? 'Cancelled' : 'Đã hủy',
@@ -214,7 +275,10 @@ const AdminDashboard = () => {
         { id: 'orders', label: language === 'en' ? 'Orders' : 'Đơn hàng', icon: FiPackage },
         ...(isAdmin ? [{ id: 'products', label: language === 'en' ? 'Products' : 'Sản phẩm', icon: FiShoppingBag }] : []),
         { id: 'articles', label: language === 'en' ? 'Articles' : 'Bài viết', icon: FiFileText },
-        ...(isAdmin ? [{ id: 'doctors', label: language === 'en' ? 'Doctors' : 'Bác sĩ', icon: FiUsers }] : []),
+        ...(isAdmin ? [
+            { id: 'doctors', label: language === 'en' ? 'Doctors' : 'Bác sĩ', icon: FiUsers },
+            { id: 'users', label: language === 'en' ? 'Accounts' : 'Tài khoản', icon: FiUsers }
+        ] : []),
     ];
 
     if (loading) {
@@ -309,39 +373,47 @@ const AdminDashboard = () => {
 
                         {/* Recent Activity */}
                         <div className="grid lg:grid-cols-2 gap-8">
-                            {/* Today's Appointments */}
+                            {/* Pending Activity */}
                             <div className="card-glass overflow-hidden animate-fade-in-up delay-200">
                                 <div className="p-6 border-b border-theme flex justify-between items-center">
                                     <h2 className="text-xl font-semibold text-theme flex items-center">
                                         <FiClock className="mr-2 text-primary-400" />
-                                        {language === 'en' ? "Today's Appointments" : 'Lịch hẹn hôm nay'}
+                                        {language === 'en' ? "Pending Appointments" : 'Lịch hẹn cần xử lý'}
                                     </h2>
-                                    <button onClick={() => setActiveTab('appointments')} className="text-primary-400 hover:text-primary-300 text-sm">
+                                    <button onClick={() => { setActiveTab('appointments'); setAppointmentFilter('pending'); }} className="text-primary-400 hover:text-primary-300 text-sm">
                                         {language === 'en' ? 'View all' : 'Xem tất cả'}
                                     </button>
                                 </div>
                                 <div className="divide-y divide-theme">
-                                    {appointments.slice(0, 3).map((apt) => (
-                                        <div key={apt._id} className={`p-4 flex items-center justify-between ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'} transition-colors`}>
+                                    {appointments.filter(a => a.status === 'pending').slice(0, 5).map((apt) => (
+                                        <div 
+                                            key={apt._id} 
+                                            onClick={() => setSelectedAppointment(apt)}
+                                            className={`p-4 flex items-center justify-between cursor-pointer transition-all duration-300 ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-100'} hover:shadow-lg hover:scale-[1.01] active:scale-100 group`}
+                                        >
                                             <div className="flex items-center space-x-4">
-                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-gray-100 border border-gray-200'}`}>
-                                                    {getServiceIcon(apt.service)}
+                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl overflow-hidden ${isDark ? 'bg-white/5 border border-white/10' : 'bg-gray-100 border border-gray-200'}`}>
+                                                    {apt.pet?.avatar ? (
+                                                        <img src={apt.pet.avatar} alt={apt.pet.name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        getServiceIcon(apt.service)
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <p className="font-medium text-theme">{apt.customer?.name}</p>
                                                     <p className="text-sm text-theme-secondary">
-                                                        {apt.pet?.name} • {apt.timeSlot}
+                                                        {apt.pet?.name} • {format(new Date(apt.date), 'dd/MM')} • {apt.timeSlot}
                                                     </p>
                                                 </div>
                                             </div>
                                             {getStatusBadge(apt.status)}
                                         </div>
                                     ))}
-                                    {appointments.length === 0 && (
+                                    {appointments.filter(a => a.status === 'pending').length === 0 && (
                                         <div className="p-8">
                                             <EmptyState
                                                 icon={<span className="text-4xl">📅</span>}
-                                                title={language === 'en' ? 'No appointments' : 'Không có lịch hẹn'}
+                                                title={language === 'en' ? 'No pending appointments' : 'Không có lịch hẹn cần xử lý'}
                                             />
                                         </div>
                                     )}
@@ -361,9 +433,13 @@ const AdminDashboard = () => {
                                 </div>
                                 <div className="divide-y divide-theme">
                                     {recentOrders.slice(0, 3).map((order) => (
-                                        <div key={order._id} className={`p-4 flex items-center justify-between ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'} transition-colors`}>
+                                        <div 
+                                            key={order._id} 
+                                            onClick={() => setSelectedOrder(order)}
+                                            className={`p-4 flex items-center justify-between cursor-pointer transition-all duration-300 ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-50'} hover:shadow-lg hover:scale-[1.01] active:scale-100 group`}
+                                        >
                                             <div>
-                                                <p className="font-medium text-theme">#{order.orderNumber}</p>
+                                                <p className="font-medium text-theme group-hover:text-primary-400 transition-colors">#{order.orderNumber}</p>
                                                 <p className="text-sm text-theme-secondary">{order.customer?.name}</p>
                                             </div>
                                             <div className="text-right">
@@ -467,6 +543,15 @@ const AdminDashboard = () => {
                             >
                                 {language === 'en' ? 'Pending' : 'Chờ xử lý'} ({appointments.filter(a => a.status === 'pending').length})
                             </button>
+                            <button
+                                onClick={() => setAppointmentFilter('processed')}
+                                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${appointmentFilter === 'processed'
+                                    ? 'bg-gradient-primary text-white shadow-glow-sm'
+                                    : `${isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`
+                                    }`}
+                            >
+                                {language === 'en' ? 'History' : 'Đã xử lý'} ({appointments.filter(a => ['completed', 'rated'].includes(a.status)).length})
+                            </button>
                         </div>
 
                         {/* Appointments List */}
@@ -478,20 +563,36 @@ const AdminDashboard = () => {
                                         : (language === 'en' ? 'All Appointments' : 'Tất cả lịch hẹn')
                                     }
                                     <span className="ml-2 text-theme-secondary">
-                                        ({appointmentFilter === 'all' ? appointments.length : appointments.filter(a => a.status === 'pending').length})
+                                        ({(() => {
+                                            if (appointmentFilter === 'all') return appointments.length;
+                                            if (appointmentFilter === 'pending') return appointments.filter(a => a.status === 'pending').length;
+                                            if (appointmentFilter === 'processed') return appointments.filter(a => ['completed', 'rated'].includes(a.status)).length;
+                                            return 0;
+                                        })()})
                                     </span>
                                 </h2>
                             </div>
                             <div className="divide-y divide-theme">
                                 {(() => {
-                                    const filteredApts = appointmentFilter === 'all'
-                                        ? appointments
-                                        : appointments.filter(a => a.status === 'pending');
+                                    let filteredApts = appointments;
+                                    if (appointmentFilter === 'pending') {
+                                        filteredApts = appointments.filter(a => a.status === 'pending');
+                                    } else if (appointmentFilter === 'processed') {
+                                        filteredApts = appointments.filter(a => ['completed', 'rated'].includes(a.status));
+                                    }
                                     return filteredApts.length > 0 ? filteredApts.map((apt) => (
-                                        <div key={apt._id} className={`p-4 flex items-center justify-between ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'} transition-colors`}>
+                                        <div 
+                                            key={apt._id} 
+                                            onClick={() => setSelectedAppointment(apt)}
+                                            className={`p-4 flex items-center justify-between cursor-pointer transition-all duration-300 ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-100'} hover:shadow-lg hover:scale-[1.01] active:scale-100 group`}
+                                        >
                                             <div className="flex items-center space-x-4">
-                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-gray-100 border border-gray-200'}`}>
-                                                    {getServiceIcon(apt.service)}
+                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl overflow-hidden ${isDark ? 'bg-white/5 border border-white/10' : 'bg-gray-100 border border-gray-200'}`}>
+                                                    {apt.pet?.avatar ? (
+                                                        <img src={apt.pet.avatar} alt={apt.pet.name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        getServiceIcon(apt.service)
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <p className="font-medium text-theme">{apt.customer?.name}</p>
@@ -501,9 +602,17 @@ const AdminDashboard = () => {
                                                         )}
                                                         {apt.pet?.name} ({apt.pet?.species}) • {apt.timeSlot}
                                                     </p>
-                                                    {isAdmin && apt.staff && (
-                                                        <p className="text-xs text-primary-400">BS: {apt.staff.name}</p>
-                                                    )}
+                                                    <div className="flex items-center gap-3">
+                                                        {isAdmin && apt.staff && (
+                                                            <p className="text-xs text-primary-400">BS: {apt.staff.name || apt.staff}</p>
+                                                        )}
+                                                        {apt.rating && (
+                                                            <div className="flex items-center gap-1 text-xs text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded">
+                                                                <span>★</span>
+                                                                <span className="font-bold">{apt.rating}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="flex items-center space-x-2">
@@ -569,7 +678,11 @@ const AdminDashboard = () => {
                                     </thead>
                                     <tbody className="divide-y divide-theme">
                                         {allOrders.map((order) => (
-                                            <tr key={order._id} className={`${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'} transition-colors`}>
+                                            <tr 
+                                                key={order._id} 
+                                                onClick={() => setSelectedOrder(order)}
+                                                className={`cursor-pointer transition-all duration-300 ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-50'}`}
+                                            >
                                                 <td className="p-4">
                                                     <p className="font-medium text-theme">#{order.orderNumber}</p>
                                                     <p className="text-sm text-theme-secondary">{format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm')}</p>
@@ -658,7 +771,370 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                 )}
+
+                {activeTab === 'users' && isAdmin && (
+                    <div className="animate-fade-in-up">
+                        <div className="card-glass overflow-hidden">
+                            <div className="p-6 border-b border-theme flex justify-between items-center">
+                                <h2 className="text-xl font-semibold text-theme">
+                                    {language === 'en' ? 'Account & Permission Management' : 'Quản lý Tài khoản & Phân quyền'}
+                                </h2>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead className={`${isDark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                                        <tr>
+                                            <th className="text-left p-4 text-theme-secondary font-medium">{language === 'en' ? 'User' : 'Người dùng'}</th>
+                                            <th className="text-left p-4 text-theme-secondary font-medium">{language === 'en' ? 'Role' : 'Quyền hạn'}</th>
+                                            <th className="text-left p-4 text-theme-secondary font-medium">{language === 'en' ? 'Actions' : 'Thao tác'}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-theme">
+                                        {users.map((u) => (
+                                            <tr key={u._id} className={`${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'} transition-colors`}>
+                                                <td className="p-4">
+                                                    <div className="flex items-center space-x-3">
+                                                        <div className="w-10 h-10 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 font-bold">
+                                                            {u.name?.charAt(0)}
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-medium text-theme">{u.name} {u._id === user?.id && <span className="text-xs text-primary-400">(You)</span>}</p>
+                                                            <p className="text-sm text-theme-secondary">{u.email}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="p-4">
+                                                    <select
+                                                        disabled={u._id === user?.id}
+                                                        value={u.role}
+                                                        onChange={(e) => updateUserRole(u._id, e.target.value)}
+                                                        className={`input py-1.5 px-3 text-sm font-medium ${
+                                                            u.role === 'admin' ? 'text-red-400' : u.role === 'staff' ? 'text-primary-400' : 'text-gray-400'
+                                                        }`}
+                                                    >
+                                                        <option value="customer">{language === 'en' ? 'Customer' : 'Khách hàng'}</option>
+                                                        <option value="staff">{language === 'en' ? 'Doctor/Staff' : 'Bác sĩ/Nhân viên'}</option>
+                                                        <option value="admin">{language === 'en' ? 'Admin' : 'Quản trị viên'}</option>
+                                                    </select>
+                                                </td>
+                                                <td className="p-4">
+                                                    {u._id !== user?.id && (
+                                                        <button 
+                                                            onClick={() => deleteUser(u._id)}
+                                                            className="text-red-400 hover:text-red-300 transition-colors p-2"
+                                                            title={language === 'en' ? 'Delete account' : 'Xóa tài khoản'}
+                                                        >
+                                                            <FiX className="w-5 h-5" />
+                                                        </button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
+
+            {/* Appointment Detail Modal */}
+            <Modal
+                isOpen={!!selectedAppointment}
+                onClose={() => setSelectedAppointment(null)}
+                title={language === 'en' ? 'Appointment Details' : 'Chi tiết lịch hẹn'}
+                size="md"
+            >
+                {selectedAppointment && (
+                    <div className="space-y-6">
+                        <div className="flex items-center space-x-6 p-4 rounded-2xl bg-white/5 border border-white/10">
+                            <div className="w-20 h-20 rounded-2xl bg-gradient-primary flex items-center justify-center text-4xl shadow-glow-sm">
+                                {getServiceIcon(selectedAppointment.service)}
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-white mb-1">
+                                    {t(`services.${selectedAppointment.service}`)}
+                                </h3>
+                                {getStatusBadge(selectedAppointment.status)}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Customer' : 'Khách hàng'}</p>
+                                <p className="font-semibold text-white">{selectedAppointment.customer?.name}</p>
+                            </div>
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center space-x-4">
+                                <div className="w-12 h-12 rounded-lg overflow-hidden bg-primary-500/20 flex items-center justify-center text-2xl">
+                                    {selectedAppointment.pet?.avatar ? (
+                                        <img src={selectedAppointment.pet.avatar} alt={selectedAppointment.pet.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span>{selectedAppointment.pet?.species === 'dog' ? '🐕' : '🐈'}</span>
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-400 mb-0.5">{language === 'en' ? 'Pet Name' : 'Tên thú cưng'}</p>
+                                    <p className="font-semibold text-white">
+                                        {selectedAppointment.pet?.name} ({selectedAppointment.pet?.species})
+                                    </p>
+                                    <p className="text-xs text-primary-400">
+                                        {selectedAppointment.pet?.breed} • {selectedAppointment.pet?.age} {language === 'en' ? 'years' : 'tuổi'}
+                                    </p>
+                                    <p className="text-xs text-gray-400">
+                                        {selectedAppointment.pet?.weight}kg • {selectedAppointment.pet?.gender === 'male' ? (language === 'en' ? 'Male' : 'Đực') : (language === 'en' ? 'Female' : 'Cái')}
+                                    </p>
+                                </div>
+                            </div>
+                            {selectedAppointment.pet?.notes && (
+                                <div className="col-span-2 p-4 rounded-xl bg-primary-500/10 border border-primary-500/20">
+                                    <p className="text-sm text-primary-400 mb-1">{language === 'en' ? 'Pet Special Notes' : 'Lưu ý đặc biệt về thú cưng'}</p>
+                                    <p className="text-gray-200 italic text-sm">"{selectedAppointment.pet.notes}"</p>
+                                </div>
+                            )}
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Date' : 'Ngày hẹn'}</p>
+                                <p className="font-semibold text-white">
+                                    {selectedAppointment.date ? format(new Date(selectedAppointment.date), 'dd/MM/yyyy') : '---'}
+                                </p>
+                            </div>
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Time Box' : 'Khung giờ'}</p>
+                                <p className="font-semibold text-white">{selectedAppointment.timeSlot}</p>
+                            </div>
+                        </div>
+
+                        {selectedAppointment.staff && (
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Doctor/Staff' : 'Bác sĩ/Nhân viên'}</p>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center text-xs text-primary-400 font-bold">
+                                        {selectedAppointment.staff.name?.charAt(0)}
+                                    </div>
+                                    <p className="font-semibold text-white">{selectedAppointment.staff.name}</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {selectedAppointment.notes && (
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Notes' : 'Ghi chú'}</p>
+                                <p className="text-gray-200">{selectedAppointment.notes}</p>
+                            </div>
+                        )}
+
+                        {(selectedAppointment.rating || selectedAppointment.feedback) && (
+                            <div className="p-5 rounded-2xl bg-gradient-to-br from-yellow-400/10 to-transparent border border-yellow-400/20 shadow-inner">
+                                <div className="flex justify-between items-center mb-3">
+                                    <p className="text-sm font-semibold text-yellow-500 uppercase tracking-wider">{language === 'en' ? 'Customer Feedback' : 'Đánh giá từ khách hàng'}</p>
+                                    <div className="flex text-yellow-400 text-lg">
+                                        {[...Array(5)].map((_, i) => (
+                                            <span key={i} className="drop-shadow-glow-sm">
+                                                {i < selectedAppointment.rating ? '★' : '☆'}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                                {selectedAppointment.feedback ? (
+                                    <p className="text-white italic leading-relaxed">
+                                        "{selectedAppointment.feedback}"
+                                    </p>
+                                ) : (
+                                    <p className="text-gray-400 italic text-sm">
+                                        {language === 'en' ? 'No written feedback' : 'Không có nhận xét bằng văn bản'}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="flex justify-end space-x-3 pt-4 border-t border-white/10">
+                            <button
+                                onClick={() => setSelectedAppointment(null)}
+                                className="btn-ghost px-6"
+                            >
+                                {language === 'en' ? 'Close' : 'Đóng'}
+                            </button>
+                            <div className="flex gap-2">
+                                {selectedAppointment.status === 'pending' && (
+                                    <button
+                                        onClick={() => {
+                                            updateAppointmentStatus(selectedAppointment._id, 'confirmed');
+                                            setSelectedAppointment(null);
+                                        }}
+                                        className="btn-primary px-6 shadow-glow-sm"
+                                    >
+                                        {language === 'en' ? 'Confirm' : 'Xác nhận'}
+                                    </button>
+                                )}
+                                {selectedAppointment.status === 'confirmed' && (
+                                    <button
+                                        onClick={() => {
+                                            updateAppointmentStatus(selectedAppointment._id, 'processing');
+                                            setSelectedAppointment(null);
+                                        }}
+                                        className="btn-primary px-6 bg-yellow-500 hover:bg-yellow-600 border-none shadow-glow-sm"
+                                    >
+                                        {language === 'en' ? 'Start Service' : 'Bắt đầu thực hiện'}
+                                    </button>
+                                )}
+                                {selectedAppointment.status === 'processing' && (
+                                    <button
+                                        onClick={() => {
+                                            updateAppointmentStatus(selectedAppointment._id, 'completed');
+                                            setSelectedAppointment(null);
+                                        }}
+                                        className="btn-primary px-6 bg-green-500 hover:bg-green-600 border-none shadow-glow-sm"
+                                    >
+                                        {language === 'en' ? 'Complete & Pay' : 'Hoàn thành & TT'}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
+            {/* Order Detail Modal */}
+            <Modal
+                isOpen={!!selectedOrder}
+                onClose={() => setSelectedOrder(null)}
+                title={language === 'en' ? 'Order Details' : 'Chi tiết đơn hàng'}
+                size="lg"
+            >
+                {selectedOrder && (
+                    <div className="space-y-6">
+                        {/* Status Highlights */}
+                        <div className="flex flex-wrap gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 justify-between items-center">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center text-2xl shadow-glow-sm">
+                                    <FiPackage className="text-yellow-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white mb-0.5">#{selectedOrder.orderNumber}</h3>
+                                    <p className="text-sm text-gray-400">{format(new Date(selectedOrder.createdAt), 'dd/MM/yyyy HH:mm')}</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                {getStatusBadge(selectedOrder.orderStatus)}
+                                {getStatusBadge(selectedOrder.paymentStatus)}
+                            </div>
+                        </div>
+
+                        {/* Info Grid */}
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {/* Customer Info */}
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <h4 className="text-sm font-semibold text-primary-400 mb-3 uppercase tracking-wider">
+                                    {language === 'en' ? 'Customer Info' : 'Thông tin khách hàng'}
+                                </h4>
+                                <div className="space-y-2">
+                                    <p className="text-white font-medium">{selectedOrder.customer?.name}</p>
+                                    <p className="text-sm text-gray-400">📧 {selectedOrder.customer?.email}</p>
+                                    <p className="text-sm text-gray-400">📱 {selectedOrder.customer?.phone}</p>
+                                </div>
+                            </div>
+                            {/* Shipping Info */}
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <h4 className="text-sm font-semibold text-primary-400 mb-3 uppercase tracking-wider">
+                                    {language === 'en' ? 'Shipping & Payment' : 'Giao hàng & Thanh toán'}
+                                </h4>
+                                <div className="space-y-2 text-sm">
+                                    <div className="text-gray-200">
+                                        <span className="text-gray-500">📍 {language === 'en' ? 'Addr:' : 'Đ/C:'}</span> 
+                                        {typeof selectedOrder.shippingAddress === 'object' ? (
+                                            <div className="ml-5 mt-1 space-y-1">
+                                                <p>{selectedOrder.shippingAddress.address}, {selectedOrder.shippingAddress.city}</p>
+                                                {selectedOrder.shippingAddress.fullName && <p className="text-xs text-gray-400">Người nhận: {selectedOrder.shippingAddress.fullName}</p>}
+                                                {selectedOrder.shippingAddress.phone && <p className="text-xs text-gray-400">SĐT: {selectedOrder.shippingAddress.phone}</p>}
+                                                {selectedOrder.shippingAddress.notes && <p className="text-xs italic text-yellow-400/70">Lưu ý: {selectedOrder.shippingAddress.notes}</p>}
+                                            </div>
+                                        ) : (
+                                            <span className="ml-1">{selectedOrder.shippingAddress}</span>
+                                        )}
+                                    </div>
+                                    <p className="text-gray-200">
+                                        <span className="text-gray-500">💳 {language === 'en' ? 'Method:' : 'P/T:'}</span> 
+                                        <span className="uppercase ml-1">{selectedOrder.paymentMethod}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Order Items */}
+                        <div className="rounded-xl border border-white/10 overflow-hidden">
+                            <table className="w-full text-sm">
+                                <thead className="bg-white/5">
+                                    <tr>
+                                        <th className="text-left p-3 text-gray-400 font-medium">{language === 'en' ? 'Product' : 'Sản phẩm'}</th>
+                                        <th className="text-center p-3 text-gray-400 font-medium">{language === 'en' ? 'Qty' : 'SL'}</th>
+                                        <th className="text-right p-3 text-gray-400 font-medium">{language === 'en' ? 'Price' : 'Giá'}</th>
+                                        <th className="text-right p-3 text-gray-400 font-medium">{language === 'en' ? 'Subtotal' : 'Thành tiền'}</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/10">
+                                    {selectedOrder.items?.map((item, idx) => (
+                                        <tr key={idx} className="hover:bg-white/5">
+                                            <td className="p-3">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-10 h-10 rounded-lg bg-white/5 overflow-hidden flex-shrink-0">
+                                                        {item.product?.images?.[0] ? (
+                                                            <img src={item.product.images[0]} alt="" className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center text-xs">📦</div>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-white font-medium line-clamp-1">{item.name || item.product?.name}</span>
+                                                </div>
+                                            </td>
+                                            <td className="p-3 text-center text-gray-300">x{item.quantity}</td>
+                                            <td className="p-3 text-right text-gray-300">{formatPrice(item.price)}</td>
+                                            <td className="p-3 text-right text-white font-semibold">{formatPrice(item.price * item.quantity)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Summary */}
+                        <div className="flex justify-end pt-4 border-t border-white/10">
+                            <div className="text-right space-y-2">
+                                <div className="flex justify-between w-64 text-sm">
+                                    <span className="text-gray-400">{language === 'en' ? 'Items Total' : 'Tiền hàng'}</span>
+                                    <span className="text-white">{formatPrice(selectedOrder.totalAmount || 0)}</span>
+                                </div>
+                                <div className="flex justify-between w-64 text-sm">
+                                    <span className="text-gray-400">{language === 'en' ? 'Shipping' : 'Phí giao hàng'}</span>
+                                    <span className="text-white">0₫</span>
+                                </div>
+                                <div className="flex justify-between w-64 pt-2 border-t border-white/5">
+                                    <span className="text-lg font-bold text-white">{language === 'en' ? 'Total' : 'Tổng cộng'}</span>
+                                    <span className="text-2xl font-bold text-gradient">{formatPrice(selectedOrder.totalAmount || 0)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex justify-end space-x-3 pt-6">
+                            <button
+                                onClick={() => setSelectedOrder(null)}
+                                className="btn-ghost px-6"
+                            >
+                                {language === 'en' ? 'Close' : 'Đóng'}
+                            </button>
+                            {selectedOrder.orderStatus === 'pending' && (
+                                <button
+                                    onClick={() => {
+                                        updateOrderStatus(selectedOrder._id, 'processing');
+                                        setSelectedOrder(null);
+                                    }}
+                                    className="btn-primary px-6 border-none shadow-glow-sm"
+                                >
+                                    {language === 'en' ? 'Process Order' : 'Xác nhận đơn'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 };

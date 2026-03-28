@@ -21,7 +21,7 @@ exports.getAppointments = async (req, res) => {
 
         const appointments = await query
             .populate('customer', 'name email phone')
-            .populate('pet', 'name species breed avatar')
+            .populate('pet', 'name species breed age weight gender avatar notes')
             .populate('staff', 'name email')
             .sort({ date: -1 });
 
@@ -43,9 +43,15 @@ exports.getAppointments = async (req, res) => {
 // @access  Private
 exports.getAppointment = async (req, res) => {
     try {
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid appointment ID format'
+            });
+        }
         const appointment = await Appointment.findById(req.params.id)
             .populate('customer', 'name email phone')
-            .populate('pet', 'name species breed avatar')
+            .populate('pet', 'name species breed age weight gender avatar notes')
             .populate('staff', 'name email');
 
         if (!appointment) {
@@ -99,7 +105,7 @@ exports.createAppointment = async (req, res) => {
         const appointment = await Appointment.create({
             customer: req.user.id,
             pet,
-            staff,
+            staff: staff || undefined,
             service,
             date,
             timeSlot,
@@ -109,7 +115,7 @@ exports.createAppointment = async (req, res) => {
 
         const populatedAppointment = await Appointment.findById(appointment._id)
             .populate('customer', 'name email phone')
-            .populate('pet', 'name species breed')
+            .populate('pet', 'name species breed age weight gender avatar notes')
             .populate('staff', 'name email');
 
         res.status(201).json({
@@ -117,6 +123,7 @@ exports.createAppointment = async (req, res) => {
             appointment: populatedAppointment
         });
     } catch (error) {
+        console.error('Error creating appointment:', error);
         res.status(500).json({
             success: false,
             message: error.message
@@ -129,6 +136,12 @@ exports.createAppointment = async (req, res) => {
 // @access  Private
 exports.updateAppointment = async (req, res) => {
     try {
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid appointment ID format'
+            });
+        }
         let appointment = await Appointment.findById(req.params.id);
 
         if (!appointment) {
@@ -173,7 +186,7 @@ exports.updateAppointment = async (req, res) => {
             runValidators: true
         })
             .populate('customer', 'name email phone')
-            .populate('pet', 'name species breed')
+            .populate('pet', 'name species breed age weight gender avatar notes')
             .populate('staff', 'name email');
 
         res.status(200).json({
@@ -193,6 +206,12 @@ exports.updateAppointment = async (req, res) => {
 // @access  Private
 exports.deleteAppointment = async (req, res) => {
     try {
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid appointment ID format'
+            });
+        }
         const appointment = await Appointment.findById(req.params.id);
 
         if (!appointment) {
@@ -267,7 +286,7 @@ exports.getAvailableSlots = async (req, res) => {
 
         // If no specific staff, return all slots with availability info
         if (!staffId) {
-            const staff = await User.find({ role: { $in: ['staff', 'admin'] } }).select('name');
+            const staff = await User.find({ role: { $in: ['staff', 'doctor', 'admin'] } }).select('name');
 
             const slotsWithAvailability = allSlots.map(slot => {
                 const availableStaff = staff.filter(s => {
@@ -381,8 +400,8 @@ exports.getAppointmentsByDate = async (req, res) => {
             date: { $gte: startOfDay, $lte: endOfDay }
         };
 
-        // Staff only sees their own appointments
-        if (req.user.role === 'staff') {
+        // Staff and Doctors only see their own appointments
+        if (req.user.role === 'staff' || req.user.role === 'doctor') {
             query.staff = req.user.id;
         }
 

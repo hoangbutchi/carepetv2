@@ -34,7 +34,7 @@ const AppointmentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'confirmed', 'completed', 'cancelled'],
+        enum: ['pending', 'confirmed', 'processing', 'completed', 'cancelled', 'rated'],
         default: 'pending'
     },
     notes: {
@@ -44,6 +44,15 @@ const AppointmentSchema = new mongoose.Schema({
     price: {
         type: Number,
         default: 0
+    },
+    rating: {
+        type: Number,
+        min: 1,
+        max: 5
+    },
+    feedback: {
+        type: String,
+        maxlength: [500, 'Feedback cannot be more than 500 characters']
     },
     createdAt: {
         type: Date,
