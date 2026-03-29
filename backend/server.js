@@ -32,6 +32,7 @@ const messageRoutes = require('./routes/messageRoutes');
 const newsRoutes = require('./routes/newsRoutes');
 const momoRoutes = require('./routes/momoRoutes');
 const vnpayRoutes = require('./routes/vnpayRoutes');
+const healthRoutes = require('./routes/healthRoutes');
 
 // Mount routers
 app.use('/api/auth', authRoutes);
@@ -43,9 +44,10 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/momo', momoRoutes);
 app.use('/api/vnpay', vnpayRoutes);
+app.use('/api/health', healthRoutes);
 
-// Health check
-app.get('/api/health', (req, res) => {
+// Status check (previously health)
+app.get('/api/status', (req, res) => {
     res.status(200).json({
         success: true,
         message: 'Pet Management API is running',

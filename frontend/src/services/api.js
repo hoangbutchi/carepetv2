@@ -120,3 +120,9 @@ export const momoAPI = {
 export const vnpayAPI = {
     createPayment: (data) => api.post('/vnpay/payment', data),
 };
+
+export const healthAPI = {
+    getHistory: (petId) => api.get(`/health/${petId}`),
+    createRecord: (data) => api.post('/health', data),
+    exportPDF: (petId) => api.get(`/health/export-pdf/${petId}`, { responseType: 'blob' }),
+};
