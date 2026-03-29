@@ -49,6 +49,7 @@ const Navbar = () => {
         { name: t('nav.doctors'), path: '/doctors' },
         { name: t('nav.shop'), path: '/shop' },
         { name: t('nav.news'), path: '/news' },
+        { name: t('nav.lostPet'), path: '/lost-pets' },
         { name: t('nav.booking'), path: '/booking' },
     ];
 
@@ -86,12 +87,12 @@ const Navbar = () => {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-1">
+                    <div className="hidden xl:flex items-center space-x-2">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`relative px-4 py-2 rounded-lg font-medium transition-all duration-300 ${isActiveLink(link.path)
+                                className={`relative px-3 py-2 rounded-lg font-medium transition-all duration-300 ${isActiveLink(link.path)
                                     ? 'text-primary-500'
                                     : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
                                     }`}
@@ -105,10 +106,10 @@ const Navbar = () => {
 
                         {/* My Appointments & My Pets - only for customers */}
                         {isAuthenticated && !isStaff && (
-                            <div className="flex items-center space-x-1">
+                            <div className="flex items-center space-x-2">
                                 <Link
                                     to="/my-appointments"
-                                    className={`relative px-4 py-2 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-appointments')
+                                    className={`relative px-3 py-2 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-appointments')
                                         ? 'text-primary-500'
                                         : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
                                         }`}
@@ -120,7 +121,7 @@ const Navbar = () => {
                                 </Link>
                                 <Link
                                     to="/my-pets"
-                                    className={`relative px-4 py-2 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-pets')
+                                    className={`relative px-3 py-2 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-pets')
                                         ? 'text-primary-500'
                                         : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
                                         }`}
@@ -135,7 +136,7 @@ const Navbar = () => {
                     </div>
 
                     {/* Right Section */}
-                    <div className="hidden md:flex items-center space-x-2">
+                    <div className="hidden md:flex items-center space-x-3">
                         {/* Theme Toggle */}
                         <button
                             onClick={toggleTheme}

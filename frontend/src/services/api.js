@@ -126,3 +126,10 @@ export const healthAPI = {
     createRecord: (data) => api.post('/health', data),
     exportPDF: (petId) => api.get(`/health/export-pdf/${petId}`, { responseType: 'blob' }),
 };
+
+export const lostPetAPI = {
+    getAll: () => api.get('/lost-pets'),
+    create: (data) => api.post('/lost-pets', data),
+    updateStatus: (id, data) => api.put(`/lost-pets/${id}`, data),
+    delete: (id) => api.delete(`/lost-pets/${id}`),
+};

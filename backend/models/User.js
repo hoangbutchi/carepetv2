@@ -32,6 +32,30 @@ const UserSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    // Structured address for location matching
+    city: {
+        name: String,
+        code: String
+    },
+    district: {
+        name: String,
+        code: String
+    },
+    ward: {
+        name: String,
+        code: String
+    },
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number], // [lng, lat]
+            default: [105.8544, 21.0285] // Default to Hanoi
+        }
+    },
     role: {
         type: String,
         enum: ['customer', 'doctor', 'staff', 'admin'],
@@ -64,6 +88,8 @@ const UserSchema = new mongoose.Schema({
         default: Date.now
     }
 });
+
+UserSchema.index({ location: '2dsphere' });
 
 // Hash password before saving
 UserSchema.pre('save', async function (next) {

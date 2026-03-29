@@ -45,7 +45,11 @@ exports.register = async (req, res) => {
                 role: user.role,
                 phone: user.phone,
                 address: user.address,
-                avatar: user.avatar
+                avatar: user.avatar,
+                city: user.city,
+                district: user.district,
+                ward: user.ward,
+                location: user.location
             }
         });
     } catch (error) {
@@ -101,7 +105,11 @@ exports.login = async (req, res) => {
                 role: user.role,
                 phone: user.phone,
                 address: user.address,
-                avatar: user.avatar
+                avatar: user.avatar,
+                city: user.city,
+                district: user.district,
+                ward: user.ward,
+                location: user.location
             }
         });
     } catch (error) {
@@ -129,6 +137,10 @@ exports.getMe = async (req, res) => {
                 phone: user.phone,
                 address: user.address,
                 avatar: user.avatar,
+                city: user.city,
+                district: user.district,
+                ward: user.ward,
+                location: user.location,
                 createdAt: user.createdAt
             }
         });
@@ -145,11 +157,11 @@ exports.getMe = async (req, res) => {
 // @access  Private
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, phone, address, avatar } = req.body;
+        const { name, phone, address, avatar, city, district, ward, location } = req.body;
 
         const user = await User.findByIdAndUpdate(
             req.user.id,
-            { name, phone, address, avatar },
+            { name, phone, address, avatar, city, district, ward, location },
             { new: true, runValidators: true }
         );
 
@@ -162,7 +174,11 @@ exports.updateProfile = async (req, res) => {
                 role: user.role,
                 phone: user.phone,
                 address: user.address,
-                avatar: user.avatar
+                avatar: user.avatar,
+                city: user.city,
+                district: user.district,
+                ward: user.ward,
+                location: user.location
             }
         });
     } catch (error) {

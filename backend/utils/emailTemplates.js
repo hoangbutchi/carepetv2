@@ -209,8 +209,82 @@ const getServiceCompletedTemplate = (appointment) => {
     </html>`;
 };
 
+const getLostPetAlertTemplate = (post) => {
+    const { petName, petImage, description, contactPhone, ward, district, city, location } = post;
+    const locationStr = `${ward?.name || ''}, ${district?.name || ''}, ${city?.name || ''}`;
+    
+    // Google Maps link with coordinates
+    const [lng, lat] = location.coordinates;
+    const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+    
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            .container { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 2px solid #FF4444; border-radius: 20px; overflow: hidden; background-color: #ffffff; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #FF4B2B 0%, #FF416C 100%); color: white; padding: 40px 20px; text-align: center; }
+            .content { padding: 35px; color: #333; line-height: 1.6; }
+            .pet-image { width: 100%; max-height: 450px; object-fit: cover; border-radius: 16px; margin-bottom: 25px; border: 5px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+            .alert-box { background-color: #FFF5F5; border-left: 8px solid #FF4444; padding: 25px; margin: 30px 0; border-radius: 12px; }
+            .label { font-weight: bold; color: #FF4444; min-width: 100px; display: inline-block; font-size: 14px; text-transform: uppercase; }
+            .map-btn { display: block; text-align: center; background-color: #4285F4; color: #ffffff !important; text-decoration: none; padding: 15px; border-radius: 12px; font-weight: bold; margin: 20px 0; border-bottom: 4px solid #357ae8; transition: all 0.3s; }
+            .contact-btn { display: block; text-align: center; background: linear-gradient(to right, #FF4B2B, #FF416C); color: #ffffff !important; text-decoration: none; padding: 22px 30px; border-radius: 45px; font-weight: bold; font-size: 22px; margin-top: 35px; box-shadow: 0 15px 30px rgba(255, 68, 68, 0.4); text-transform: uppercase; border: none; }
+            .footer { background-color: #f8f9fa; padding: 30px; text-align: center; font-size: 13px; color: #777; border-top: 1px solid #eee; }
+            .highlight { color: #FF4444; font-weight: bold; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div style="font-size: 60px; margin-bottom: 15px;">🚨📍</div>
+                <h1 style="margin:0; font-size: 32px; letter-spacing: 1.5px; font-weight: 900;">BÉ ĐANG CẦN BẠN!</h1>
+                <p style="margin-top: 10px; font-size: 18px; opacity: 0.9;">Phát hiện bé bị lạc tại ${district?.name || 'khu vực'}</p>
+            </div>
+            <div class="content">
+                <p style="font-size: 18px;">Chào thành viên CarePet,</p>
+                <p style="font-size: 16px;">Chúng tôi vừa nhận được báo động khẩn: Bé <b class="highlight" style="font-size: 20px;">${petName}</b> đã bị lạc ngay trong khu vực bạn sinh sống. Mọi sự giúp đỡ của bạn lúc này đều vô cùng quý giá.</p>
+                
+                <img src="${petImage}" class="pet-image" alt="${petName}">
+ 
+                <div class="alert-box">
+                    <p style="margin: 8px 0;"><span class="label">🔍 Tình trạng:</span> <b style="font-size: 18px; color: #FF4444;">ĐANG TÌM KIẾM</b></p>
+                    <p style="margin: 8px 0;"><span class="label">📍 Địa chỉ:</span> <b>${locationStr}</b></p>
+                    <p style="margin: 15px 0;">
+                        <span class="label">🛰️ Bản đồ:</span>
+                        <a href="${googleMapsUrl}" class="map-btn" target="_blank">
+                            🗺️ XEM VỊ TRÍ CHÍNH XÁC TRÊN GOOGLE MAPS
+                        </a>
+                    </p>
+                </div>
+ 
+                <div style="background-color: #fff9db; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px dashed #f1c40f;">
+                    <p style="margin: 0; font-weight: bold; color: #856404; font-size: 16px;">📝 Đặc điểm nhận diện:</p>
+                    <p style="margin: 12px 0; font-size: 15px; color: #555; line-height: 1.8;">${description}</p>
+                </div>
+ 
+                <p style="text-align: center; font-weight: bold; color: #333; font-size: 16px;">GỌI NGAY CHO CHỦ NUÔI NẾU BẠN THẤY BÉ:</p>
+                
+                <a href="tel:${contactPhone}" class="contact-btn">📞 ${contactPhone} - GỌI NGAY</a>
+                
+                <div style="margin-top: 45px; text-align: center; color: #888; font-size: 14px;">
+                    <p>Hãy cùng cộng đồng chung tay đưa bé về nhà an toàn!</p>
+                </div>
+            </div>
+            <div class="footer">
+                <p><b>Cộng đồng Cứu trợ & Chăm sóc Thú cưng CarePet VN</b></p>
+                <p>Tin nhắn này được gửi đến dựa trên thông tin Quận/Huyện trong hồ sơ của bạn.</p>
+                <p>© 2024 CarePet Vietnam</p>
+            </div>
+        </div>
+    </body>
+    </html>`;
+};
+
 module.exports = {
     getBookingSuccessTemplate,
     getReminderTemplate,
-    getServiceCompletedTemplate
+    getServiceCompletedTemplate,
+    getLostPetAlertTemplate
 };

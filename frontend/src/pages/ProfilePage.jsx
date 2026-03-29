@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { authAPI, orderAPI, appointmentAPI } from '../services/api';
 import { Modal, Badge, EmptyState, Spinner } from '../components/common/UI';
 import toast from 'react-hot-toast';
+import VietnamAddressSelector from '../components/common/VietnamAddressSelector';
+import MapPicker from '../components/common/MapPicker';
 
 const ProfilePage = () => {
     const { t, language } = useLanguage();
@@ -22,7 +24,14 @@ const ProfilePage = () => {
         name: '',
         phone: '',
         address: '',
-        avatar: ''
+        avatar: '',
+        city: null,
+        district: null,
+        ward: null,
+        location: {
+            type: 'Point',
+            coordinates: [105.8544, 21.0285]
+        }
     });
 
     useEffect(() => {
@@ -34,7 +43,11 @@ const ProfilePage = () => {
             name: user?.name || '',
             phone: user?.phone || '',
             address: user?.address || '',
-            avatar: user?.avatar || ''
+            avatar: user?.avatar || '',
+            city: user?.city || null,
+            district: user?.district || null,
+            ward: user?.ward || null,
+            location: user?.location || { type: 'Point', coordinates: [105.8544, 21.0285] }
         });
         fetchData();
     }, [isAuthenticated, navigate, user]);
@@ -181,15 +194,42 @@ const ProfilePage = () => {
                                             className="input"
                                         />
                                     </div>
+                                    <div className="space-y-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                                        <h4 className="text-sm font-semibold text-primary-400 uppercase tracking-wider">
+                                            {language === 'en' ? 'Your Address / Regional Information' : 'Thông tin địa chỉ / Khu vực'}
+                                        </h4>
+                                        <VietnamAddressSelector
+                                            initialAddress={{
+                                                city: editForm.city,
+                                                district: editForm.district,
+                                                ward: editForm.ward
+                                            }}
+                                            onAddressChange={(addr) => setEditForm(prev => {
+                                                const addressParts = [];
+                                                if (addr.ward?.name) addressParts.push(addr.ward.name);
+                                                if (addr.district?.name) addressParts.push(addr.district.name);
+                                                if (addr.city?.name) addressParts.push(addr.city.name);
+                                                
+                                                return { 
+                                                    ...prev, 
+                                                    ...addr,
+                                                    address: addressParts.join(', ')
+                                                };
+                                            })}
+                                        />
+                                        
+
+                                    </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-300 mb-2">
-                                            {language === 'en' ? 'Address' : 'Địa chỉ'}
+                                            {language === 'en' ? 'Street Address' : 'Địa chỉ cụ thể (Số nhà, đường...)'}
                                         </label>
                                         <textarea
                                             value={editForm.address}
                                             onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
                                             className="input resize-none"
-                                            rows={3}
+                                            rows={2}
+                                            placeholder={language === 'en' ? 'e.g. 123 Main St' : 'VD: 123 Đường Nguyễn Trãi'}
                                         />
                                     </div>
                                     <div>
@@ -255,7 +295,15 @@ const ProfilePage = () => {
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-500">{language === 'en' ? 'Address' : 'Địa chỉ'}</p>
-                                                <p className="font-medium text-white">{user?.address || '-'}</p>
+                                                <p className="font-medium text-white">
+                                                    {user?.address || ''}
+                                                    {(user?.ward || user?.district || user?.city) && (
+                                                        <span className="block text-sm text-gray-400 mt-1">
+                                                            {[user?.ward?.name, user?.district?.name, user?.city?.name].filter(Boolean).join(', ')}
+                                                        </span>
+                                                    )}
+                                                    {!user?.address && !user?.city && '-'}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
