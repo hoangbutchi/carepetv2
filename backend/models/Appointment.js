@@ -57,6 +57,10 @@ const AppointmentSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    isReminded: {
+        type: Boolean,
+        default: false
     }
 });
 

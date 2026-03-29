@@ -2,12 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const { initReminderJob } = require('./jobs/reminderJob');
 
 // Load env vars
 dotenv.config();
 
 // Connect to database
 connectDB();
+initReminderJob();
 
 const app = express();
 

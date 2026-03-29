@@ -1,5 +1,6 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const genAI = new GoogleGenerativeAI("AIzaSyCRqYdzYdDts5EgeLgG8kBJCyTetwZcavY");
+// Vui lòng sử dụng biến môi trường VITE_GEMINI_API_KEY từ file .env
+const genAI = new GoogleGenerativeAI(process.env.VITE_GEMINI_API_KEY || "YOUR_API_KEY_HERE");
 async function run() {
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
