@@ -7,8 +7,8 @@ const getBookingSuccessTemplate = (appointment) => {
     const formattedDate = new Date(date).toLocaleDateString('vi-VN');
     const formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price || 0);
     
-    // Hình ảnh bản đồ giả lập hoặc tĩnh
-    const mapUrl = "https://images.pexels.com/photos/1054391/pexels-photo-1054391.jpeg?auto=compress&cs=tinysrgb&w=600";
+    // Link Google Maps cho cửa hàng (Bạn có thể thay bằng link thực tế của shop)
+    const googleMapsLink = "https://www.google.com/maps/search/123+Đường+Thú+Cưng,+Quận+Hoàn+Kiếm,+Hà+Nội";
     // Avatar mặc định nếu bác sĩ chưa có ảnh
     const doctorAvatar = staff?.avatar || "https://cdn-icons-png.flaticon.com/512/387/387561.png";
 
@@ -80,11 +80,15 @@ const getBookingSuccessTemplate = (appointment) => {
                 </div>
                 ` : ''}
 
-                <div class="map-container">
-                    <h3 style="color: #444; margin-bottom: 10px; text-align: left;">Địa chỉ cửa hàng:</h3>
-                    <img src="${mapUrl}" class="map-img" alt="Map">
-                    <p style="font-size: 14px; margin-top: 8px; color: #666;">📍 123 Đường Thú Cưng, Quận Hoàn Kiếm, Hà Nội</p>
-                    <a href="https://maps.google.com" style="color: #FF6B6B; font-size: 14px; text-decoration: none; font-weight: bold;">Mở trong Google Maps →</a>
+                <div class="map-container" style="margin-top: 30px;">
+                    <h3 style="color: #444; margin-bottom: 15px; text-align: left;">Địa chỉ cửa hàng:</h3>
+                    <a href="${googleMapsLink}" target="_blank" style="text-decoration: none; display: block;">
+                        <div style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; text-align: center; border: 2px dashed #FF6B6B; cursor: pointer;">
+                            <div style="font-size: 45px; margin-bottom: 10px;">📍🗺️</div>
+                            <div style="font-weight: bold; color: #333; font-size: 16px;">123 Đường Thú Cưng, Quận Hoàn Kiếm, Hà Nội</div>
+                            <div style="color: #FF6B6B; font-size: 14px; margin-top: 15px; font-weight: bold; text-decoration: underline;">NHẤN ĐỂ XEM BẢN ĐỒ DẪN ĐƯỜNG →</div>
+                        </div>
+                    </a>
                 </div>
 
                 <div style="text-align: center; margin-top: 40px;">
