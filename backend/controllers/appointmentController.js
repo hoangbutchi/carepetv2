@@ -1,5 +1,7 @@
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
+const sendEmail = require('../utils/mailer');
+const { getBookingSuccessTemplate, getServiceCompletedTemplate } = require('../utils/emailTemplates');
 
 // @desc    Get all appointments
 // @route   GET /api/appointments
@@ -116,7 +118,20 @@ exports.createAppointment = async (req, res) => {
         const populatedAppointment = await Appointment.findById(appointment._id)
             .populate('customer', 'name email phone')
             .populate('pet', 'name species breed age weight gender avatar notes')
-            .populate('staff', 'name email');
+            .populate('staff', 'name email avatar specialization');
+
+        // Gửi email xác nhận cho khách hàng
+        try {
+            await sendEmail({
+                email: populatedAppointment.customer.email,
+                subject: 'CarePet - Xác nhận Đặt lịch thành công! 🐾',
+                html: getBookingSuccessTemplate(populatedAppointment)
+            });
+            console.log(`Email xác nhận đã được gửi tới: ${populatedAppointment.customer.email}`);
+        } catch (emailError) {
+            console.error('Lỗi gửi email xác nhận:', emailError.message);
+            // Không trả về lỗi 500 ở đây vì lịch hẹn đã được tạo thành công trong DB rồi
+        }
 
         res.status(201).json({
             success: true,
@@ -181,13 +196,29 @@ exports.updateAppointment = async (req, res) => {
             }
         }
 
+        const oldStatus = appointment.status;
+
         appointment = await Appointment.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
         })
             .populate('customer', 'name email phone')
             .populate('pet', 'name species breed age weight gender avatar notes')
-            .populate('staff', 'name email');
+            .populate('staff', 'name email avatar specialization');
+
+        // Gửi email cảm ơn nếu trạng thái chuyển sang 'completed'
+        if (appointment.status === 'completed' && oldStatus !== 'completed') {
+            try {
+                await sendEmail({
+                    email: appointment.customer.email,
+                    subject: 'CarePet - Cảm ơn bạn và bé đã tin dùng dịch vụ! ❤️',
+                    html: getServiceCompletedTemplate(appointment)
+                });
+                console.log(`Email cảm ơn đã được gửi tới: ${appointment.customer.email}`);
+            } catch (emailError) {
+                console.error('Lỗi gửi email cảm ơn:', emailError.message);
+            }
+        }
 
         res.status(200).json({
             success: true,

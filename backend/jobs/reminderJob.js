@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const Appointment = require('../models/Appointment');
 const sendEmail = require('../utils/mailer');
+const { getReminderTemplate } = require('../utils/emailTemplates');
 
 const processReminders = async () => {
     console.log('Starting Appointment Reminder Process...');
@@ -30,32 +31,10 @@ const processReminders = async () => {
 
             if (!customer || !customer.email) continue;
 
-            const emailHtml = `
-            <!DOCTYPE html>
-            <html>
-            <body style="font-family: sans-serif; line-height: 1.6; color: #333;">
-                <div style="max-width: 600px; margin: 20px auto; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
-                    <div style="background: linear-gradient(135deg, #FF6B6B, #4ECDC4); padding: 20px; text-align: center; color: white;">
-                        <h2>CarePet Reminder</h2>
-                    </div>
-                    <div style="padding: 20px;">
-                        <p>Chào <b>${customer.name}</b>,</p>
-                        <p>Bạn có lịch hẹn vào ngày mai cho bé <b>${pet ? pet.name : 'thú cưng'}</b>:</p>
-                        <ul>
-                            <li><b>Dịch vụ:</b> ${appointment.service}</li>
-                            <li><b>Thời gian:</b> ${appointment.timeSlot}</li>
-                            <li><b>Ngày:</b> ${appointment.date.toLocaleDateString('vi-VN')}</li>
-                        </ul>
-                        <p>Hẹn gặp lại bạn và bé!</p>
-                    </div>
-                </div>
-            </body>
-            </html>`;
-
             await sendEmail({
                 email: customer.email,
-                subject: `Nhắc lịch hẹn cho ${pet ? pet.name : 'bé'} vào ngày mai!`,
-                html: emailHtml
+                subject: `Nhắc lịch hẹn cho ${pet ? pet.name : 'bé'} vào ngày mai! 🐾`,
+                html: getReminderTemplate(appointment)
             });
 
             appointment.isReminded = true;
