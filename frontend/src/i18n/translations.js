@@ -177,6 +177,19 @@ const translations = {
             logoutSuccess: 'Logged out successfully!',
         },
 
+        // Register Page
+        register: {
+            title: 'Create Account',
+            name: 'Full Name',
+            email: 'Email',
+            phone: 'Phone Number',
+            password: 'Password',
+            confirmPassword: 'Confirm Password',
+            submit: 'Create Account',
+            hasAccount: 'Already have an account?',
+            loginLink: 'Login',
+        },
+
         // Common
         common: {
             loading: 'Loading...',
@@ -381,6 +394,19 @@ const translations = {
             loginSuccess: 'Đăng nhập thành công!',
             registerSuccess: 'Đăng ký thành công!',
             logoutSuccess: 'Đăng xuất thành công!',
+        },
+
+        // Register Page
+        register: {
+            title: 'Tạo Tài Khoản',
+            name: 'Họ và tên',
+            email: 'Email',
+            phone: 'Số điện thoại',
+            password: 'Mật khẩu',
+            confirmPassword: 'Xác nhận mật khẩu',
+            submit: 'Tạo Tài Khoản',
+            hasAccount: 'Đã có tài khoản?',
+            loginLink: 'Đăng nhập',
         },
 
         // Common

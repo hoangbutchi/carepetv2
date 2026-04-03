@@ -123,14 +123,28 @@ const MyAppointmentsPage = () => {
         }
     };
 
+    const getServiceName = (service) => {
+        if (language === 'en') {
+            const en = { grooming: 'Grooming', vaccination: 'Vaccination', checkup: 'Checkup', surgery: 'Surgery', boarding: 'Boarding', training: 'Training' };
+            return en[service] || service;
+        }
+        const vi = { grooming: 'Tắm & Cắt tỉa lông', vaccination: 'Tiêm vắc-xin', checkup: 'Khám định kỳ', surgery: 'Phẫu thuật', boarding: 'Trông giữ thú cưng', training: 'Huấn luyện' };
+        return vi[service] || service;
+    };
+
+    const getServiceIcon = (service) => {
+        const icons = { grooming: '✂️', vaccination: '💉', checkup: '🩺', surgery: '🏥', boarding: '🏠', training: '🎾' };
+        return icons[service] || '📋';
+    };
+
     const filteredAppointments = appointments.filter(app => {
         const isProcessed = ['completed', 'rated', 'cancelled'].includes(app.status);
         const matchesTab = activeTab === 'processed' ? isProcessed : !isProcessed;
-        const matchesSearch = 
+        const matchesSearch =
             app.service.toLowerCase().includes(searchTerm.toLowerCase()) ||
             app.pet?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             app.staff?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-        
+
         return matchesTab && matchesSearch;
     });
 
@@ -152,8 +166,8 @@ const MyAppointmentsPage = () => {
                             {language === 'en' ? 'My Appointments' : 'Lịch hẹn của tôi'}
                         </h1>
                         <p className="text-theme-secondary max-w-2xl">
-                            {language === 'en' 
-                                ? 'Manage and track all your pet care service appointments.' 
+                            {language === 'en'
+                                ? 'Manage and track all your pet care service appointments.'
                                 : 'Quản lý và theo dõi tất cả các lịch hẹn dịch vụ cho thú cưng của bạn.'}
                         </p>
                     </div>
@@ -166,29 +180,26 @@ const MyAppointmentsPage = () => {
                         <div className="flex bg-theme-tertiary/50 p-1 rounded-xl w-fit">
                             <button
                                 onClick={() => setActiveTab('unprocessed')}
-                                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center space-x-2 ${
-                                    activeTab === 'unprocessed'
+                                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center space-x-2 ${activeTab === 'unprocessed'
                                         ? 'bg-primary-500 text-white shadow-glow-sm scale-[1.02]'
                                         : 'text-theme-secondary hover:text-theme'
-                                }`}
+                                    }`}
                             >
                                 <FiActivity className="w-4 h-4" />
                                 <span>{language === 'en' ? 'Unprocessed' : 'Chưa xử lý'}</span>
                                 {appointments.filter(a => !['completed', 'rated', 'cancelled'].includes(a.status)).length > 0 && (
-                                    <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] ${
-                                        activeTab === 'unprocessed' ? 'bg-white text-primary-500' : 'bg-primary-500/20 text-primary-500'
-                                    }`}>
+                                    <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] ${activeTab === 'unprocessed' ? 'bg-white text-primary-500' : 'bg-primary-500/20 text-primary-500'
+                                        }`}>
                                         {appointments.filter(a => !['completed', 'rated', 'cancelled'].includes(a.status)).length}
                                     </span>
                                 )}
                             </button>
                             <button
                                 onClick={() => setActiveTab('processed')}
-                                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center space-x-2 ${
-                                    activeTab === 'processed'
+                                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center space-x-2 ${activeTab === 'processed'
                                         ? 'bg-primary-500 text-white shadow-glow-sm scale-[1.02]'
                                         : 'text-theme-secondary hover:text-theme'
-                                }`}
+                                    }`}
                             >
                                 <FiCheckCircle className="w-4 h-4" />
                                 <span>{language === 'en' ? 'Processed' : 'Đã xử lý'}</span>
@@ -226,13 +237,10 @@ const MyAppointmentsPage = () => {
                                             <td className="px-8 py-6">
                                                 <div className="flex items-center space-x-4">
                                                     <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center text-2xl shadow-glow-sm">
-                                                        {app.service === 'grooming' ? '✂️' : 
-                                                         app.service === 'vaccination' ? '💉' : 
-                                                         app.service === 'checkup' ? '🩺' : 
-                                                         app.service === 'surgery' ? '🏥' : '📋'}
+                                                        {getServiceIcon(app.service)}
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-theme capitalize">{app.service}</p>
+                                                        <p className="font-bold text-theme">{getServiceName(app.service)}</p>
                                                         <p className="text-xs text-primary-400">🐾 {app.pet?.name || '---'}</p>
                                                     </div>
                                                 </div>
@@ -268,7 +276,7 @@ const MyAppointmentsPage = () => {
                                             </td>
                                             <td className="px-8 py-6">
                                                 <div className="flex items-center justify-center space-x-2">
-                                                    <button 
+                                                    <button
                                                         onClick={() => setSelectedAppointment(app)}
                                                         className="p-2 rounded-lg bg-white/5 text-theme-secondary hover:text-primary-500 hover:bg-primary-500/10 transition-all shadow-sm"
                                                         title={language === 'en' ? 'View details' : 'Xem chi tiết'}
@@ -276,7 +284,7 @@ const MyAppointmentsPage = () => {
                                                         <FiInfo className="w-5 h-5" />
                                                     </button>
                                                     {['pending', 'confirmed'].includes(app.status) && (
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleCancelAppointment(app._id)}
                                                             className="p-2 rounded-lg bg-white/5 text-theme-secondary hover:text-red-500 hover:bg-red-500/10 transition-all shadow-sm"
                                                             title={language === 'en' ? 'Cancel' : 'Hủy lịch'}
@@ -285,7 +293,7 @@ const MyAppointmentsPage = () => {
                                                         </button>
                                                     )}
                                                     {app.status === 'completed' && !app.rating && (
-                                                        <button 
+                                                        <button
                                                             onClick={() => {
                                                                 setSelectedAppointment(app);
                                                                 setShowRatingModal(true);
@@ -304,7 +312,7 @@ const MyAppointmentsPage = () => {
                                 ) : (
                                     <tr>
                                         <td colSpan="5" className="px-8 py-10">
-                                            <EmptyState 
+                                            <EmptyState
                                                 title={language === 'en' ? 'No appointments found' : 'Không tìm thấy lịch hẹn nào'}
                                                 description={language === 'en' ? 'You haven\'t scheduled any service yet.' : 'Bác chưa có lịch hẹn dịch vụ nào.'}
                                             />
@@ -323,13 +331,10 @@ const MyAppointmentsPage = () => {
                                     <div className="flex justify-between items-start">
                                         <div className="flex items-center space-x-4">
                                             <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center text-2xl">
-                                                {app.service === 'grooming' ? '✂️' : 
-                                                 app.service === 'vaccination' ? '💉' : 
-                                                 app.service === 'checkup' ? '🩺' : 
-                                                 app.service === 'surgery' ? '🏥' : '📋'}
+                                                {getServiceIcon(app.service)}
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-theme capitalize">{app.service}</h3>
+                                                <h3 className="font-bold text-theme">{getServiceName(app.service)}</h3>
                                                 <p className="text-xs text-primary-400">🐾 {app.pet?.name}</p>
                                             </div>
                                         </div>
@@ -358,14 +363,14 @@ const MyAppointmentsPage = () => {
                                             <span>{app.staff?.name}</span>
                                         </div>
                                         <div className="flex space-x-2">
-                                            <button 
+                                            <button
                                                 onClick={() => setSelectedAppointment(app)}
                                                 className="px-4 py-2 rounded-lg bg-primary-500/10 text-primary-500 text-xs font-bold"
                                             >
                                                 {language === 'en' ? 'Details' : 'Chi tiết'}
                                             </button>
                                             {['pending', 'confirmed'].includes(app.status) && (
-                                                <button 
+                                                <button
                                                     onClick={() => handleCancelAppointment(app._id)}
                                                     className="px-4 py-2 rounded-lg bg-red-500/10 text-red-500 text-xs font-bold"
                                                 >
@@ -373,7 +378,7 @@ const MyAppointmentsPage = () => {
                                                 </button>
                                             )}
                                             {app.status === 'completed' && !app.rating && (
-                                                <button 
+                                                <button
                                                     onClick={() => {
                                                         setSelectedAppointment(app);
                                                         setShowRatingModal(true);
@@ -390,7 +395,7 @@ const MyAppointmentsPage = () => {
                             ))
                         ) : (
                             <div className="p-12 text-center opacity-40">
-                                <EmptyState 
+                                <EmptyState
                                     title={language === 'en' ? 'No appointments' : 'Không có lịch hẹn'}
                                 />
                             </div>
@@ -410,14 +415,11 @@ const MyAppointmentsPage = () => {
                     <div className="space-y-6">
                         <div className="flex items-center space-x-6 p-4 rounded-2xl bg-white/5 border border-white/10">
                             <div className="w-20 h-20 rounded-2xl bg-gradient-primary flex items-center justify-center text-4xl shadow-glow-sm">
-                                {selectedAppointment.service === 'grooming' ? '✂️' : 
-                                 selectedAppointment.service === 'vaccination' ? '💉' : 
-                                 selectedAppointment.service === 'checkup' ? '🩺' : 
-                                 selectedAppointment.service === 'surgery' ? '🏥' : '📋'}
+                                {getServiceIcon(selectedAppointment.service)}
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-white mb-1 capitalize">
-                                    {selectedAppointment.service}
+                                <h3 className="text-2xl font-bold text-white mb-1">
+                                    {getServiceName(selectedAppointment.service)}
                                 </h3>
                                 {(() => {
                                     const info = getStatusInfo(selectedAppointment.status);
@@ -442,8 +444,8 @@ const MyAppointmentsPage = () => {
                                     {selectedAppointment.pet?.name} ({selectedAppointment.pet?.species})
                                 </p>
                                 <p className="text-xs text-primary-400">
-                                    {selectedAppointment.pet?.age} {language === 'en' ? 'years' : 'tuổi'} • 
-                                    {selectedAppointment.pet?.weight}kg • 
+                                    {selectedAppointment.pet?.age} {language === 'en' ? 'years' : 'tuổi'} •
+                                    {selectedAppointment.pet?.weight}kg •
                                     {selectedAppointment.pet?.gender === 'male' ? (language === 'en' ? 'Male' : 'Đực') : (language === 'en' ? 'Female' : 'Cái')}
                                 </p>
                             </div>
@@ -493,7 +495,7 @@ const MyAppointmentsPage = () => {
 
                         <div className="flex justify-end pt-4 border-t border-white/10">
                             {['pending', 'confirmed'].includes(selectedAppointment.status) && (
-                                <button 
+                                <button
                                     onClick={() => handleCancelAppointment(selectedAppointment._id)}
                                     className="btn-outline border-red-500/30 text-red-500 hover:bg-red-500/10 mr-auto"
                                 >
@@ -501,7 +503,7 @@ const MyAppointmentsPage = () => {
                                 </button>
                             )}
                             {selectedAppointment.status === 'completed' && !selectedAppointment.rating && (
-                                <button 
+                                <button
                                     onClick={() => {
                                         setShowRatingModal(true);
                                         setRatingForm({ rating: 5, feedback: '' });

@@ -44,14 +44,20 @@ export const AuthProvider = ({ children }) => {
     };
 
     const register = async (userData) => {
-        const response = await api.post('/auth/register', userData);
-        const { token: newToken, user: newUser } = response.data;
+        try {
+            const response = await api.post('/auth/register', userData);
+            const { token: newToken, user: newUser } = response.data;
 
-        sessionStorage.setItem('token', newToken);
-        setToken(newToken);
-        setUser(newUser);
+            sessionStorage.setItem('token', newToken);
+            setToken(newToken);
+            setUser(newUser);
 
-        return newUser;
+            return { success: true, user: newUser };
+        } catch (error) {
+            console.error('Register error:', error);
+            const message = error.response?.data?.message || 'Đăng ký thất bại';
+            return { success: false, message };
+        }
     };
 
     const logout = () => {

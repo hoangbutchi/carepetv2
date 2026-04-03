@@ -4,11 +4,9 @@ import { FiPlus, FiEdit2, FiTrash2, FiCalendar, FiActivity, FiBell, FiCamera, Fi
 import { format } from 'date-fns';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { petAPI, appointmentAPI, healthAPI } from '../services/api';
+import { petAPI, appointmentAPI } from '../services/api';
 import { Modal, Badge, EmptyState, Spinner, FormInput, FormSelect, FormTextarea } from '../components/common/UI';
 import toast from 'react-hot-toast';
-import WeightChart from '../components/health/WeightChart';
-import VaccinationTable from '../components/health/VaccinationTable';
 
 const speciesOptions = [
     { value: 'dog', label: '🐕 Dog' },
@@ -51,13 +49,10 @@ const MyPetsPage = () => {
     const [selectedPet, setSelectedPet] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [showMedicalModal, setShowMedicalModal] = useState(false);
     const [activeTab, setActiveTab] = useState('info');
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [showRatingModal, setShowRatingModal] = useState(false);
     const [ratingForm, setRatingForm] = useState({ rating: 5, feedback: '' });
-    const [healthHistory, setHealthHistory] = useState([]);
-    const [exportingPDF, setExportingPDF] = useState(false);
 
     const [petForm, setPetForm] = useState({
         name: '',
@@ -81,14 +76,7 @@ const MyPetsPage = () => {
         notes: ''
     });
 
-    const [medicalForm, setMedicalForm] = useState({
-        type: 'vaccination',
-        description: '',
-        veterinarian: '',
-        nextDueDate: '',
-        notes: '',
-        weight: '',
-    });
+
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -102,7 +90,6 @@ const MyPetsPage = () => {
     useEffect(() => {
         if (selectedPet) {
             fetchPetAppointments(selectedPet._id);
-            fetchHealthHistory(selectedPet._id);
         }
     }, [selectedPet]);
 
@@ -138,34 +125,7 @@ const MyPetsPage = () => {
         }
     };
 
-    const fetchHealthHistory = async (petId) => {
-        try {
-            const response = await healthAPI.getHistory(petId);
-            setHealthHistory(response.data.data || []);
-        } catch (error) {
-            console.error('Error fetching health history:', error);
-        }
-    };
 
-    const handleExportPDF = async () => {
-        if (!selectedPet) return;
-        setExportingPDF(true);
-        try {
-            const response = await healthAPI.exportPDF(selectedPet._id);
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `HealthReport_${selectedPet.name}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            toast.success(language === 'en' ? 'PDF exported successfully!' : 'Đã xuất file PDF!');
-        } catch (error) {
-            toast.error(language === 'en' ? 'Failed to export PDF' : 'Lỗi khi xuất PDF');
-        } finally {
-            setExportingPDF(false);
-        }
-    };
 
     const handleAddPet = async (e) => {
         e.preventDefault();
@@ -212,46 +172,7 @@ const MyPetsPage = () => {
         }
     };
 
-    const handleAddMedical = async (e) => {
-        e.preventDefault();
-        if (!selectedPet) return;
 
-        // Basic validation
-        if (!medicalForm.weight && !selectedPet.weight) {
-            toast.error(language === 'en' ? 'Weight is required' : 'Vui lòng nhập cân nặng');
-            return;
-        }
-
-        if (medicalForm.type === 'vaccination' && !medicalForm.description) {
-            toast.error(language === 'en' ? 'Vaccine name is required' : 'Vui lòng nhập tên vaccine');
-            return;
-        }
-
-        try {
-            // Save to new health collection
-            await healthAPI.createRecord({
-                petId: selectedPet._id,
-                weight: medicalForm.weight || selectedPet.weight,
-                checkupDate: new Date().toISOString(),
-                notes: medicalForm.notes,
-                vetName: medicalForm.veterinarian,
-                vaccines: medicalForm.type === 'vaccination' ? [{
-                    name: medicalForm.description,
-                    dateAdministered: new Date().toISOString(),
-                    nextDueDate: medicalForm.nextDueDate || null
-                }] : []
-            });
-            
-            toast.success(language === 'en' ? 'Health record added!' : 'Đã thêm hồ sơ sức khỏe!');
-            setShowMedicalModal(false);
-            setMedicalForm({ type: 'vaccination', description: '', veterinarian: '', nextDueDate: '', notes: '', weight: '' });
-            fetchPets();
-            fetchHealthHistory(selectedPet._id);
-            fetchReminders();
-        } catch (error) {
-            toast.error(error.response?.data?.message || t('common.error'));
-        }
-    };
 
     const handleRateAppointment = async (e) => {
         e.preventDefault();
@@ -447,13 +368,7 @@ const MyPetsPage = () => {
                                         >
                                             {language === 'en' ? 'Info' : 'Thông tin'}
                                         </button>
-                                        <button
-                                            onClick={() => setActiveTab('health')}
-                                            className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all ${activeTab === 'health' ? 'bg-gradient-primary text-white shadow-glow-sm' : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                                }`}
-                                        >
-                                            {language === 'en' ? 'Health' : 'Sức khỏe'}
-                                        </button>
+
                                         <button
                                             onClick={() => setActiveTab('services')}
                                             className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all ${activeTab === 'services' ? 'bg-gradient-primary text-white shadow-glow-sm' : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -492,109 +407,7 @@ const MyPetsPage = () => {
                                         </div>
                                     )}
 
-                                    {activeTab === 'health' && (
-                                        <div className="space-y-8">
-                                            {/* Health Header with Export */}
-                                            <div className="flex flex-wrap justify-between items-center gap-4">
-                                                <h3 className="text-xl font-display font-bold text-white flex items-center">
-                                                    <FiActivity className="mr-2 text-primary-400" />
-                                                    {language === 'en' ? 'Health Dashboard' : 'Quản lý sức khỏe'}
-                                                </h3>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={handleExportPDF}
-                                                        disabled={exportingPDF}
-                                                        className="btn-glass text-sm flex items-center"
-                                                    >
-                                                        {exportingPDF ? <Spinner size="xs" /> : <FiDownload className="mr-1.5" />}
-                                                        {language === 'en' ? 'Export Report' : 'Xuất phiếu khám'}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setShowMedicalModal(true)}
-                                                        className="btn-primary text-sm"
-                                                    >
-                                                        <FiPlus className="mr-1.5" /> {t('pets.addRecord')}
-                                                    </button>
-                                                </div>
-                                            </div>
 
-                                            {/* Weight Chart Section */}
-                                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                                                <WeightChart data={healthHistory} />
-                                            </div>
-
-                                            {/* Vaccination Section */}
-                                            <div>
-                                                <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
-                                                    <span className="w-8 h-8 rounded-lg bg-primary-500/20 flex items-center justify-center mr-3">
-                                                        💉
-                                                    </span>
-                                                    {language === 'en' ? 'Vaccination History' : 'Lịch sử tiêm chủng'}
-                                                </h4>
-                                                <VaccinationTable 
-                                                    vaccines={healthHistory.flatMap(record => 
-                                                        record.vaccines.map(v => ({...v, vetName: record.vetName}))
-                                                    )} 
-                                                />
-                                            </div>
-
-                                            {/* Timeline Section */}
-                                            <div>
-                                                <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
-                                                    <span className="w-8 h-8 rounded-lg bg-primary-500/20 flex items-center justify-center mr-3">
-                                                        📋
-                                                    </span>
-                                                    {t('pets.healthTimeline')}
-                                                </h4>
-                                                {healthHistory.length > 0 ? (
-                                                    <div className="relative">
-                                                        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-white/10" />
-                                                        <div className="space-y-4">
-                                                            {[...healthHistory].reverse().map((record, idx) => (
-                                                                <div key={idx} className="relative pl-10">
-                                                                    <div className="absolute left-2 w-4 h-4 bg-primary-500 rounded-full border-4 border-dark-200 shadow" />
-                                                                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                                                                        <div className="flex flex-wrap justify-between items-center gap-2 mb-2">
-                                                                            <div className="flex items-center gap-2">
-                                                                                <Badge variant="primary">Record</Badge>
-                                                                                <span className="text-sm text-gray-500">
-                                                                                    {format(new Date(record.checkupDate), 'dd/MM/yyyy')}
-                                                                                </span>
-                                                                            </div>
-                                                                            <span className="text-sm font-medium text-primary-400">
-                                                                                {record.weight} kg
-                                                                            </span>
-                                                                        </div>
-                                                                        <p className="font-medium text-white line-clamp-2">{record.notes || 'Routine checkup'}</p>
-                                                                        {record.vetName && (
-                                                                            <p className="text-sm text-gray-400 mt-1">
-                                                                                {language === 'en' ? 'Vet:' : 'Bác sĩ:'} {record.vetName}
-                                                                            </p>
-                                                                        )}
-                                                                        {record.vaccines?.length > 0 && (
-                                                                            <div className="mt-3 flex flex-wrap gap-2">
-                                                                                {record.vaccines.map((v, i) => (
-                                                                                    <span key={i} className="text-[10px] bg-white/10 text-gray-300 px-2 py-0.5 rounded-full border border-white/5">
-                                                                                        💉 {v.name}
-                                                                                    </span>
-                                                                                ))}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <EmptyState
-                                                        icon={<span className="text-4xl">📋</span>}
-                                                        title={language === 'en' ? 'No health records yet' : 'Chưa có hồ sơ sức khỏe'}
-                                                        description={language === 'en' ? 'Exported PDF and charts will appear once you add records' : 'Phiếu khám và biểu đồ sẽ hiện sau khi bạn thêm hồ sơ'}
-                                                    />
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
 
                                     {activeTab === 'services' && (
                                         <div>
@@ -611,8 +424,8 @@ const MyPetsPage = () => {
                                             {petAppointments.length > 0 ? (
                                                 <div className="space-y-4">
                                                     {petAppointments.map((apt) => (
-                                                        <div 
-                                                            key={apt._id} 
+                                                        <div
+                                                            key={apt._id}
                                                             onClick={() => setSelectedAppointment(apt)}
                                                             className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all cursor-pointer group"
                                                         >
@@ -621,12 +434,12 @@ const MyPetsPage = () => {
                                                                     <p className="font-semibold text-white capitalize flex items-center">
                                                                         {apt.service}
                                                                         {apt.status === 'completed' && (
-                                                                            <span className="ml-2 text-xs text-primary-400 bg-primary-400/10 px-2 py-0.5 rounded cursor-pointer hover:bg-primary-400/20" 
-                                                                                onClick={(e) => { 
-                                                                                    e.stopPropagation(); 
+                                                                            <span className="ml-2 text-xs text-primary-400 bg-primary-400/10 px-2 py-0.5 rounded cursor-pointer hover:bg-primary-400/20"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
                                                                                     setSelectedAppointment(apt);
                                                                                     setRatingForm({ rating: apt.rating || 5, feedback: apt.feedback || '' });
-                                                                                    setShowRatingModal(true); 
+                                                                                    setShowRatingModal(true);
                                                                                 }}>
                                                                                 {apt.rating ? '⭐ ' + apt.rating : '+ ' + (language === 'en' ? 'Rate' : 'Đánh giá')}
                                                                             </span>
@@ -863,70 +676,7 @@ const MyPetsPage = () => {
                 </form>
             </Modal>
 
-            {/* Add Medical Record Modal */}
-            <Modal
-                isOpen={showMedicalModal}
-                onClose={() => setShowMedicalModal(false)}
-                title={t('pets.addRecord')}
-                size="md"
-            >
-                <form onSubmit={handleAddMedical} className="space-y-4">
-                    <FormSelect
-                        label={language === 'en' ? 'Record Type' : 'Loại hồ sơ'}
-                        required
-                        value={medicalForm.type}
-                        onChange={(e) => setMedicalForm({ ...medicalForm, type: e.target.value })}
-                        options={medicalTypes}
-                    />
 
-                    <FormInput
-                        label={language === 'en' ? 'Description' : 'Mô tả'}
-                        required
-                        value={medicalForm.description}
-                        onChange={(e) => setMedicalForm({ ...medicalForm, description: e.target.value })}
-                        placeholder={language === 'en' ? 'Rabies vaccination' : 'Tiêm phòng dại'}
-                    />
-
-                    <FormInput
-                        label={language === 'en' ? 'Veterinarian' : 'Bác sĩ thú y'}
-                        value={medicalForm.veterinarian}
-                        onChange={(e) => setMedicalForm({ ...medicalForm, veterinarian: e.target.value })}
-                        placeholder="Dr. Nguyen"
-                    />
-
-                    <FormInput
-                        label={language === 'en' ? 'Next Due Date' : 'Ngày hẹn tiếp theo'}
-                        type="date"
-                        value={medicalForm.nextDueDate}
-                        onChange={(e) => setMedicalForm({ ...medicalForm, nextDueDate: e.target.value })}
-                    />
-
-                    <FormInput
-                        label={`${t('pets.weight')} (${t('pets.kg')})`}
-                        type="number"
-                        step="0.1"
-                        value={medicalForm.weight}
-                        onChange={(e) => setMedicalForm({ ...medicalForm, weight: e.target.value })}
-                        placeholder={selectedPet?.weight || "0"}
-                    />
-
-                    <FormTextarea
-                        label={language === 'en' ? 'Notes' : 'Ghi chú'}
-                        value={medicalForm.notes}
-                        onChange={(e) => setMedicalForm({ ...medicalForm, notes: e.target.value })}
-                        placeholder={language === 'en' ? 'Any additional notes...' : 'Ghi chú thêm...'}
-                    />
-
-                    <div className="flex space-x-3 pt-4">
-                        <button type="button" onClick={() => setShowMedicalModal(false)} className="btn-outline flex-1">
-                            {t('common.cancel')}
-                        </button>
-                        <button type="submit" className="btn-primary flex-1">
-                            {t('common.save')}
-                        </button>
-                    </div>
-                </form>
-            </Modal>
             {/* Appointment Detail Modal */}
             <Modal
                 isOpen={!!selectedAppointment && !showRatingModal}
@@ -938,10 +688,10 @@ const MyPetsPage = () => {
                     <div className="space-y-6">
                         <div className="flex items-center space-x-6 p-4 rounded-2xl bg-white/5 border border-white/10">
                             <div className="w-20 h-20 rounded-2xl bg-gradient-primary flex items-center justify-center text-4xl shadow-glow-sm">
-                                {selectedAppointment.service === 'grooming' ? '✂️' : 
-                                 selectedAppointment.service === 'vaccination' ? '💉' : 
-                                 selectedAppointment.service === 'checkup' ? '🩺' : 
-                                 selectedAppointment.service === 'surgery' ? '🏥' : '📋'}
+                                {selectedAppointment.service === 'grooming' ? '✂️' :
+                                    selectedAppointment.service === 'vaccination' ? '💉' :
+                                        selectedAppointment.service === 'checkup' ? '🩺' :
+                                            selectedAppointment.service === 'surgery' ? '🏥' : '📋'}
                             </div>
                             <div>
                                 <h3 className="text-2xl font-bold text-white mb-1 capitalize">
@@ -962,8 +712,8 @@ const MyPetsPage = () => {
                                     {selectedAppointment.pet?.name || selectedPet?.name} ({selectedAppointment.pet?.species || selectedPet?.species})
                                 </p>
                                 <p className="text-xs text-primary-400">
-                                    {selectedAppointment.pet?.age || selectedPet?.age} {language === 'en' ? 'years' : 'tuổi'} • 
-                                    {selectedAppointment.pet?.weight || selectedPet?.weight}kg • 
+                                    {selectedAppointment.pet?.age || selectedPet?.age} {language === 'en' ? 'years' : 'tuổi'} •
+                                    {selectedAppointment.pet?.weight || selectedPet?.weight}kg •
                                     {(selectedAppointment.pet?.gender || selectedPet?.gender) === 'male' ? (language === 'en' ? 'Male' : 'Đực') : (language === 'en' ? 'Female' : 'Cái')}
                                 </p>
                             </div>
@@ -1021,7 +771,7 @@ const MyPetsPage = () => {
 
                         <div className="flex justify-end pt-4 border-t border-white/10">
                             {selectedAppointment.status === 'completed' && !selectedAppointment.rating && (
-                                <button 
+                                <button
                                     onClick={() => setShowRatingModal(true)}
                                     className="btn-primary mr-3"
                                 >

@@ -300,3 +300,67 @@ exports.deleteUser = async (req, res) => {
         });
     }
 };
+
+// @desc    Create a doctor/staff account (Admin only)
+// @route   POST /api/auth/doctors
+// @access  Private/Admin
+exports.createDoctor = async (req, res) => {
+    try {
+        const { name, email, password, phone, specialization, experience, bio, role } = req.body;
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: 'Email đã được sử dụng' });
+        }
+
+        const doctor = await User.create({
+            name,
+            email,
+            password: password || 'Doctor@123',
+            phone,
+            specialization,
+            experience,
+            bio,
+            role: role || 'staff',
+        });
+
+        res.status(201).json({
+            success: true,
+            doctor: {
+                _id: doctor._id,
+                name: doctor.name,
+                email: doctor.email,
+                phone: doctor.phone,
+                role: doctor.role,
+                specialization: doctor.specialization,
+                experience: doctor.experience,
+                bio: doctor.bio,
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Update a doctor/staff account (Admin only)
+// @route   PUT /api/auth/doctors/:id
+// @access  Private/Admin
+exports.updateDoctor = async (req, res) => {
+    try {
+        const { name, email, phone, specialization, experience, bio, role } = req.body;
+
+        const doctor = await User.findByIdAndUpdate(
+            req.params.id,
+            { name, email, phone, specialization, experience, bio, role },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!doctor) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy bác sĩ' });
+        }
+
+        res.status(200).json({ success: true, doctor });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

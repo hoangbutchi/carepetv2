@@ -121,7 +121,7 @@ const BookingPage = () => {
                 price: selectedService?.price || 0,
             });
             toast.success(t('booking.bookingSuccess'));
-            navigate('/my-pets');
+            navigate('/my-appointments');
         } catch (error) {
             toast.error(error.response?.data?.message || t('common.error'));
         } finally {
@@ -135,10 +135,10 @@ const BookingPage = () => {
                 <div key={s} className="flex items-center">
                     <div
                         className={`w-12 h-12 rounded-2xl flex items-center justify-center font-semibold transition-all duration-300 ${step > s
-                                ? 'bg-green-500 text-white shadow-glow-sm'
-                                : step === s
-                                    ? 'bg-gradient-primary text-white shadow-glow-sm scale-110'
-                                    : 'bg-white/10 text-gray-500'
+                            ? 'bg-green-500 text-white shadow-glow-sm'
+                            : step === s
+                                ? 'bg-gradient-primary text-white shadow-glow-sm scale-110'
+                                : 'bg-white/10 text-gray-500'
                             }`}
                     >
                         {step > s ? <FiCheck className="w-5 h-5" /> : s}
@@ -163,8 +163,8 @@ const BookingPage = () => {
                         key={service.id}
                         onClick={() => setBooking({ ...booking, service: service.id })}
                         className={`relative p-6 rounded-2xl text-left transition-all duration-300 group ${booking.service === service.id
-                                ? 'card-glow ring-2 ring-primary-500'
-                                : 'card-glass hover:bg-white/10'
+                            ? 'card-glow ring-2 ring-primary-500'
+                            : 'card-glass hover:bg-white/10'
                             }`}
                         style={{ animationDelay: `${index * 50}ms` }}
                     >
@@ -245,10 +245,10 @@ const BookingPage = () => {
                                 onClick={() => isAvailable && setBooking({ ...booking, timeSlot: slot })}
                                 disabled={!isAvailable}
                                 className={`py-3 px-4 rounded-xl font-medium transition-all duration-300 ${booking.timeSlot === slot
-                                        ? 'bg-gradient-primary text-white shadow-glow-sm'
-                                        : isAvailable
-                                            ? 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 hover:border-primary-500/50'
-                                            : 'bg-white/5 text-gray-600 cursor-not-allowed opacity-50'
+                                    ? 'bg-gradient-primary text-white shadow-glow-sm'
+                                    : isAvailable
+                                        ? 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 hover:border-primary-500/50'
+                                        : 'bg-white/5 text-gray-600 cursor-not-allowed opacity-50'
                                     }`}
                             >
                                 {slot}
@@ -280,8 +280,8 @@ const BookingPage = () => {
                             key={pet._id}
                             onClick={() => setBooking({ ...booking, pet: pet._id })}
                             className={`relative p-6 rounded-2xl text-left transition-all duration-300 ${booking.pet === pet._id
-                                    ? 'card-glow ring-2 ring-primary-500'
-                                    : 'card-glass hover:bg-white/10'
+                                ? 'card-glow ring-2 ring-primary-500'
+                                : 'card-glass hover:bg-white/10'
                                 }`}
                             style={{ animationDelay: `${index * 50}ms` }}
                         >

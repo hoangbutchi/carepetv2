@@ -34,6 +34,11 @@ const AdminDashboard = () => {
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [users, setUsers] = useState([]);
+    // Doctor CRUD
+    const [showDoctorModal, setShowDoctorModal] = useState(false);
+    const [editingDoctor, setEditingDoctor] = useState(null); // null = adding new
+    const [doctorForm, setDoctorForm] = useState({ name: '', email: '', password: '', phone: '', specialization: '', experience: '', bio: '', role: 'staff', avatar: '' });
+    const [savingDoctor, setSavingDoctor] = useState(false);
 
     useEffect(() => {
         if (!isStaff) {
@@ -234,6 +239,61 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleSaveDoctor = async (e) => {
+        e.preventDefault();
+        setSavingDoctor(true);
+        try {
+            if (editingDoctor) {
+                await authAPI.updateDoctor(editingDoctor._id, doctorForm);
+                toast.success(language === 'en' ? 'Doctor updated!' : 'Đã cập nhật bác sĩ!');
+            } else {
+                await authAPI.createDoctor(doctorForm);
+                toast.success(language === 'en' ? 'Doctor created!' : 'Đã thêm bác sĩ mới!');
+            }
+            setShowDoctorModal(false);
+            fetchData();
+        } catch (err) {
+            toast.error(err.response?.data?.message || t('common.error'));
+        } finally {
+            setSavingDoctor(false);
+        }
+    };
+
+    const handleDeleteDoctor = async (doctorId) => {
+        if (!window.confirm(language === 'en' ? 'Delete this doctor account?' : 'Xóa tài khoản bác sĩ này?')) return;
+        try {
+            await authAPI.deleteUser(doctorId);
+            toast.success(language === 'en' ? 'Deleted!' : 'Đã xóa!');
+            fetchData();
+        } catch (err) {
+            toast.error(t('common.error'));
+        }
+    };
+
+    const openAddDoctor = () => {
+        setEditingDoctor(null);
+        setDoctorForm({ name: '', email: '', password: '', phone: '', specialization: '', experience: '', bio: '', role: 'staff', avatar: '' });
+        setShowDoctorModal(true);
+    };
+
+    const openEditDoctor = (doctor) => {
+        setEditingDoctor(doctor);
+        setDoctorForm({ name: doctor.name || '', email: doctor.email || '', password: '', phone: doctor.phone || '', specialization: doctor.specialization || '', experience: doctor.experience || '', bio: doctor.bio || '', role: doctor.role || 'staff', avatar: doctor.avatar || '' });
+        setShowDoctorModal(true);
+    };
+
+    const handleDoctorAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 3 * 1024 * 1024) {
+            toast.error(language === 'en' ? 'Image too large (max 3MB)' : 'Ảnh quá lớn (tối đa 3MB)');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (ev) => setDoctorForm(p => ({ ...p, avatar: ev.target.result }));
+        reader.readAsDataURL(file);
+    };
+
     const formatPrice = (price) => new Intl.NumberFormat('vi-VN').format(price) + '₫';
 
     const getStatusBadge = (status) => {
@@ -386,8 +446,8 @@ const AdminDashboard = () => {
                                 </div>
                                 <div className="divide-y divide-theme">
                                     {appointments.filter(a => a.status === 'pending').slice(0, 5).map((apt) => (
-                                        <div 
-                                            key={apt._id} 
+                                        <div
+                                            key={apt._id}
                                             onClick={() => setSelectedAppointment(apt)}
                                             className={`p-4 flex items-center justify-between cursor-pointer transition-all duration-300 ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-100'} hover:shadow-lg hover:scale-[1.01] active:scale-100 group`}
                                         >
@@ -433,8 +493,8 @@ const AdminDashboard = () => {
                                 </div>
                                 <div className="divide-y divide-theme">
                                     {recentOrders.slice(0, 3).map((order) => (
-                                        <div 
-                                            key={order._id} 
+                                        <div
+                                            key={order._id}
                                             onClick={() => setSelectedOrder(order)}
                                             className={`p-4 flex items-center justify-between cursor-pointer transition-all duration-300 ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-50'} hover:shadow-lg hover:scale-[1.01] active:scale-100 group`}
                                         >
@@ -581,8 +641,8 @@ const AdminDashboard = () => {
                                         filteredApts = appointments.filter(a => ['completed', 'rated'].includes(a.status));
                                     }
                                     return filteredApts.length > 0 ? filteredApts.map((apt) => (
-                                        <div 
-                                            key={apt._id} 
+                                        <div
+                                            key={apt._id}
                                             onClick={() => setSelectedAppointment(apt)}
                                             className={`p-4 flex items-center justify-between cursor-pointer transition-all duration-300 ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-100'} hover:shadow-lg hover:scale-[1.01] active:scale-100 group`}
                                         >
@@ -678,8 +738,8 @@ const AdminDashboard = () => {
                                     </thead>
                                     <tbody className="divide-y divide-theme">
                                         {allOrders.map((order) => (
-                                            <tr 
-                                                key={order._id} 
+                                            <tr
+                                                key={order._id}
                                                 onClick={() => setSelectedOrder(order)}
                                                 className={`cursor-pointer transition-all duration-300 ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-50'}`}
                                             >
@@ -695,10 +755,13 @@ const AdminDashboard = () => {
                                                         {getStatusBadge(order.paymentStatus)}
                                                     </div>
                                                 </td>
-                                                <td className="p-4">
+                                                <td className="p-4" onClick={(e) => e.stopPropagation()}>
                                                     <select
                                                         value={order.orderStatus}
-                                                        onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                                                        onChange={(e) => {
+                                                            e.stopPropagation();
+                                                            updateOrderStatus(order._id, e.target.value);
+                                                        }}
                                                         className="input py-1 px-2 text-sm"
                                                     >
                                                         <option value="pending">{language === 'en' ? 'Pending' : 'Chờ xử lý'}</option>
@@ -727,8 +790,9 @@ const AdminDashboard = () => {
                             <div className="p-6 border-b border-theme flex justify-between items-center">
                                 <h2 className="text-xl font-semibold text-theme">
                                     {language === 'en' ? 'Doctor Management' : 'Quản lý Bác sĩ'}
+                                    <span className="ml-2 text-sm text-theme-secondary">({doctors.length})</span>
                                 </h2>
-                                <button className="btn-primary">
+                                <button className="btn-primary" onClick={openAddDoctor}>
                                     + {language === 'en' ? 'Add Doctor' : 'Thêm Bác sĩ'}
                                 </button>
                             </div>
@@ -738,37 +802,152 @@ const AdminDashboard = () => {
                                         <EmptyState
                                             icon={<span className="text-4xl">👨‍⚕️</span>}
                                             title={language === 'en' ? 'No doctors found' : 'Chưa có bác sĩ'}
-                                            description={language === 'en' ? 'Add doctors to start managing staff' : 'Thêm bác sĩ để quản lý nhân viên'}
+                                            description={language === 'en' ? 'Click "Add Doctor" to create the first account' : 'Nhấn "Thêm Bác sĩ" để tạo tài khoản đầu tiên'}
                                         />
                                     </div>
                                 ) : doctors.map((doctor) => (
-                                    <div key={doctor._id} className={`p-6 rounded-xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-gray-50 border border-gray-200'}`}>
+                                    <div key={doctor._id} className={`p-6 rounded-xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-gray-50 border border-gray-200'} flex flex-col`}>
                                         <div className="flex items-center space-x-4 mb-4">
-                                            <div className="w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center">
-                                                <span className="text-2xl text-white font-bold">{doctor.name?.charAt(0)}</span>
+                                            <div className="w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
+                                                {doctor.avatar
+                                                    ? <img src={doctor.avatar} alt={doctor.name} className="w-full h-full rounded-full object-cover" />
+                                                    : <span className="text-2xl text-white font-bold">{doctor.name?.charAt(0)}</span>}
                                             </div>
-                                            <div>
-                                                <h3 className="font-semibold text-theme">{doctor.name}</h3>
-                                                <p className="text-sm text-theme-secondary">{doctor.specialization}</p>
+                                            <div className="min-w-0">
+                                                <h3 className="font-semibold text-theme truncate">{doctor.name}</h3>
+                                                <p className="text-sm text-theme-secondary truncate">{doctor.specialization || (language === 'en' ? 'No specialization' : 'Chưa có chuyên khoa')}</p>
+                                                <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${doctor.role === 'admin' ? 'bg-red-500/20 text-red-400' :
+                                                    doctor.role === 'staff' ? 'bg-blue-500/20 text-blue-400' :
+                                                        'bg-gray-500/20 text-gray-400'
+                                                    }`}>{doctor.role?.toUpperCase()}</span>
                                             </div>
                                         </div>
-                                        <div className="space-y-2 text-sm">
+                                        <div className="space-y-1.5 text-sm flex-1">
                                             <p className="text-theme-secondary">📧 {doctor.email}</p>
-                                            <p className="text-theme-secondary">📱 {doctor.phone}</p>
-                                            <p className="text-theme-secondary">⭐ {doctor.experience} {language === 'en' ? 'years experience' : 'năm kinh nghiệm'}</p>
+                                            {doctor.phone && <p className="text-theme-secondary">📱 {doctor.phone}</p>}
+                                            {doctor.experience && <p className="text-theme-secondary">⭐ {doctor.experience} {language === 'en' ? 'years exp.' : 'năm kinh nghiệm'}</p>}
+                                            {doctor.bio && <p className="text-theme-muted text-xs line-clamp-2 mt-2 italic">{doctor.bio}</p>}
                                         </div>
                                         <div className="mt-4 flex gap-2">
-                                            <button className="btn-ghost flex-1 text-sm py-2">
-                                                {language === 'en' ? 'Edit' : 'Sửa'}
+                                            <button
+                                                onClick={() => openEditDoctor(doctor)}
+                                                className="btn-ghost flex-1 text-sm py-2"
+                                            >
+                                                ✏️ {language === 'en' ? 'Edit' : 'Sửa'}
                                             </button>
-                                            <button className="btn-ghost flex-1 text-sm py-2 text-red-400 hover:text-red-300">
-                                                {language === 'en' ? 'Delete' : 'Xóa'}
+                                            <button
+                                                onClick={() => handleDeleteDoctor(doctor._id)}
+                                                className="btn-ghost flex-1 text-sm py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                            >
+                                                🗑 {language === 'en' ? 'Delete' : 'Xóa'}
                                             </button>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
+
+                        {/* Add/Edit Doctor Modal */}
+                        <Modal
+                            isOpen={showDoctorModal}
+                            onClose={() => setShowDoctorModal(false)}
+                            title={editingDoctor
+                                ? (language === 'en' ? 'Edit Doctor' : 'Chỉnh sửa Bác sĩ')
+                                : (language === 'en' ? 'Add New Doctor' : 'Thêm Bác sĩ mới')}
+                            size="md"
+                        >
+                            <form onSubmit={handleSaveDoctor} className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* Avatar Upload */}
+                                    <div className="col-span-2 flex flex-col items-center gap-3">
+                                        <div className="relative w-24 h-24">
+                                            {doctorForm.avatar ? (
+                                                <img
+                                                    src={doctorForm.avatar}
+                                                    alt="avatar"
+                                                    className="w-24 h-24 rounded-full object-cover border-2 border-primary-500 shadow-glow-sm"
+                                                />
+                                            ) : (
+                                                <div className="w-24 h-24 rounded-full bg-gradient-primary flex items-center justify-center text-4xl text-white font-bold border-2 border-white/10">
+                                                    {doctorForm.name ? doctorForm.name.charAt(0).toUpperCase() : '👨‍⚕️'}
+                                                </div>
+                                            )}
+                                            {doctorForm.avatar && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setDoctorForm(p => ({ ...p, avatar: '' }))}
+                                                    className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 text-white text-xs flex items-center justify-center hover:bg-red-600 transition-colors shadow"
+                                                    title={language === 'en' ? 'Remove photo' : 'Xóa ảnh'}
+                                                >✕</button>
+                                            )}
+                                        </div>
+                                        <label className="cursor-pointer">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={handleDoctorAvatarChange}
+                                            />
+                                            <span className="btn-ghost text-sm px-4 py-2 rounded-lg border border-white/10 hover:border-primary-500/50 transition-colors">
+                                                📷 {language === 'en' ? 'Choose Photo' : 'Chọn ảnh'}
+                                            </span>
+                                        </label>
+                                        <p className="text-xs text-gray-500">{language === 'en' ? 'JPG/PNG, max 3MB' : 'Định dạng JPG/PNG, tối đa 3MB'}</p>
+                                    </div>
+
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Full Name' : 'Họ và tên'} *</label>
+                                        <input required className="input" value={doctorForm.name} onChange={e => setDoctorForm(p => ({ ...p, name: e.target.value }))} placeholder="BS. Nguyễn Văn A" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">Email *</label>
+                                        <input required type="email" className="input" value={doctorForm.email} onChange={e => setDoctorForm(p => ({ ...p, email: e.target.value }))} placeholder="doctor@clinic.com" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Phone' : 'Số điện thoại'}</label>
+                                        <input className="input" value={doctorForm.phone} onChange={e => setDoctorForm(p => ({ ...p, phone: e.target.value }))} placeholder="0912345678" />
+                                    </div>
+                                    {!editingDoctor && (
+                                        <div className="col-span-2">
+                                            <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Password' : 'Mật khẩu'}</label>
+                                            <input type="password" className="input" value={doctorForm.password} onChange={e => setDoctorForm(p => ({ ...p, password: e.target.value }))} placeholder={language === 'en' ? 'Default: Doctor@123' : 'Mặc định: Doctor@123'} />
+                                        </div>
+                                    )}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Specialization' : 'Chuyên khoa'}</label>
+                                        <input className="input" value={doctorForm.specialization} onChange={e => setDoctorForm(p => ({ ...p, specialization: e.target.value }))} placeholder={language === 'en' ? 'e.g. Internal Medicine' : 'VD: Nội khoa thú cưng'} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Years of Experience' : 'Năm kinh nghiệm'}</label>
+                                        <input type="number" min="0" className="input" value={doctorForm.experience} onChange={e => setDoctorForm(p => ({ ...p, experience: e.target.value }))} placeholder="5" />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Role' : 'Quyền hạn'}</label>
+                                        <select className="input" value={doctorForm.role} onChange={e => setDoctorForm(p => ({ ...p, role: e.target.value }))}>
+                                            <option value="staff">{language === 'en' ? 'Staff / Doctor' : 'Nhân viên / Bác sĩ'}</option>
+                                            <option value="admin">{language === 'en' ? 'Admin' : 'Quản trị viên'}</option>
+                                        </select>
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Bio / Description' : 'Giới thiệu'}</label>
+                                        <textarea rows={3} className="input resize-none" value={doctorForm.bio} onChange={e => setDoctorForm(p => ({ ...p, bio: e.target.value }))} placeholder={language === 'en' ? 'Short bio...' : 'Giới thiệu ngắn...'} />
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 pt-2">
+                                    <button type="button" onClick={() => setShowDoctorModal(false)} className="btn-ghost flex-1">
+                                        {language === 'en' ? 'Cancel' : 'Hủy'}
+                                    </button>
+                                    <button type="submit" disabled={savingDoctor} className="btn-primary flex-1">
+                                        {savingDoctor ? (
+                                            <span className="flex items-center justify-center gap-2">
+                                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                {language === 'en' ? 'Saving...' : 'Đang lưu...'}
+                                            </span>
+                                        ) : (editingDoctor ? (language === 'en' ? 'Update' : 'Cập nhật') : (language === 'en' ? 'Create' : 'Tạo tài khoản'))}
+                                    </button>
+                                </div>
+                            </form>
+                        </Modal>
                     </div>
                 )}
 
@@ -808,9 +987,8 @@ const AdminDashboard = () => {
                                                         disabled={u._id === user?.id}
                                                         value={u.role}
                                                         onChange={(e) => updateUserRole(u._id, e.target.value)}
-                                                        className={`input py-1.5 px-3 text-sm font-medium ${
-                                                            u.role === 'admin' ? 'text-red-400' : u.role === 'staff' ? 'text-primary-400' : 'text-gray-400'
-                                                        }`}
+                                                        className={`input py-1.5 px-3 text-sm font-medium ${u.role === 'admin' ? 'text-red-400' : u.role === 'staff' ? 'text-primary-400' : 'text-gray-400'
+                                                            }`}
                                                     >
                                                         <option value="customer">{language === 'en' ? 'Customer' : 'Khách hàng'}</option>
                                                         <option value="staff">{language === 'en' ? 'Doctor/Staff' : 'Bác sĩ/Nhân viên'}</option>
@@ -819,7 +997,7 @@ const AdminDashboard = () => {
                                                 </td>
                                                 <td className="p-4">
                                                     {u._id !== user?.id && (
-                                                        <button 
+                                                        <button
                                                             onClick={() => deleteUser(u._id)}
                                                             className="text-red-400 hover:text-red-300 transition-colors p-2"
                                                             title={language === 'en' ? 'Delete account' : 'Xóa tài khoản'}
@@ -1039,7 +1217,7 @@ const AdminDashboard = () => {
                                 </h4>
                                 <div className="space-y-2 text-sm">
                                     <div className="text-gray-200">
-                                        <span className="text-gray-500">📍 {language === 'en' ? 'Addr:' : 'Đ/C:'}</span> 
+                                        <span className="text-gray-500">📍 {language === 'en' ? 'Addr:' : 'Đ/C:'}</span>
                                         {typeof selectedOrder.shippingAddress === 'object' ? (
                                             <div className="ml-5 mt-1 space-y-1">
                                                 <p>{selectedOrder.shippingAddress.address}, {selectedOrder.shippingAddress.city}</p>
@@ -1052,7 +1230,7 @@ const AdminDashboard = () => {
                                         )}
                                     </div>
                                     <p className="text-gray-200">
-                                        <span className="text-gray-500">💳 {language === 'en' ? 'Method:' : 'P/T:'}</span> 
+                                        <span className="text-gray-500">💳 {language === 'en' ? 'Method:' : 'P/T:'}</span>
                                         <span className="uppercase ml-1">{selectedOrder.paymentMethod}</span>
                                     </p>
                                 </div>
