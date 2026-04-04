@@ -2,16 +2,17 @@ const crypto = require('crypto');
 const axios = require('axios');
 const Order = require('../models/Order');
 
-// Variables for MoMo Sandbox configuration
-const partnerCode = process.env.MOMO_PARTNER_CODE || 'MOMO';
-const accessKey = process.env.MOMO_ACCESS_KEY || 'F8BBA842ECF85';
-const secretKey = process.env.MOMO_SECRET_KEY || 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
-const endpoint = process.env.MOMO_ENDPOINT || 'https://test-payment.momo.vn/v2/gateway/api/create';
 
 // @desc    Create MoMo payment url
 // @route   POST /api/momo/payment
 // @access  Private
 exports.createPayment = async (req, res) => {
+    // Moved credentials inside to ensure they pick up latest .env changes
+    const partnerCode = process.env.MOMO_PARTNER_CODE || 'MOMO';
+    const accessKey = process.env.MOMO_ACCESS_KEY || 'F8BBA842ECF85';
+    const secretKey = process.env.MOMO_SECRET_KEY || 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
+    const endpoint = process.env.MOMO_ENDPOINT || 'https://test-payment.momo.vn/v2/gateway/api/create';
+
     try {
         const { orderId, amount, orderInfo } = req.body;
 
@@ -66,11 +67,17 @@ exports.createPayment = async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Create MoMo Payment Error:', error.response ? error.response.data : error.message);
+        console.error('Create MoMo Payment Error Stack:', error.stack || error);
+        
+        const errorData = error.response ? error.response.data : null;
+        if (errorData) {
+            console.error('MoMo Response Data:', errorData);
+        }
+        
         res.status(500).json({
             success: false,
-            message: 'Server error while creating payment',
-            error: error.response ? error.response.data : error.message
+            message: errorData ? (errorData.message || 'MoMo error') : 'Server error while creating payment',
+            error: errorData || error.message
         });
     }
 };
@@ -97,6 +104,9 @@ exports.ipnWebhook = async (req, res) => {
         } = req.body;
 
         console.log(`MoMo IPN hit for order [${orderId}] with resultCode: ${resultCode}`);
+
+        const accessKey = process.env.MOMO_ACCESS_KEY || 'F8BBA842ECF85';
+        const secretKey = process.env.MOMO_SECRET_KEY || 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
 
         // Reconstruct raw signature to verify
         const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&message=${message}&orderId=${orderId}&orderInfo=${orderInfo}&orderType=${orderType}&partnerCode=${partnerCode}&payType=${payType}&requestId=${requestId}&responseTime=${responseTime}&resultCode=${resultCode}&transId=${transId}`;

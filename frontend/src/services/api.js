@@ -129,9 +129,7 @@ export const healthAPI = {
     exportPDF: (petId) => api.get(`/health/export-pdf/${petId}`, { responseType: 'blob' }),
 };
 
-export const lostPetAPI = {
-    getAll: () => api.get('/lost-pets'),
-    create: (data) => api.post('/lost-pets', data),
-    updateStatus: (id, data) => api.put(`/lost-pets/${id}`, data),
-    delete: (id) => api.delete(`/lost-pets/${id}`),
+export const statsAPI = {
+    getRevenue: (params) => api.get('/stats/revenue', { params }),
 };
+

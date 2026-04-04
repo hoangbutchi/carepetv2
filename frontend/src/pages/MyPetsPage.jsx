@@ -224,21 +224,21 @@ const MyPetsPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-dark-300 flex items-center justify-center pt-20">
+            <div className="min-h-screen bg-theme flex items-center justify-center pt-20">
                 <Spinner size="lg" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-dark-300 pt-24 pb-12">
+        <div className="min-h-screen bg-theme pt-24 pb-12">
             <div className="container-custom">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Left Column - Pet List */}
                     <div className="lg:w-1/3">
                         <div className="card-glass p-6 sticky top-24">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-display font-bold text-white">{t('pets.title')}</h2>
+                                <h2 className="text-2xl font-display font-bold text-[#1e293b]">{t('pets.title')}</h2>
                                 <button
                                     onClick={() => setShowAddModal(true)}
                                     className="btn-primary text-sm"
@@ -281,7 +281,7 @@ const MyPetsPage = () => {
                                                     />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h3 className="font-semibold text-white truncate">{pet.name}</h3>
+                                                    <h3 className="font-semibold text-[#1e293b] truncate">{pet.name}</h3>
                                                     <p className="text-sm text-gray-400 capitalize">{pet.breed || pet.species}</p>
                                                     <p className="text-xs text-gray-500">
                                                         {pet.age} {t('pets.years')} • {pet.weight}{t('pets.kg')}
@@ -296,7 +296,7 @@ const MyPetsPage = () => {
                             {/* Reminders Section */}
                             {reminders.length > 0 && (
                                 <div className="mt-8 pt-6 border-t border-white/10">
-                                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                                    <h3 className="text-lg font-semibold text-[#1e293b] mb-4 flex items-center">
                                         <FiBell className="mr-2 text-yellow-400" />
                                         {t('pets.upcomingReminders')}
                                     </h3>
@@ -304,7 +304,7 @@ const MyPetsPage = () => {
                                         {reminders.slice(0, 3).map((reminder, idx) => (
                                             <div key={idx} className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="font-medium text-white">{reminder.petName}</span>
+                                                    <span className="font-medium text-[#1e293b]">{reminder.petName}</span>
                                                     <Badge variant="warning">{reminder.type}</Badge>
                                                 </div>
                                                 <p className="text-sm text-gray-400 mt-1">
@@ -339,7 +339,7 @@ const MyPetsPage = () => {
                                                 </div>
                                             </div>
                                             <div>
-                                                <h2 className="text-2xl font-display font-bold text-white">{selectedPet.name}</h2>
+                                                <h2 className="text-2xl font-display font-bold text-[#1e293b]">{selectedPet.name}</h2>
                                                 <p className="text-gray-400 capitalize">{selectedPet.breed || selectedPet.species}</p>
                                             </div>
                                         </div>
@@ -363,7 +363,7 @@ const MyPetsPage = () => {
                                     <div className="flex gap-1 mb-6 p-1 bg-white/5 rounded-xl">
                                         <button
                                             onClick={() => setActiveTab('info')}
-                                            className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all ${activeTab === 'info' ? 'bg-gradient-primary text-white shadow-glow-sm' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                            className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all ${activeTab === 'info' ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm' : 'text-gray-400 hover:text-[#1e293b] hover:bg-white/5'
                                                 }`}
                                         >
                                             {language === 'en' ? 'Info' : 'Thông tin'}
@@ -371,7 +371,7 @@ const MyPetsPage = () => {
 
                                         <button
                                             onClick={() => setActiveTab('services')}
-                                            className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all ${activeTab === 'services' ? 'bg-gradient-primary text-white shadow-glow-sm' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                            className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all ${activeTab === 'services' ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm' : 'text-gray-400 hover:text-[#1e293b] hover:bg-white/5'
                                                 }`}
                                         >
                                             {language === 'en' ? 'Services' : 'Dịch vụ'}
@@ -382,26 +382,26 @@ const MyPetsPage = () => {
                                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                             <div className="bg-white/5 rounded-xl p-4 text-center border border-white/10">
                                                 <p className="text-sm text-gray-500">{t('pets.age')}</p>
-                                                <p className="text-xl font-semibold text-white">{selectedPet.age} {t('pets.years')}</p>
+                                                <p className="text-xl font-semibold text-[#1e293b]">{selectedPet.age} {t('pets.years')}</p>
                                             </div>
                                             <div className="bg-white/5 rounded-xl p-4 text-center border border-white/10">
                                                 <p className="text-sm text-gray-500">{t('pets.weight')}</p>
-                                                <p className="text-xl font-semibold text-white">{selectedPet.weight} {t('pets.kg')}</p>
+                                                <p className="text-xl font-semibold text-[#1e293b]">{selectedPet.weight} {t('pets.kg')}</p>
                                             </div>
                                             <div className="bg-white/5 rounded-xl p-4 text-center border border-white/10">
                                                 <p className="text-sm text-gray-500">{t('pets.gender')}</p>
-                                                <p className="text-xl font-semibold text-white capitalize">
+                                                <p className="text-xl font-semibold text-[#1e293b] capitalize">
                                                     {t(`pets.${selectedPet.gender}`)}
                                                 </p>
                                             </div>
                                             <div className="bg-white/5 rounded-xl p-4 text-center border border-white/10">
                                                 <p className="text-sm text-gray-500">{t('pets.species')}</p>
-                                                <p className="text-xl font-semibold text-white capitalize">{selectedPet.species}</p>
+                                                <p className="text-xl font-semibold text-[#1e293b] capitalize">{selectedPet.species}</p>
                                             </div>
                                             {selectedPet.notes && (
                                                 <div className="col-span-full bg-white/5 rounded-xl p-4 border border-white/10">
                                                     <p className="text-sm text-gray-500 mb-1">{language === 'en' ? 'Notes / Special Care' : 'Ghi chú / Lưu ý đặc biệt'}</p>
-                                                    <p className="text-white italic">"{selectedPet.notes}"</p>
+                                                    <p className="text-[#1e293b] italic">"{selectedPet.notes}"</p>
                                                 </div>
                                             )}
                                         </div>
@@ -412,7 +412,7 @@ const MyPetsPage = () => {
                                     {activeTab === 'services' && (
                                         <div>
                                             <div className="flex justify-between items-center mb-4">
-                                                <h3 className="text-lg font-semibold text-white flex items-center">
+                                                <h3 className="text-lg font-semibold text-[#1e293b] flex items-center">
                                                     <FiCalendar className="mr-2 text-primary-400" />
                                                     {language === 'en' ? 'Service History' : 'Lịch sử dịch vụ'}
                                                 </h3>
@@ -431,7 +431,7 @@ const MyPetsPage = () => {
                                                         >
                                                             <div className="flex flex-wrap justify-between items-start gap-2 mb-2">
                                                                 <div>
-                                                                    <p className="font-semibold text-white capitalize flex items-center">
+                                                                    <p className="font-semibold text-[#1e293b] capitalize flex items-center">
                                                                         {apt.service}
                                                                         {apt.status === 'completed' && (
                                                                             <span className="ml-2 text-xs text-primary-400 bg-primary-400/10 px-2 py-0.5 rounded cursor-pointer hover:bg-primary-400/20"
@@ -694,7 +694,7 @@ const MyPetsPage = () => {
                                             selectedAppointment.service === 'surgery' ? '🏥' : '📋'}
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-white mb-1 capitalize">
+                                <h3 className="text-2xl font-bold text-[#1e293b] mb-1 capitalize">
                                     {selectedAppointment.service}
                                 </h3>
                                 {getStatusBadge(selectedAppointment.status)}
@@ -708,7 +708,7 @@ const MyPetsPage = () => {
                             </div>
                             <div>
                                 <p className="text-sm text-gray-400 mb-0.5">{language === 'en' ? 'Pet Name' : 'Tên thú cưng'}</p>
-                                <p className="font-semibold text-white">
+                                <p className="font-semibold text-[#1e293b]">
                                     {selectedAppointment.pet?.name || selectedPet?.name} ({selectedAppointment.pet?.species || selectedPet?.species})
                                 </p>
                                 <p className="text-xs text-primary-400">
@@ -729,20 +729,20 @@ const MyPetsPage = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                                 <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Date' : 'Ngày'}</p>
-                                <p className="font-semibold text-white">
+                                <p className="font-semibold text-[#1e293b]">
                                     {selectedAppointment.date ? format(new Date(selectedAppointment.date), 'dd/MM/yyyy') : '---'}
                                 </p>
                             </div>
                             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                                 <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Time' : 'Giờ'}</p>
-                                <p className="font-semibold text-white">{selectedAppointment.timeSlot}</p>
+                                <p className="font-semibold text-[#1e293b]">{selectedAppointment.timeSlot}</p>
                             </div>
                         </div>
 
                         {selectedAppointment.staff && (
                             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                                 <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Staff/Doctor' : 'Nhân viên/Bác sĩ'}</p>
-                                <p className="font-semibold text-white">{selectedAppointment.staff.name || selectedAppointment.staff}</p>
+                                <p className="font-semibold text-[#1e293b]">{selectedAppointment.staff.name || selectedAppointment.staff}</p>
                             </div>
                         )}
 

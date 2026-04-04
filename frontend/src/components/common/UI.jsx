@@ -19,7 +19,7 @@ export const LoadingPage = () => (
                 <Spinner size="lg" />
                 <div className="absolute inset-0 rounded-full bg-gradient-primary opacity-20 blur-lg animate-pulse" />
             </div>
-            <p className="mt-6 text-gray-400 font-medium">Loading...</p>
+            <p className="mt-6 text-[#64748b] font-medium">Loading...</p>
         </div>
     </div>
 );
@@ -59,8 +59,8 @@ export const EmptyState = ({ icon, title, description, action }) => (
         <div className="w-20 h-20 glass rounded-2xl flex items-center justify-center mx-auto mb-6">
             {icon || <span className="text-4xl">📭</span>}
         </div>
-        <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-        {description && <p className="text-gray-400 mb-6 max-w-md mx-auto">{description}</p>}
+        <h3 className="text-xl font-semibold text-[#1e293b] mb-2">{title}</h3>
+        {description && <p className="text-[#64748b] mb-6 max-w-md mx-auto">{description}</p>}
         {action}
     </div>
 );
@@ -73,7 +73,7 @@ export const Badge = ({ children, variant = 'primary', className = '' }) => {
         success: 'badge-success',
         warning: 'badge-warning',
         danger: 'badge-danger',
-        gray: 'bg-white/10 text-gray-300 border border-white/20',
+        gray: 'bg-white/10 text-[#475569] border border-white/20',
     };
 
     return (
@@ -101,10 +101,10 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
             <div className={`relative card-glass w-full ${sizes[size]} modal-content max-h-[90vh] overflow-y-auto`}>
                 {title && (
                     <div className="sticky top-0 bg-dark-200/95 backdrop-blur-sm px-6 py-4 border-b border-white/10 flex justify-between items-center">
-                        <h2 className="text-xl font-semibold text-white">{title}</h2>
+                        <h2 className="text-xl font-display font-bold text-primary-500">{title}</h2>
                         <button
                             onClick={onClose}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#64748b] hover:text-[#1e293b] hover:bg-white/10 transition-colors"
                         >
                             ✕
                         </button>
@@ -132,8 +132,8 @@ export const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, conf
                 <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center ${variant === 'danger' ? 'bg-red-500/20' : 'bg-primary-500/20'}`}>
                     <span className="text-3xl">{variant === 'danger' ? '⚠️' : 'ℹ️'}</span>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-                <p className="text-gray-400 mb-6">{message}</p>
+                <h3 className="text-xl font-semibold text-[#1e293b] mb-2">{title}</h3>
+                <p className="text-[#64748b] mb-6">{message}</p>
                 <div className="flex space-x-3 justify-center">
                     <button onClick={onClose} className="btn-ghost px-6">
                         {cancelText}
@@ -143,7 +143,7 @@ export const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, conf
                             onConfirm();
                             onClose();
                         }}
-                        className={`btn text-white px-6 ${buttonVariants[variant]}`}
+                        className={`btn text-[#1e293b] px-6 ${buttonVariants[variant]}`}
                     >
                         {confirmText}
                     </button>
@@ -157,7 +157,7 @@ export const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, conf
 export const FormInput = ({ label, error, required, className = '', ...props }) => (
     <div className={className}>
         {label && (
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-[#1e293b] mb-2">
                 {label}
                 {required && <span className="text-red-400 ml-1">*</span>}
             </label>
@@ -174,7 +174,7 @@ export const FormInput = ({ label, error, required, className = '', ...props }) 
 export const FormSelect = ({ label, error, required, options, placeholder, className = '', ...props }) => (
     <div className={className}>
         {label && (
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-[#1e293b] mb-2">
                 {label}
                 {required && <span className="text-red-400 ml-1">*</span>}
             </label>
@@ -198,7 +198,7 @@ export const FormSelect = ({ label, error, required, options, placeholder, class
 export const FormTextarea = ({ label, error, required, className = '', ...props }) => (
     <div className={className}>
         {label && (
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-[#1e293b] mb-2">
                 {label}
                 {required && <span className="text-red-400 ml-1">*</span>}
             </label>
@@ -219,8 +219,8 @@ export const Tabs = ({ tabs, activeTab, onChange }) => (
                 key={tab.id}
                 onClick={() => onChange(tab.id)}
                 className={`flex-1 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 ${activeTab === tab.id
-                        ? 'bg-gradient-primary text-white shadow-glow-sm'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm'
+                        : 'text-[#64748b] hover:text-[#1e293b] hover:bg-white/5'
                     }`}
             >
                 {tab.icon && <span className="mr-2">{tab.icon}</span>}
@@ -249,7 +249,7 @@ export const ProgressBar = ({ value, max = 100, color = 'primary', showLabel = t
                 />
             </div>
             {showLabel && (
-                <p className="text-xs text-gray-400 mt-1">{percentage.toFixed(0)}%</p>
+                <p className="text-xs text-[#64748b] mt-1">{percentage.toFixed(0)}%</p>
             )}
         </div>
     );

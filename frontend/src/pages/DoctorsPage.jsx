@@ -116,7 +116,7 @@ const DoctorsPage = () => {
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
                     <span className="badge-primary mb-4">{language === 'en' ? 'Our Team' : 'Đội ngũ'}</span>
-                    <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+                    <h1 className="text-4xl md:text-5xl font-display font-bold text-[#1e293b] mb-4">
                         {language === 'en' ? 'Expert Veterinarians' : 'Đội Ngũ Bác Sĩ Chuyên Nghiệp'}
                     </h1>
                     <p className="text-xl text-gray-400">
@@ -183,14 +183,14 @@ const DoctorsPage = () => {
 
                                     {/* Overlay content */}
                                     <div className="absolute bottom-0 left-0 right-0 p-6">
-                                        <h3 className="text-xl font-bold text-white mb-1">{doctor.name}</h3>
+                                        <h3 className="text-xl font-bold text-[#1e293b] mb-1">{doctor.name}</h3>
                                         <p className="text-primary-400 font-medium">{doctor.specialization}</p>
                                     </div>
 
                                     {/* Rating badge */}
                                     <div className="absolute top-4 right-4 flex items-center space-x-1 px-3 py-1.5 rounded-full glass">
                                         <FiStar className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                        <span className="text-sm font-medium text-white">4.9</span>
+                                        <span className="text-sm font-medium text-[#1e293b]">4.9</span>
                                     </div>
                                 </div>
 
@@ -266,13 +266,13 @@ const DoctorsPage = () => {
 
                         <div className="relative p-8 md:p-16 text-center">
                             <span className="text-5xl mb-4 block">💬</span>
-                            <h2 className="text-2xl md:text-4xl font-display font-bold text-white mb-4">
+                            <h2 className="text-2xl md:text-4xl font-display font-bold text-[#1e293b] mb-4">
                                 {language === 'en'
                                     ? 'Need Expert Consultation?'
                                     : 'Cần tư vấn chuyên gia?'
                                 }
                             </h2>
-                            <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
+                            <p className="text-lg text-[#1e293b]/80 mb-8 max-w-2xl mx-auto">
                                 {language === 'en'
                                     ? 'Our doctors are available 24/7 for online consultation. Get expert advice for your pet today!'
                                     : 'Đội ngũ bác sĩ của chúng tôi sẵn sàng tư vấn trực tuyến 24/7. Nhận lời khuyên chuyên gia cho thú cưng ngay!'

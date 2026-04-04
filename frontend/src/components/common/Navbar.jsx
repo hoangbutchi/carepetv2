@@ -4,6 +4,7 @@ import { FiMenu, FiX, FiShoppingCart, FiChevronDown, FiGlobe, FiMessageCircle, F
 import { useLanguage } from '../../i18n/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+
 import { useTheme } from '../../context/ThemeContext';
 
 const Navbar = () => {
@@ -49,7 +50,6 @@ const Navbar = () => {
         { name: t('nav.doctors'), path: '/doctors' },
         { name: t('nav.shop'), path: '/shop' },
         { name: t('nav.news'), path: '/news' },
-        { name: t('nav.lostPet'), path: '/lost-pets' },
         { name: t('nav.booking'), path: '/booking' },
     ];
 
@@ -76,13 +76,12 @@ const Navbar = () => {
                         className="flex items-center space-x-3 group"
                     >
                         <div className="relative">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                            <div className="w-10 h-10 rounded-xl bg-[#00adef] flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 shadow-md">
                                 <span className="text-xl">🐾</span>
                             </div>
-                            <div className="absolute inset-0 rounded-xl bg-gradient-primary opacity-0 group-hover:opacity-50 blur-lg transition-opacity duration-300" />
                         </div>
-                        <span className="text-xl font-display font-bold text-gradient hidden sm:block">
-                            Pet Care Pro
+                        <span className="text-2xl font-bold tracking-tight text-[#00adef] hidden sm:block">
+                            PetCare<span className="text-[#1e293b]">Pro</span>
                         </span>
                     </Link>
 
@@ -131,24 +130,24 @@ const Navbar = () => {
                                         <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary-500" />
                                     )}
                                 </Link>
+                                <Link
+                                    to="/my-orders"
+                                    className={`relative px-3 py-2 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-orders')
+                                        ? 'text-primary-500'
+                                        : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
+                                        }`}
+                                >
+                                    {t('nav.myOrders')}
+                                    {isActiveLink('/my-orders') && (
+                                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary-500" />
+                                    )}
+                                </Link>
                             </div>
                         )}
                     </div>
 
                     {/* Right Section */}
                     <div className="hidden md:flex items-center space-x-3">
-                        {/* Theme Toggle */}
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2.5 rounded-lg text-theme-secondary hover:text-theme hover:bg-theme-tertiary transition-all duration-300"
-                            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                        >
-                            {isDark ? (
-                                <FiSun className="w-5 h-5" />
-                            ) : (
-                                <FiMoon className="w-5 h-5" />
-                            )}
-                        </button>
 
                         {/* Language Toggle */}
                         <button
@@ -168,7 +167,7 @@ const Navbar = () => {
                             >
                                 <FiShoppingCart className="w-5 h-5" />
                                 {cartCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-white rounded-full bg-gradient-secondary animate-pulse">
+                                    <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-[#1e293b] rounded-full bg-gradient-secondary animate-pulse">
                                         {cartCount}
                                     </span>
                                 )}
@@ -197,7 +196,7 @@ const Navbar = () => {
                                     className="flex items-center space-x-2 px-3 py-2 rounded-xl hover:bg-theme-tertiary transition-all duration-300"
                                 >
                                     <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-                                        <span className="text-white text-sm font-semibold">
+                                        <span className="text-[#1e293b] text-sm font-semibold">
                                             {user?.name?.charAt(0).toUpperCase()}
                                         </span>
                                     </div>
@@ -234,6 +233,14 @@ const Navbar = () => {
                                                     <span>{t('nav.myAppointments')}</span>
                                                 </Link>
                                                 <Link
+                                                    to="/my-orders"
+                                                    onClick={() => setUserMenuOpen(false)}
+                                                    className="flex items-center space-x-3 px-4 py-3 text-theme-secondary hover:text-theme hover:bg-theme-tertiary transition-colors"
+                                                >
+                                                    <FiPackage className="w-4 h-4" />
+                                                    <span>{t('nav.myOrders')}</span>
+                                                </Link>
+                                                <Link
                                                     to="/my-pets"
                                                     onClick={() => setUserMenuOpen(false)}
                                                     className="flex items-center space-x-3 px-4 py-3 text-theme-secondary hover:text-theme hover:bg-theme-tertiary transition-colors"
@@ -268,16 +275,9 @@ const Navbar = () => {
                         )}
                     </div>
 
+
                     {/* Mobile Menu Button */}
                     <div className="flex items-center space-x-2 md:hidden">
-                        {/* Mobile Theme Toggle */}
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2 rounded-lg text-theme-secondary hover:text-theme hover:bg-theme-tertiary transition-all duration-300"
-                        >
-                            {isDark ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
-                        </button>
-
                         <button
                             onClick={() => setIsOpen(!isOpen)}
                             className="p-2 rounded-lg text-theme-secondary hover:text-theme hover:bg-theme-tertiary transition-all duration-300"
@@ -315,7 +315,17 @@ const Navbar = () => {
                                             : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
                                             }`}
                                     >
-                                        {t('nav.myAppointments')}
+                                        <span>{t('nav.myAppointments')}</span>
+                                    </Link>
+                                    <Link
+                                        to="/my-orders"
+                                        onClick={() => setIsOpen(false)}
+                                        className={`px-4 py-3 rounded-lg font-medium transition-all duration-300 ${isActiveLink('/my-orders')
+                                            ? 'text-primary-500 bg-primary-500/10'
+                                            : 'text-theme-secondary hover:text-theme hover:bg-theme-tertiary'
+                                            }`}
+                                    >
+                                        {t('nav.myOrders')}
                                     </Link>
                                     <Link
                                         to="/my-pets"

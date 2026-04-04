@@ -121,8 +121,8 @@ const ShopPage = () => {
                 {/* Header */}
                 <div className="text-center mb-12 animate-fade-in-up">
                     <span className="badge-primary mb-4">{language === 'en' ? 'Pet Shop' : 'Cửa hàng'}</span>
-                    <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">{t('shop.title')}</h1>
-                    <p className="text-xl text-gray-400">
+                    <h1 className="text-4xl md:text-5xl font-display font-bold text-[#1e293b] mb-4">{t('shop.title')}</h1>
+                    <p className="text-xl text-[#64748b]">
                         {language === 'en' ? 'Quality products for your beloved pets' : 'Sản phẩm chất lượng cho thú cưng của bạn'}
                     </p>
                 </div>
@@ -132,7 +132,7 @@ const ShopPage = () => {
                     <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
                         {/* Search */}
                         <div className="relative w-full lg:w-80">
-                            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748b]" />
                             <input
                                 type="text"
                                 placeholder={t('common.search')}
@@ -143,7 +143,7 @@ const ShopPage = () => {
                             {searchQuery && (
                                 <button
                                     onClick={() => setSearchQuery('')}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748b] hover:text-[#475569]"
                                 >
                                     <FiX className="w-4 h-4" />
                                 </button>
@@ -157,8 +157,8 @@ const ShopPage = () => {
                                     key={cat.id}
                                     onClick={() => handleCategoryChange(cat.id)}
                                     className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 flex items-center space-x-2 ${activeCategory === cat.id
-                                            ? 'bg-gradient-primary text-white shadow-glow-sm'
-                                            : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                                            ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm'
+                                            : 'bg-white/5 text-[#64748b] hover:bg-white/10 hover:text-[#1e293b]'
                                         }`}
                                 >
                                     <span>{cat.icon}</span>
@@ -193,13 +193,13 @@ const ShopPage = () => {
                             <div className="flex rounded-xl overflow-hidden border border-white/10">
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-primary-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                                    className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-primary-500 text-[#1e293b]' : 'bg-white/5 text-[#64748b] hover:bg-white/10'}`}
                                 >
                                     <FiGrid className="w-5 h-5" />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-2.5 transition-colors ${viewMode === 'list' ? 'bg-primary-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                                    className={`p-2.5 transition-colors ${viewMode === 'list' ? 'bg-primary-500 text-[#1e293b]' : 'bg-white/5 text-[#64748b] hover:bg-white/10'}`}
                                 >
                                     <FiList className="w-5 h-5" />
                                 </button>
@@ -210,7 +210,7 @@ const ShopPage = () => {
                     {/* Mobile Categories */}
                     {showFilters && (
                         <div className="lg:hidden mt-4 pt-4 border-t border-white/10 animate-fade-in-down">
-                            <p className="text-sm text-gray-500 mb-3">{language === 'en' ? 'Categories' : 'Danh mục'}</p>
+                            <p className="text-sm text-[#64748b] mb-3">{language === 'en' ? 'Categories' : 'Danh mục'}</p>
                             <div className="flex flex-wrap gap-2">
                                 {categories.map((cat) => (
                                     <button
@@ -220,8 +220,8 @@ const ShopPage = () => {
                                             setShowFilters(false);
                                         }}
                                         className={`px-4 py-2 rounded-xl font-medium transition-all flex items-center space-x-2 ${activeCategory === cat.id
-                                                ? 'bg-gradient-primary text-white'
-                                                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                                ? 'bg-gradient-primary text-[#1e293b]'
+                                                : 'bg-white/5 text-[#64748b] hover:bg-white/10'
                                             }`}
                                     >
                                         <span>{cat.icon}</span>
@@ -235,7 +235,7 @@ const ShopPage = () => {
 
                 {/* Results Count */}
                 <div className="flex items-center justify-between mb-6 animate-fade-in">
-                    <p className="text-gray-400">
+                    <p className="text-[#64748b]">
                         {language === 'en' ? `Showing ${filteredProducts.length} products` : `Hiển thị ${filteredProducts.length} sản phẩm`}
                     </p>
                     {activeCategory !== 'all' && (
@@ -268,8 +268,8 @@ const ShopPage = () => {
                 ) : filteredProducts.length === 0 ? (
                     <div className="text-center py-20 animate-fade-in">
                         <span className="text-6xl mb-4 block">📦</span>
-                        <h3 className="text-xl font-semibold text-white mb-2">{t('common.noResults')}</h3>
-                        <p className="text-gray-400">{language === 'en' ? 'Try adjusting your search or filters' : 'Thử điều chỉnh tìm kiếm hoặc bộ lọc'}</p>
+                        <h3 className="text-xl font-semibold text-[#1e293b] mb-2">{t('common.noResults')}</h3>
+                        <p className="text-[#64748b]">{language === 'en' ? 'Try adjusting your search or filters' : 'Thử điều chỉnh tìm kiếm hoặc bộ lọc'}</p>
                     </div>
                 ) : viewMode === 'grid' ? (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -303,7 +303,7 @@ const ShopPage = () => {
                                             onClick={(e) => e.preventDefault()}
                                             className="absolute top-3 right-3 w-10 h-10 rounded-xl glass flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-pink-500/20"
                                         >
-                                            <FiHeart className="w-5 h-5 text-gray-400 hover:text-pink-400 transition-colors" />
+                                            <FiHeart className="w-5 h-5 text-[#64748b] hover:text-pink-400 transition-colors" />
                                         </button>
 
                                         {/* Quick add button */}
@@ -326,7 +326,7 @@ const ShopPage = () => {
                                 <div className="p-4">
                                     <p className="text-xs text-primary-400 uppercase tracking-wide mb-1">{product.category}</p>
                                     <Link to={`/shop/${product._id}`}>
-                                        <h3 className="font-semibold text-white mb-3 line-clamp-2 min-h-[48px] hover:text-primary-400 transition-colors">
+                                        <h3 className="font-semibold text-[#1e293b] mb-3 line-clamp-2 min-h-[48px] hover:text-primary-400 transition-colors">
                                             {product.name}
                                         </h3>
                                     </Link>
@@ -334,7 +334,7 @@ const ShopPage = () => {
                                         <div>
                                             <span className="text-lg font-bold text-gradient">{formatPrice(product.price)}</span>
                                             {product.originalPrice && (
-                                                <span className="text-sm text-gray-500 line-through ml-2">{formatPrice(product.originalPrice)}</span>
+                                                <span className="text-sm text-[#64748b] line-through ml-2">{formatPrice(product.originalPrice)}</span>
                                             )}
                                         </div>
                                         {product.stock <= 10 && product.stock > 0 && (
@@ -372,16 +372,16 @@ const ShopPage = () => {
                                         )}
                                     </div>
                                     <Link to={`/shop/${product._id}`}>
-                                        <h3 className="text-xl font-semibold text-white mb-2 hover:text-primary-400 transition-colors">{product.name}</h3>
+                                        <h3 className="text-xl font-semibold text-[#1e293b] mb-2 hover:text-primary-400 transition-colors">{product.name}</h3>
                                     </Link>
-                                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                                    <p className="text-[#64748b] text-sm mb-4 line-clamp-2">
                                         {language === 'en' ? 'High-quality product for your beloved pet' : 'Sản phẩm chất lượng cao cho thú cưng của bạn'}
                                     </p>
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <span className="text-2xl font-bold text-gradient">{formatPrice(product.price)}</span>
                                             {product.originalPrice && (
-                                                <span className="text-gray-500 line-through ml-2">{formatPrice(product.originalPrice)}</span>
+                                                <span className="text-[#64748b] line-through ml-2">{formatPrice(product.originalPrice)}</span>
                                             )}
                                         </div>
                                         <button

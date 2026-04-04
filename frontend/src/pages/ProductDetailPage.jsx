@@ -84,7 +84,7 @@ const ProductDetailPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-dark-300 flex items-center justify-center pt-20">
+            <div className="min-h-screen bg-theme-light flex items-center justify-center pt-20">
                 <Spinner size="lg" />
             </div>
         );
@@ -92,12 +92,12 @@ const ProductDetailPage = () => {
 
     if (!product) {
         return (
-            <div className="min-h-screen bg-dark-300 flex items-center justify-center pt-20">
+            <div className="min-h-screen bg-theme-light flex items-center justify-center pt-20">
                 <div className="text-center">
                     <div className="w-20 h-20 glass rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <FiPackage className="w-10 h-10 text-gray-400" />
+                        <FiPackage className="w-10 h-10 text-[#64748b]" />
                     </div>
-                    <h2 className="text-xl font-semibold text-white mb-4">
+                    <h2 className="text-xl font-semibold text-[#1e293b] mb-4">
                         {language === 'en' ? 'Product not found' : 'Không tìm thấy sản phẩm'}
                     </h2>
                     <Link to="/shop" className="btn-primary">
@@ -113,15 +113,15 @@ const ProductDetailPage = () => {
         : 0;
 
     return (
-        <div className="min-h-screen bg-dark-300 pt-24 pb-12">
+        <div className="min-h-screen bg-theme-light pt-24 pb-12">
             <div className="container-custom">
                 {/* Breadcrumb */}
-                <div className="flex items-center gap-2 text-sm text-gray-500 mb-8 animate-fade-in">
+                <div className="flex items-center gap-2 text-sm text-[#64748b] mb-8 animate-fade-in">
                     <Link to="/" className="hover:text-primary-400 transition-colors">{language === 'en' ? 'Home' : 'Trang chủ'}</Link>
                     <span>/</span>
                     <Link to="/shop" className="hover:text-primary-400 transition-colors">{language === 'en' ? 'Shop' : 'Cửa hàng'}</Link>
                     <span>/</span>
-                    <span className="text-gray-300 truncate max-w-[200px]">{product.name}</span>
+                    <span className="text-[#475569] truncate max-w-[200px]">{product.name}</span>
                 </div>
 
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
@@ -172,7 +172,7 @@ const ProductDetailPage = () => {
                                     <Badge variant="danger">-{discount}%</Badge>
                                 )}
                             </div>
-                            <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">{product.name}</h1>
+                            <h1 className="text-3xl md:text-4xl font-display font-bold text-[#1e293b] mb-4">{product.name}</h1>
                         </div>
 
                         {/* Price */}
@@ -181,7 +181,7 @@ const ProductDetailPage = () => {
                                 {new Intl.NumberFormat('vi-VN').format(product.price)}₫
                             </span>
                             {product.originalPrice && (
-                                <span className="text-xl text-gray-500 line-through">
+                                <span className="text-xl text-[#64748b] line-through">
                                     {new Intl.NumberFormat('vi-VN').format(product.originalPrice)}₫
                                 </span>
                             )}
@@ -204,10 +204,10 @@ const ProductDetailPage = () => {
 
                         {/* Description */}
                         <div className="card-glass p-6 rounded-2xl">
-                            <h3 className="font-semibold text-white mb-3">
+                            <h3 className="font-semibold text-[#1e293b] mb-3">
                                 {language === 'en' ? 'Description' : 'Mô tả sản phẩm'}
                             </h3>
-                            <p className="text-gray-400 leading-relaxed">
+                            <p className="text-[#1e293b] leading-relaxed">
                                 {product.description || (language === 'en'
                                     ? 'High-quality product for your beloved pet. Made with premium ingredients and carefully tested for safety.'
                                     : 'Sản phẩm chất lượng cao cho thú cưng yêu quý của bạn. Được làm từ nguyên liệu cao cấp và kiểm tra an toàn cẩn thận.'
@@ -222,14 +222,14 @@ const ProductDetailPage = () => {
                                     <div className="flex items-center rounded-xl overflow-hidden bg-white/5 border border-white/10">
                                         <button
                                             onClick={decrementQuantity}
-                                            className="w-12 h-12 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                                            className="w-12 h-12 flex items-center justify-center text-[#64748b] hover:text-[#1e293b] hover:bg-white/10 transition-colors"
                                         >
                                             <FiMinus />
                                         </button>
-                                        <span className="w-16 text-center font-semibold text-lg text-white">{quantity}</span>
+                                        <span className="w-16 text-center font-semibold text-lg text-[#1e293b]">{quantity}</span>
                                         <button
                                             onClick={incrementQuantity}
-                                            className="w-12 h-12 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                                            className="w-12 h-12 flex items-center justify-center text-[#64748b] hover:text-[#1e293b] hover:bg-white/10 transition-colors"
                                         >
                                             <FiPlus />
                                         </button>
@@ -237,7 +237,7 @@ const ProductDetailPage = () => {
                                     <button
                                         onClick={handleAddToCart}
                                         className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 ${addedToCart
-                                                ? 'bg-green-500 text-white'
+                                                ? 'bg-green-500 text-[#1e293b]'
                                                 : 'btn-primary'
                                             }`}
                                     >
@@ -273,7 +273,7 @@ const ProductDetailPage = () => {
                         {!isStaff && product.stock > 0 && (
                             <div className="card-glass rounded-2xl p-6">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">{language === 'en' ? 'Total' : 'Tổng cộng'}:</span>
+                                    <span className="text-[#64748b]">{language === 'en' ? 'Total' : 'Tổng cộng'}:</span>
                                     <span className="text-3xl font-bold text-gradient">
                                         {new Intl.NumberFormat('vi-VN').format(product.price * quantity)}₫
                                     </span>
@@ -285,22 +285,22 @@ const ProductDetailPage = () => {
                         <div className="grid grid-cols-3 gap-4">
                             <div className="text-center p-4 rounded-xl bg-white/5">
                                 <FiTruck className="w-6 h-6 mx-auto text-primary-400 mb-2" />
-                                <p className="text-xs text-gray-400">{language === 'en' ? 'Free Shipping' : 'Miễn phí ship'}</p>
+                                <p className="text-xs text-[#64748b]">{language === 'en' ? 'Free Shipping' : 'Miễn phí ship'}</p>
                             </div>
                             <div className="text-center p-4 rounded-xl bg-white/5">
                                 <FiShield className="w-6 h-6 mx-auto text-green-400 mb-2" />
-                                <p className="text-xs text-gray-400">{language === 'en' ? 'Genuine' : 'Chính hãng'}</p>
+                                <p className="text-xs text-[#64748b]">{language === 'en' ? 'Genuine' : 'Chính hãng'}</p>
                             </div>
                             <div className="text-center p-4 rounded-xl bg-white/5">
                                 <FiRefreshCw className="w-6 h-6 mx-auto text-yellow-400 mb-2" />
-                                <p className="text-xs text-gray-400">{language === 'en' ? 'Easy Return' : 'Đổi trả dễ'}</p>
+                                <p className="text-xs text-[#64748b]">{language === 'en' ? 'Easy Return' : 'Đổi trả dễ'}</p>
                             </div>
                         </div>
 
                         {/* Back button */}
                         <Link
                             to="/shop"
-                            className="inline-flex items-center text-gray-400 hover:text-primary-400 transition-colors"
+                            className="inline-flex items-center text-[#64748b] hover:text-primary-400 transition-colors"
                         >
                             <FiArrowLeft className="mr-2" />
                             {language === 'en' ? 'Continue Shopping' : 'Tiếp tục mua sắm'}

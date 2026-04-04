@@ -1,43 +1,18 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext } from 'react';
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState(() => {
-        // Check localStorage first, then system preference
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) return savedTheme;
-
-        if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-            return 'light';
-        }
-        return 'dark';
-    });
-
-    useEffect(() => {
-        // Update document class and localStorage when theme changes
-        const root = document.documentElement;
-
-        if (theme === 'dark') {
-            root.classList.add('dark');
-            root.classList.remove('light');
-        } else {
-            root.classList.add('light');
-            root.classList.remove('dark');
-        }
-
-        localStorage.setItem('theme', theme);
-    }, [theme]);
-
+    // Theme is now permanently light
+    const theme = 'light';
+    const isDark = false;
+    const isLight = true;
     const toggleTheme = () => {
-        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+        console.log('Theme toggle is disabled');
     };
 
-    const isDark = theme === 'dark';
-    const isLight = theme === 'light';
-
     return (
-        <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, isDark, isLight }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme, isDark, isLight }}>
             {children}
         </ThemeContext.Provider>
     );

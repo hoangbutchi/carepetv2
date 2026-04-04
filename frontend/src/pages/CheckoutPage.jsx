@@ -139,13 +139,13 @@ const CheckoutPage = () => {
 
     if (showSuccess) {
         return (
-            <div className="min-h-screen bg-dark-300 pt-24 pb-12 flex items-center justify-center">
+            <div className="min-h-screen bg-theme-light pt-24 pb-12 flex items-center justify-center">
                 <div className="card-glass p-12 max-w-lg text-center animate-fade-in-up">
                     <div className="w-20 h-20 bg-green-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <FiCheck className="w-10 h-10 text-green-400" />
                     </div>
-                    <h1 className="text-3xl font-display font-bold text-white mb-4">{t('checkout.orderSuccess')}</h1>
-                    <p className="text-gray-400 mb-2">
+                    <h1 className="text-3xl font-display font-bold text-[#1e293b] mb-4">{t('checkout.orderSuccess')}</h1>
+                    <p className="text-[#64748b] mb-2">
                         {language === 'en' ? 'Order Number:' : 'Mã đơn hàng:'}
                     </p>
                     <p className="text-2xl font-bold text-gradient mb-6">{orderNumber}</p>
@@ -162,7 +162,7 @@ const CheckoutPage = () => {
                         </div>
                     )}
 
-                    <p className="text-gray-500 mb-6">
+                    <p className="text-[#64748b] mb-6">
                         {language === 'en'
                             ? 'We will send you an email confirmation shortly.'
                             : 'Chúng tôi sẽ gửi email xác nhận trong thời gian sớm nhất.'}
@@ -177,9 +177,9 @@ const CheckoutPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-dark-300 pt-24 pb-12">
+        <div className="min-h-screen bg-theme-light pt-24 pb-12">
             <div className="container-custom">
-                <h1 className="text-4xl font-display font-bold text-white mb-8 animate-fade-in-up">{t('checkout.title')}</h1>
+                <h1 className="text-4xl font-display font-bold text-[#1e293b] mb-8 animate-fade-in-up">{t('checkout.title')}</h1>
 
                 <form onSubmit={handleSubmit}>
                     <div className="grid lg:grid-cols-3 gap-8">
@@ -187,7 +187,7 @@ const CheckoutPage = () => {
                         <div className="lg:col-span-2 space-y-6">
                             {/* Shipping Info */}
                             <div className="card-glass p-6 animate-fade-in-up">
-                                <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
+                                <h2 className="text-xl font-semibold text-[#1e293b] mb-6 flex items-center">
                                     <FiTruck className="mr-2 text-primary-400" />
                                     {t('checkout.shippingInfo')}
                                 </h2>
@@ -243,7 +243,7 @@ const CheckoutPage = () => {
 
                             {/* Payment Method */}
                             <div className="card-glass p-6 animate-fade-in-up delay-100">
-                                <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
+                                <h2 className="text-xl font-semibold text-[#1e293b] mb-6 flex items-center">
                                     <FiCreditCard className="mr-2 text-primary-400" />
                                     {t('checkout.paymentMethod')}
                                 </h2>
@@ -268,9 +268,9 @@ const CheckoutPage = () => {
                                             <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${method.color} flex items-center justify-center text-xl mr-4`}>
                                                 {method.icon}
                                             </div>
-                                            <span className="font-medium text-white">{method.name || t(`checkout.${method.id.replace('_', '')}`) || t(`checkout.${method.id}`)}</span>
+                                            <span className="font-medium text-[#1e293b]">{method.name || t(`checkout.${method.id.replace('_', '')}`) || t(`checkout.${method.id}`)}</span>
                                             {paymentMethod === method.id && (
-                                                <FiCheck className="ml-auto text-white" />
+                                                <FiCheck className="ml-auto text-[#1e293b]" />
                                             )}
                                         </label>
                                     ))}
@@ -281,7 +281,7 @@ const CheckoutPage = () => {
                         {/* Order Summary */}
                         <div className="lg:col-span-1">
                             <div className="card-glass p-6 sticky top-24 animate-fade-in-up delay-200">
-                                <h2 className="text-xl font-semibold text-white mb-6">
+                                <h2 className="text-xl font-semibold text-[#1e293b] mb-6">
                                     {language === 'en' ? 'Order Summary' : 'Tóm tắt đơn hàng'}
                                 </h2>
 
@@ -290,10 +290,10 @@ const CheckoutPage = () => {
                                     {items.map((item) => (
                                         <div key={item.product._id} className="flex justify-between">
                                             <div className="flex-1">
-                                                <p className="text-sm font-medium text-white line-clamp-1">{item.product.name}</p>
-                                                <p className="text-xs text-gray-500">x{item.quantity}</p>
+                                                <p className="text-sm font-medium text-[#1e293b] line-clamp-1">{item.product.name}</p>
+                                                <p className="text-xs text-[#64748b]">x{item.quantity}</p>
                                             </div>
-                                            <span className="text-sm font-medium text-white">
+                                            <span className="text-sm font-medium text-[#1e293b]">
                                                 {formatPrice(item.product.price * item.quantity)}
                                             </span>
                                         </div>
@@ -304,19 +304,19 @@ const CheckoutPage = () => {
 
                                 {/* Totals */}
                                 <div className="space-y-3 mb-6">
-                                    <div className="flex justify-between text-gray-400">
+                                    <div className="flex justify-between text-[#64748b]">
                                         <span>{t('cart.subtotal')}</span>
-                                        <span className="text-white">{formatPrice(subtotal)}</span>
+                                        <span className="text-[#1e293b]">{formatPrice(subtotal)}</span>
                                     </div>
-                                    <div className="flex justify-between text-gray-400">
+                                    <div className="flex justify-between text-[#64748b]">
                                         <span>{t('cart.shipping')}</span>
-                                        <span className={shipping === 0 ? 'text-green-400' : 'text-white'}>
+                                        <span className={shipping === 0 ? 'text-green-400' : 'text-[#1e293b]'}>
                                             {shipping === 0 ? (language === 'en' ? 'Free' : 'Miễn phí') : formatPrice(shipping)}
                                         </span>
                                     </div>
                                     <div className="divider" />
                                     <div className="flex justify-between text-xl font-bold">
-                                        <span className="text-white">{t('cart.total')}</span>
+                                        <span className="text-[#1e293b]">{t('cart.total')}</span>
                                         <span className="text-gradient">{formatPrice(total)}</span>
                                     </div>
                                 </div>
@@ -338,11 +338,11 @@ const CheckoutPage = () => {
 
                                 {/* Trust badges */}
                                 <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
-                                    <div className="flex items-center text-sm text-gray-400">
+                                    <div className="flex items-center text-sm text-[#64748b]">
                                         <FiLock className="w-4 h-4 mr-2 text-green-400" />
                                         {language === 'en' ? 'SSL Encrypted' : 'Mã hóa SSL'}
                                     </div>
-                                    <div className="flex items-center text-sm text-gray-400">
+                                    <div className="flex items-center text-sm text-[#64748b]">
                                         <FiShield className="w-4 h-4 mr-2 text-primary-400" />
                                         {language === 'en' ? 'Secure Payment' : 'Thanh toán an toàn'}
                                     </div>

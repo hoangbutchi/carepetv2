@@ -19,9 +19,9 @@ const CartPage = () => {
 
     if (items.length === 0) {
         return (
-            <div className="min-h-screen bg-dark-300 pt-24 pb-12">
+            <div className="min-h-screen bg-theme-light pt-24 pb-12">
                 <div className="container-custom max-w-4xl">
-                    <h1 className="text-4xl font-display font-bold text-white mb-8 animate-fade-in-up">{t('cart.title')}</h1>
+                    <h1 className="text-4xl font-display font-bold text-[#1e293b] mb-8 animate-fade-in-up">{t('cart.title')}</h1>
                     <div className="card-glass p-12 animate-fade-in-up delay-100">
                         <EmptyState
                             icon={<span className="text-5xl">🛒</span>}
@@ -41,9 +41,9 @@ const CartPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-dark-300 pt-24 pb-12">
+        <div className="min-h-screen bg-theme-light pt-24 pb-12">
             <div className="container-custom">
-                <h1 className="text-4xl font-display font-bold text-white mb-8 animate-fade-in-up">{t('cart.title')}</h1>
+                <h1 className="text-4xl font-display font-bold text-[#1e293b] mb-8 animate-fade-in-up">{t('cart.title')}</h1>
 
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Cart Items */}
@@ -74,23 +74,23 @@ const CartPage = () => {
                                 <div className="flex-1 flex flex-col justify-between">
                                     <div>
                                         <Link to={`/shop/${item.product._id}`}>
-                                            <h3 className="font-semibold text-white hover:text-primary-400 transition-colors">{item.product.name}</h3>
+                                            <h3 className="font-semibold text-[#1e293b] hover:text-primary-400 transition-colors">{item.product.name}</h3>
                                         </Link>
-                                        <p className="text-sm text-gray-500 capitalize">{item.product.category}</p>
+                                        <p className="text-sm text-[#64748b] capitalize">{item.product.category}</p>
                                     </div>
                                     <div className="flex items-center justify-between mt-3">
                                         {/* Quantity Controls */}
                                         <div className="flex items-center rounded-lg overflow-hidden bg-white/5 border border-white/10">
                                             <button
                                                 onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
-                                                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                                                className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#1e293b] hover:bg-white/10 transition-colors"
                                             >
                                                 <FiMinus className="w-4 h-4" />
                                             </button>
-                                            <span className="w-10 text-center font-medium text-white">{item.quantity}</span>
+                                            <span className="w-10 text-center font-medium text-[#1e293b]">{item.quantity}</span>
                                             <button
                                                 onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
-                                                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                                                className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#1e293b] hover:bg-white/10 transition-colors"
                                             >
                                                 <FiPlus className="w-4 h-4" />
                                             </button>
@@ -122,18 +122,18 @@ const CartPage = () => {
                     {/* Order Summary */}
                     <div className="lg:col-span-1">
                         <div className="card-glass p-6 sticky top-24 animate-fade-in-up delay-200">
-                            <h2 className="text-xl font-semibold text-white mb-6">
+                            <h2 className="text-xl font-semibold text-[#1e293b] mb-6">
                                 {language === 'en' ? 'Order Summary' : 'Tóm tắt đơn hàng'}
                             </h2>
 
                             <div className="space-y-4 mb-6">
-                                <div className="flex justify-between text-gray-400">
+                                <div className="flex justify-between text-[#64748b]">
                                     <span>{t('cart.subtotal')}</span>
-                                    <span className="text-white">{formatPrice(subtotal)}</span>
+                                    <span className="text-[#1e293b]">{formatPrice(subtotal)}</span>
                                 </div>
-                                <div className="flex justify-between text-gray-400">
+                                <div className="flex justify-between text-[#64748b]">
                                     <span>{t('cart.shipping')}</span>
-                                    <span className={shipping === 0 ? 'text-green-400' : 'text-white'}>
+                                    <span className={shipping === 0 ? 'text-green-400' : 'text-[#1e293b]'}>
                                         {shipping === 0 ? (language === 'en' ? 'Free' : 'Miễn phí') : formatPrice(shipping)}
                                     </span>
                                 </div>
@@ -144,7 +144,7 @@ const CartPage = () => {
                                     </div>
                                 )}
                                 {shipping > 0 && (
-                                    <div className="text-sm text-gray-500">
+                                    <div className="text-sm text-[#64748b]">
                                         {language === 'en'
                                             ? `Add ${formatPrice(500000 - subtotal)} more for free shipping`
                                             : `Thêm ${formatPrice(500000 - subtotal)} để được miễn phí vận chuyển`
@@ -155,7 +155,7 @@ const CartPage = () => {
                                 <div className="divider" />
 
                                 <div className="flex justify-between text-xl font-bold">
-                                    <span className="text-white">{t('cart.total')}</span>
+                                    <span className="text-[#1e293b]">{t('cart.total')}</span>
                                     <span className="text-gradient">{formatPrice(total)}</span>
                                 </div>
                             </div>
@@ -167,15 +167,15 @@ const CartPage = () => {
 
                             {/* Trust badges */}
                             <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
-                                <div className="flex items-center text-sm text-gray-400">
+                                <div className="flex items-center text-sm text-[#64748b]">
                                     <FiShield className="w-4 h-4 mr-2 text-green-400" />
                                     {language === 'en' ? 'Secure checkout with SSL' : 'Thanh toán an toàn SSL'}
                                 </div>
-                                <div className="flex items-center text-sm text-gray-400">
+                                <div className="flex items-center text-sm text-[#64748b]">
                                     <FiTruck className="w-4 h-4 mr-2 text-primary-400" />
                                     {language === 'en' ? 'Fast delivery 2-3 days' : 'Giao hàng nhanh 2-3 ngày'}
                                 </div>
-                                <div className="flex items-center text-sm text-gray-400">
+                                <div className="flex items-center text-sm text-[#64748b]">
                                     <FiPercent className="w-4 h-4 mr-2 text-yellow-400" />
                                     {language === 'en' ? 'Best price guaranteed' : 'Đảm bảo giá tốt nhất'}
                                 </div>

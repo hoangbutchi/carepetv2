@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { FiCalendar, FiClock, FiCheckCircle, FiXCircle, FiInfo, FiChevronRight, FiSearch, FiFilter, FiUser, FiActivity, FiStar } from 'react-icons/fi';
+import { FiCalendar, FiClock, FiCheckCircle, FiXCircle, FiInfo, FiChevronRight, FiSearch, FiFilter, FiUser, FiActivity, FiStar, FiFileText } from 'react-icons/fi';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { appointmentAPI } from '../services/api';
@@ -119,7 +119,7 @@ const MyAppointmentsPage = () => {
                     icon: <FiXCircle className="w-3 h-3" />
                 };
             default:
-                return { label: status, color: 'bg-gray-500/10 text-gray-500', icon: null };
+                return { label: status, color: 'bg-gray-500/10 text-[#64748b]', icon: null };
         }
     };
 
@@ -181,7 +181,7 @@ const MyAppointmentsPage = () => {
                             <button
                                 onClick={() => setActiveTab('unprocessed')}
                                 className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center space-x-2 ${activeTab === 'unprocessed'
-                                        ? 'bg-primary-500 text-white shadow-glow-sm scale-[1.02]'
+                                        ? 'bg-primary-500 text-[#1e293b] shadow-glow-sm scale-[1.02]'
                                         : 'text-theme-secondary hover:text-theme'
                                     }`}
                             >
@@ -197,7 +197,7 @@ const MyAppointmentsPage = () => {
                             <button
                                 onClick={() => setActiveTab('processed')}
                                 className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center space-x-2 ${activeTab === 'processed'
-                                        ? 'bg-primary-500 text-white shadow-glow-sm scale-[1.02]'
+                                        ? 'bg-primary-500 text-[#1e293b] shadow-glow-sm scale-[1.02]'
                                         : 'text-theme-secondary hover:text-theme'
                                     }`}
                             >
@@ -418,7 +418,7 @@ const MyAppointmentsPage = () => {
                                 {getServiceIcon(selectedAppointment.service)}
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-white mb-1">
+                                <h3 className="text-2xl font-bold text-[#1e293b] mb-1">
                                     {getServiceName(selectedAppointment.service)}
                                 </h3>
                                 {(() => {
@@ -439,8 +439,8 @@ const MyAppointmentsPage = () => {
                                 {selectedAppointment.pet?.species === 'dog' ? '🐕' : '🐈'}
                             </div>
                             <div>
-                                <p className="text-sm text-gray-400 mb-0.5">{language === 'en' ? 'Pet Name' : 'Tên thú cưng'}</p>
-                                <p className="font-semibold text-white">
+                                <p className="text-sm text-[#64748b] mb-0.5">{language === 'en' ? 'Pet Name' : 'Tên thú cưng'}</p>
+                                <p className="font-semibold text-[#1e293b]">
                                     {selectedAppointment.pet?.name} ({selectedAppointment.pet?.species})
                                 </p>
                                 <p className="text-xs text-primary-400">
@@ -453,27 +453,32 @@ const MyAppointmentsPage = () => {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Date' : 'Ngày'}</p>
-                                <p className="font-semibold text-white">
+                                <p className="text-sm text-[#64748b] mb-1">{language === 'en' ? 'Date' : 'Ngày'}</p>
+                                <p className="font-semibold text-[#1e293b]">
                                     {format(new Date(selectedAppointment.date), 'dd/MM/yyyy')}
                                 </p>
                             </div>
                             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Time' : 'Giờ'}</p>
-                                <p className="font-semibold text-white">{selectedAppointment.timeSlot}</p>
+                                <p className="text-sm text-[#64748b] mb-1">{language === 'en' ? 'Time' : 'Giờ'}</p>
+                                <p className="font-semibold text-[#1e293b]">{selectedAppointment.timeSlot}</p>
                             </div>
                         </div>
 
                         <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                            <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Staff/Doctor' : 'Nhân viên/Bác sĩ'}</p>
-                            <p className="font-semibold text-white">{selectedAppointment.staff?.name}</p>
+                            <p className="text-sm text-[#64748b] mb-1">{language === 'en' ? 'Staff/Doctor' : 'Nhân viên/Bác sĩ'}</p>
+                            <p className="font-semibold text-[#1e293b]">{selectedAppointment.staff?.name}</p>
                             <p className="text-xs text-theme-muted">{selectedAppointment.staff?.email}</p>
                         </div>
 
                         {selectedAppointment.notes && (
-                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Your Notes' : 'Ghi chú của bạn'}</p>
-                                <p className="text-gray-200">{selectedAppointment.notes}</p>
+                            <div className="p-4 rounded-xl bg-orange-50 border border-orange-200">
+                                <p className="text-sm font-bold text-orange-700 mb-2 flex items-center">
+                                    <FiFileText className="mr-1.5" />
+                                    {language === 'en' ? 'Your Notes' : 'Ghi chú của bạn'}
+                                </p>
+                                <p className="text-[#1e293b] font-medium leading-relaxed italic">
+                                    "{selectedAppointment.notes}"
+                                </p>
                             </div>
                         )}
 
@@ -488,7 +493,7 @@ const MyAppointmentsPage = () => {
                                     </div>
                                 </div>
                                 {selectedAppointment.feedback && (
-                                    <p className="text-gray-200 italic">"{selectedAppointment.feedback}"</p>
+                                    <p className="text-[#475569] italic">"{selectedAppointment.feedback}"</p>
                                 )}
                             </div>
                         )}

@@ -33,7 +33,7 @@ const newsRoutes = require('./routes/newsRoutes');
 const momoRoutes = require('./routes/momoRoutes');
 const vnpayRoutes = require('./routes/vnpayRoutes');
 const healthRoutes = require('./routes/healthRoutes');
-const lostPetRoutes = require('./routes/lostPetRoutes');
+const statsRoutes = require('./routes/statsRoutes');
 
 // Mount routers
 app.use('/api/auth', authRoutes);
@@ -46,7 +46,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/momo', momoRoutes);
 app.use('/api/vnpay', vnpayRoutes);
 app.use('/api/health', healthRoutes);
-app.use('/api/lost-pets', lostPetRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Status check (previously health)
 app.get('/api/status', (req, res) => {

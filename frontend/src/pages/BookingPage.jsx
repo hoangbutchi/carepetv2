@@ -135,10 +135,10 @@ const BookingPage = () => {
                 <div key={s} className="flex items-center">
                     <div
                         className={`w-12 h-12 rounded-2xl flex items-center justify-center font-semibold transition-all duration-300 ${step > s
-                            ? 'bg-green-500 text-white shadow-glow-sm'
+                            ? 'bg-green-500 text-[#1e293b] shadow-glow-sm'
                             : step === s
-                                ? 'bg-gradient-primary text-white shadow-glow-sm scale-110'
-                                : 'bg-white/10 text-gray-500'
+                                ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm scale-110'
+                                : 'bg-white/10 text-[#64748b]'
                             }`}
                     >
                         {step > s ? <FiCheck className="w-5 h-5" /> : s}
@@ -156,7 +156,7 @@ const BookingPage = () => {
 
     const renderStep1 = () => (
         <div className="animate-fade-in-up">
-            <h2 className="text-2xl font-display font-bold text-white mb-6">{t('booking.selectService')}</h2>
+            <h2 className="text-2xl font-display font-bold text-[#1e293b] mb-6">{t('booking.selectService')}</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {services.map((service, index) => (
                     <button
@@ -171,13 +171,13 @@ const BookingPage = () => {
                         <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform`}>
                             {service.icon}
                         </div>
-                        <h3 className="text-lg font-semibold text-white mb-1">{t(`services.${service.id}`)}</h3>
-                        <p className="text-sm text-gray-400 mb-3 line-clamp-2">{t(`services.${service.id}Desc`)}</p>
+                        <h3 className="text-lg font-semibold text-[#1e293b] mb-1">{t(`services.${service.id}`)}</h3>
+                        <p className="text-sm text-[#64748b] mb-3 line-clamp-2">{t(`services.${service.id}Desc`)}</p>
                         <p className="text-xl font-bold text-gradient">{formatPrice(service.price)}</p>
 
                         {booking.service === service.id && (
                             <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                                <FiCheck className="w-4 h-4 text-white" />
+                                <FiCheck className="w-4 h-4 text-[#1e293b]" />
                             </div>
                         )}
                     </button>
@@ -188,12 +188,12 @@ const BookingPage = () => {
 
     const renderStep2 = () => (
         <div className="animate-fade-in-up">
-            <h2 className="text-2xl font-display font-bold text-white mb-6">{t('booking.selectDate')}</h2>
+            <h2 className="text-2xl font-display font-bold text-[#1e293b] mb-6">{t('booking.selectDate')}</h2>
 
             <div className="grid md:grid-cols-2 gap-8">
                 {/* Date Picker */}
                 <div>
-                    <label className="flex items-center text-sm font-medium text-gray-300 mb-3">
+                    <label className="flex items-center text-sm font-medium text-[#475569] mb-3">
                         <FiCalendar className="mr-2 text-primary-400" />
                         {language === 'en' ? 'Select Date' : 'Chọn ngày'}
                     </label>
@@ -208,9 +208,9 @@ const BookingPage = () => {
 
                 {/* Staff Selection */}
                 <div>
-                    <label className="flex items-center text-sm font-medium text-gray-300 mb-3">
+                    <label className="flex items-center text-sm font-medium text-[#475569] mb-3">
                         <FiUser className="mr-2 text-primary-400" />
-                        {t('booking.selectStaff')} <span className="text-gray-500 ml-1">({language === 'en' ? 'Optional' : 'Tùy chọn'})</span>
+                        {t('booking.selectStaff')} <span className="text-[#64748b] ml-1">({language === 'en' ? 'Optional' : 'Tùy chọn'})</span>
                     </label>
                     <select
                         value={booking.staff}
@@ -227,7 +227,7 @@ const BookingPage = () => {
 
             {/* Time Slots */}
             <div className="mt-8">
-                <label className="flex items-center text-sm font-medium text-gray-300 mb-4">
+                <label className="flex items-center text-sm font-medium text-[#475569] mb-4">
                     <FiClock className="mr-2 text-primary-400" />
                     {language === 'en' ? 'Select Time' : 'Chọn giờ'}
                 </label>
@@ -245,9 +245,9 @@ const BookingPage = () => {
                                 onClick={() => isAvailable && setBooking({ ...booking, timeSlot: slot })}
                                 disabled={!isAvailable}
                                 className={`py-3 px-4 rounded-xl font-medium transition-all duration-300 ${booking.timeSlot === slot
-                                    ? 'bg-gradient-primary text-white shadow-glow-sm'
+                                    ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm'
                                     : isAvailable
-                                        ? 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 hover:border-primary-500/50'
+                                        ? 'bg-white/5 border border-white/10 text-[#475569] hover:bg-white/10 hover:border-primary-500/50'
                                         : 'bg-white/5 text-gray-600 cursor-not-allowed opacity-50'
                                     }`}
                             >
@@ -262,13 +262,13 @@ const BookingPage = () => {
 
     const renderStep3 = () => (
         <div className="animate-fade-in-up">
-            <h2 className="text-2xl font-display font-bold text-white mb-6">{t('booking.yourPet')}</h2>
+            <h2 className="text-2xl font-display font-bold text-[#1e293b] mb-6">{t('booking.yourPet')}</h2>
 
             {pets.length === 0 ? (
                 <div className="text-center py-16 card-glass rounded-2xl">
                     <span className="text-6xl mb-4 block">🐾</span>
-                    <h3 className="text-xl font-semibold text-white mb-2">{t('pets.noPets')}</h3>
-                    <p className="text-gray-400 mb-6">{language === 'en' ? 'Please add a pet first' : 'Vui lòng thêm thú cưng trước'}</p>
+                    <h3 className="text-xl font-semibold text-[#1e293b] mb-2">{t('pets.noPets')}</h3>
+                    <p className="text-[#64748b] mb-6">{language === 'en' ? 'Please add a pet first' : 'Vui lòng thêm thú cưng trước'}</p>
                     <button onClick={() => navigate('/my-pets')} className="btn-primary">
                         {t('pets.addPet')}
                     </button>
@@ -290,15 +290,15 @@ const BookingPage = () => {
                                     {pet.species === 'dog' ? '🐕' : pet.species === 'cat' ? '🐈' : '🐾'}
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-white">{pet.name}</h3>
-                                    <p className="text-sm text-gray-400 capitalize">{pet.species} - {pet.breed}</p>
-                                    <p className="text-sm text-gray-500">{pet.age} {t('pets.years')}, {pet.weight}{t('pets.kg')}</p>
+                                    <h3 className="text-lg font-semibold text-[#1e293b]">{pet.name}</h3>
+                                    <p className="text-sm text-[#64748b] capitalize">{pet.species} - {pet.breed}</p>
+                                    <p className="text-sm text-[#64748b]">{pet.age} {t('pets.years')}, {pet.weight}{t('pets.kg')}</p>
                                 </div>
                             </div>
 
                             {booking.pet === pet._id && (
                                 <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                                    <FiCheck className="w-4 h-4 text-white" />
+                                    <FiCheck className="w-4 h-4 text-[#1e293b]" />
                                 </div>
                             )}
                         </button>
@@ -308,7 +308,7 @@ const BookingPage = () => {
 
             {/* Notes */}
             <div className="mt-8">
-                <label className="block text-sm font-medium text-gray-300 mb-3">
+                <label className="block text-sm font-medium text-[#475569] mb-3">
                     {t('booking.notes')}
                 </label>
                 <textarea
@@ -327,26 +327,26 @@ const BookingPage = () => {
 
         return (
             <div className="animate-fade-in-up">
-                <h2 className="text-2xl font-display font-bold text-white mb-6">{t('booking.confirm')}</h2>
+                <h2 className="text-2xl font-display font-bold text-[#1e293b] mb-6">{t('booking.confirm')}</h2>
 
                 <div className="card-glass rounded-2xl p-6 space-y-0">
                     <div className="flex justify-between items-center py-4 border-b border-white/10">
-                        <span className="text-gray-400">{t('booking.selectService')}</span>
-                        <span className="font-semibold text-white flex items-center">
+                        <span className="text-[#64748b]">{t('booking.selectService')}</span>
+                        <span className="font-semibold text-[#1e293b] flex items-center">
                             {t(`services.${booking.service}`)}
                         </span>
                     </div>
 
                     <div className="flex justify-between items-center py-4 border-b border-white/10">
-                        <span className="text-gray-400">{t('booking.selectDate')}</span>
-                        <span className="font-semibold text-white">
+                        <span className="text-[#64748b]">{t('booking.selectDate')}</span>
+                        <span className="font-semibold text-[#1e293b]">
                             {format(new Date(booking.date), 'dd/MM/yyyy')} - {booking.timeSlot}
                         </span>
                     </div>
 
                     <div className="flex justify-between items-center py-4 border-b border-white/10">
-                        <span className="text-gray-400">{t('booking.yourPet')}</span>
-                        <span className="font-semibold text-white flex items-center">
+                        <span className="text-[#64748b]">{t('booking.yourPet')}</span>
+                        <span className="font-semibold text-[#1e293b] flex items-center">
                             <span className="mr-2">{selectedPet?.species === 'dog' ? '🐕' : '🐈'}</span>
                             {selectedPet?.name}
                         </span>
@@ -354,20 +354,20 @@ const BookingPage = () => {
 
                     {selectedStaff && (
                         <div className="flex justify-between items-center py-4 border-b border-white/10">
-                            <span className="text-gray-400">{t('booking.selectStaff')}</span>
-                            <span className="font-semibold text-white">{selectedStaff.name}</span>
+                            <span className="text-[#64748b]">{t('booking.selectStaff')}</span>
+                            <span className="font-semibold text-[#1e293b]">{selectedStaff.name}</span>
                         </div>
                     )}
 
                     {booking.notes && (
                         <div className="py-4 border-b border-white/10">
-                            <span className="text-gray-400 block mb-2">{t('booking.notes')}</span>
-                            <p className="text-gray-300">{booking.notes}</p>
+                            <span className="text-[#64748b] block mb-2">{t('booking.notes')}</span>
+                            <p className="text-[#475569]">{booking.notes}</p>
                         </div>
                     )}
 
                     <div className="flex justify-between items-center pt-6">
-                        <span className="text-xl font-semibold text-white">{t('cart.total')}</span>
+                        <span className="text-xl font-semibold text-[#1e293b]">{t('cart.total')}</span>
                         <span className="text-3xl font-bold text-gradient">
                             {formatPrice(selectedService?.price || 0)}
                         </span>
@@ -378,13 +378,13 @@ const BookingPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-dark-300 pt-24 pb-12">
+        <div className="min-h-screen bg-theme pt-24 pb-12">
             <div className="container-custom">
                 <div className="max-w-4xl mx-auto">
                     {/* Header */}
                     <div className="text-center mb-8 animate-fade-in-up">
                         <span className="badge-primary mb-4">{t('booking.step')} {step}/4</span>
-                        <h1 className="text-4xl font-display font-bold text-white mb-4">{t('booking.title')}</h1>
+                        <h1 className="text-4xl font-display font-bold text-[#1e293b] mb-4">{t('booking.title')}</h1>
                     </div>
 
                     {/* Step Indicator */}

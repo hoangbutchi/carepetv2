@@ -171,7 +171,7 @@ const ArticleManagement = () => {
         <div className="card-glass">
             {/* Header */}
             <div className="p-6 border-b border-white/10">
-                <h2 className="text-xl font-semibold text-white flex items-center">
+                <h2 className="text-xl font-semibold text-[#1e293b] flex items-center">
                     <FiFileText className="mr-2 text-primary-400" />
                     {language === 'en' ? 'Article Management' : 'Quản lý Bài viết'}
                 </h2>
@@ -182,8 +182,8 @@ const ArticleManagement = () => {
                 <button
                     onClick={() => setActiveTab('write')}
                     className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-300 ${activeTab === 'write'
-                        ? 'text-white border-b-2 border-primary-500 bg-white/5'
-                        : 'text-gray-500 hover:text-gray-300'
+                        ? 'text-primary-600 border-b-2 border-primary-500 bg-primary-50'
+                        : 'text-[#64748b] hover:text-[#1e293b] hover:bg-gray-50'
                         }`}
                 >
                     <FiPlus className="inline mr-1" />
@@ -192,8 +192,8 @@ const ArticleManagement = () => {
                 <button
                     onClick={() => setActiveTab('my-articles')}
                     className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-300 ${activeTab === 'my-articles'
-                        ? 'text-white border-b-2 border-primary-500 bg-white/5'
-                        : 'text-gray-500 hover:text-gray-300'
+                        ? 'text-primary-600 border-b-2 border-primary-500 bg-primary-50'
+                        : 'text-[#64748b] hover:text-[#1e293b] hover:bg-gray-50'
                         }`}
                 >
                     <FiFileText className="inline mr-1" />
@@ -203,8 +203,8 @@ const ArticleManagement = () => {
                     <button
                         onClick={() => setActiveTab('pending')}
                         className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-300 ${activeTab === 'pending'
-                            ? 'text-white border-b-2 border-primary-500 bg-white/5'
-                            : 'text-gray-500 hover:text-gray-300'
+                            ? 'text-primary-600 border-b-2 border-primary-500 bg-primary-50'
+                            : 'text-[#64748b] hover:text-[#1e293b] hover:bg-gray-50'
                             }`}
                     >
                         <FiClock className="inline mr-1" />
@@ -227,7 +227,7 @@ const ArticleManagement = () => {
                         )}
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-[#1e293b] font-bold mb-2">
                                 {language === 'en' ? 'Title' : 'Tiêu đề'} *
                             </label>
                             <input
@@ -242,7 +242,7 @@ const ArticleManagement = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-[#1e293b] font-bold mb-2">
                                 {language === 'en' ? 'Summary' : 'Tóm tắt'}
                             </label>
                             <input
@@ -257,7 +257,7 @@ const ArticleManagement = () => {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                <label className="block text-sm font-medium text-[#1e293b] font-bold mb-2">
                                     {language === 'en' ? 'Category' : 'Danh mục'}
                                 </label>
                                 <select name="category" value={formData.category} onChange={handleChange} className="input">
@@ -269,7 +269,7 @@ const ArticleManagement = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                <label className="block text-sm font-medium text-[#1e293b] font-bold mb-2">
                                     {language === 'en' ? 'Cover Image URL' : 'Link ảnh bìa'}
                                 </label>
                                 <input
@@ -284,7 +284,7 @@ const ArticleManagement = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-[#1e293b] font-bold mb-2">
                                 {language === 'en' ? 'Content' : 'Nội dung'} *
                             </label>
                             <textarea
@@ -339,13 +339,13 @@ const ArticleManagement = () => {
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-2">
                                                 {getStatusBadge(article.status)}
-                                                <span className="text-xs text-gray-500">
+                                                <span className="text-xs text-[#64748b]">
                                                     {format(new Date(article.createdAt), 'dd/MM/yyyy HH:mm')}
                                                 </span>
                                             </div>
-                                            <h3 className="font-semibold text-white">{article.title}</h3>
+                                            <h3 className="font-semibold text-[#1e293b]">{article.title}</h3>
                                             {article.summary && (
-                                                <p className="text-sm text-gray-500 mt-1 line-clamp-2">{article.summary}</p>
+                                                <p className="text-sm text-[#64748b] mt-1 line-clamp-2">{article.summary}</p>
                                             )}
                                             {article.rejectionReason && (
                                                 <p className="text-sm text-red-400 mt-2">
@@ -394,15 +394,15 @@ const ArticleManagement = () => {
                                                 <span className="text-xs text-gray-400">
                                                     {language === 'en' ? 'By' : 'Bởi'}: {article.author?.name || 'Unknown'}
                                                 </span>
-                                                <span className="text-xs text-gray-500">
+                                                <span className="text-xs text-[#64748b]">
                                                     {format(new Date(article.createdAt), 'dd/MM/yyyy HH:mm')}
                                                 </span>
                                             </div>
-                                            <h3 className="font-semibold text-white">{article.title}</h3>
+                                            <h3 className="font-semibold text-[#1e293b]">{article.title}</h3>
                                             {article.summary && (
-                                                <p className="text-sm text-gray-300 mt-1">{article.summary}</p>
+                                                <p className="text-sm text-[#475569] mt-1">{article.summary}</p>
                                             )}
-                                            <p className="text-sm text-gray-500 mt-2 line-clamp-3">{article.content}</p>
+                                            <p className="text-sm text-[#64748b] mt-2 line-clamp-3">{article.content}</p>
                                         </div>
                                         <div className="flex gap-2 ml-4">
                                             <button

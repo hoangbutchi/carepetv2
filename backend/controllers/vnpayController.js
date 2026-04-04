@@ -2,10 +2,6 @@ const crypto = require('crypto');
 const moment = require('moment');
 const Order = require('../models/Order');
 
-// Variables for VNPAY Sandbox configuration
-const tmnCode = process.env.VNP_TMN_CODE;
-const secretKey = process.env.VNP_HASH_SECRET;
-const vnpUrl = process.env.VNP_URL;
 
 function sortObject(obj) {
     let sorted = {};
@@ -27,6 +23,11 @@ function sortObject(obj) {
 // @route   POST /api/vnpay/payment
 // @access  Private
 exports.createPayment = async (req, res) => {
+    // Moved credentials inside to ensure they pick up latest .env changes
+    const tmnCode = process.env.VNP_TMN_CODE;
+    const secretKey = process.env.VNP_HASH_SECRET;
+    const vnpUrl = process.env.VNP_URL;
+
     try {
         const { orderId, amount, bankCode, language } = req.body;
 
@@ -79,10 +80,10 @@ exports.createPayment = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Create VNPAY Payment Error:', error.message);
+        console.error('Create VNPAY Payment Error Stack:', error.stack || error);
         res.status(500).json({
             success: false,
-            message: 'Server error while creating payment',
+            message: error.message || 'Server error while creating payment',
             error: error.message
         });
     }

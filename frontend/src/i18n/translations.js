@@ -19,7 +19,7 @@ const translations = {
             news: 'News',
             chat: 'Chat',
             myAppointments: 'My Appointments',
-            lostPet: 'Lost Pets',
+            myOrders: 'My Orders',
         },
 
         // Homepage
@@ -238,7 +238,7 @@ const translations = {
             news: 'Tin tức',
             chat: 'Tin nhắn',
             myAppointments: 'Lịch hẹn của tôi',
-            lostPet: 'Báo lạc',
+            myOrders: 'Đơn hàng của tôi',
         },
 
         // Homepage

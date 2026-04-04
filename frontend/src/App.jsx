@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { LanguageProvider } from './i18n/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
-import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Components
 import Navbar from './components/common/Navbar';
@@ -27,7 +27,7 @@ import NewsPage from './pages/NewsPage';
 import ChatPage from './pages/ChatPage';
 import PaymentResultPage from './pages/PaymentResultPage';
 import MyAppointmentsPage from './pages/MyAppointmentsPage';
-import LostPetPage from './pages/LostPetPage';
+import MyOrdersPage from './pages/MyOrdersPage';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -40,21 +40,19 @@ const ScrollToTop = () => {
     return null;
 };
 
-// Toast wrapper to use theme
+// Toast wrapper
 const ThemedToaster = () => {
-    const { isDark } = useTheme();
-
     return (
         <Toaster
             position="top-right"
             toastOptions={{
                 duration: 3000,
                 style: {
-                    background: isDark ? '#1a1a2e' : '#ffffff',
-                    color: isDark ? '#fff' : '#1e293b',
+                    background: '#ffffff',
+                    color: '#1e293b',
                     borderRadius: '12px',
-                    border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
-                    boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.1)',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                 },
                 success: {
                     iconTheme: {
@@ -75,33 +73,18 @@ const ThemedToaster = () => {
 
 // Main App content
 const AppContent = () => {
-    const { isDark } = useTheme();
     return (
         <Router>
             <ScrollToTop />
-            <div className={`min-h-screen flex flex-col ${isDark ? 'bg-theme' : 'bg-transparent'} transition-colors duration-300 relative`}>
+            <div className="min-h-screen flex flex-col bg-transparent relative">
                 
-                {/* Global Light Mode Organic Background */}
-                {!isDark && (
-                    <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
-                        {/* Porcelain White to Mint to Sky Blue Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white via-[#f0fdf4] to-[#f0f9ff] opacity-90"></div>
-                        
-                        {/* Abstract floating pastel circles */}
-                        <div className="absolute top-[10%] left-[60%] w-[50vw] max-w-[600px] h-[50vw] max-h-[600px] rounded-full bg-emerald-100/60 blur-[100px] animate-pulse-slow"></div>
-                        <div className="absolute top-[60%] left-[10%] w-[60vw] max-w-[800px] h-[60vw] max-h-[800px] rounded-full bg-sky-200/50 blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
-                        
-                        {/* High blur Monstera / Leaves in corners */}
-                        <div 
-                            className="absolute -top-[10%] -left-[5%] w-[40vw] max-w-[500px] h-[40vw] max-h-[500px] rounded-full mix-blend-multiply opacity-30 blur-[12px] transform rotate-12"
-                            style={{ backgroundImage: 'url("https://images.pexels.com/photos/3125132/pexels-photo-3125132.jpeg?auto=compress&cs=tinysrgb&w=800")', backgroundSize: 'cover' }}
-                        ></div>
-                        <div 
-                            className="absolute -bottom-[10%] -right-[5%] w-[50vw] max-w-[600px] h-[50vw] max-h-[600px] rounded-full mix-blend-multiply opacity-25 blur-[16px] transform -rotate-15"
-                            style={{ backgroundImage: 'url("https://images.pexels.com/photos/3125132/pexels-photo-3125132.jpeg?auto=compress&cs=tinysrgb&w=800")', backgroundSize: 'cover' }}
-                        ></div>
-                    </div>
-                )}
+                {/* Global Healthcare Background */}
+                <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#f0f9ff] via-white to-[#f0f9ff] opacity-90"></div>
+                    <div className="absolute top-[10%] left-[60%] w-[50vw] max-w-[600px] h-[50vw] max-h-[600px] rounded-full bg-sky-100/40 blur-[100px]"></div>
+                    <div className="absolute top-[60%] left-[10%] w-[60vw] max-w-[800px] h-[60vw] max-h-[800px] rounded-full bg-orange-50/40 blur-[120px]"></div>
+                </div>
+
                 <Navbar />
                 <main className="flex-grow">
                     <Routes>
@@ -122,7 +105,7 @@ const AppContent = () => {
                         <Route path="/chat" element={<ChatPage />} />
                         <Route path="/payment-result" element={<PaymentResultPage />} />
                         <Route path="/my-appointments" element={<MyAppointmentsPage />} />
-                        <Route path="/lost-pets" element={<LostPetPage />} />
+                        <Route path="/my-orders" element={<MyOrdersPage />} />
                     </Routes>
                 </main>
                 <Footer />

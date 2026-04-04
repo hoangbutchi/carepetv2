@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiCalendar, FiPackage, FiDollarSign, FiTrendingUp, FiClock, FiCheck, FiX, FiShoppingBag, FiGrid, FiFileText, FiUsers, FiFilter } from 'react-icons/fi';
+import { FiCalendar, FiPackage, FiClock, FiCheck, FiX, FiShoppingBag, FiGrid, FiFileText, FiUsers, FiFilter } from 'react-icons/fi';
 import { format, addDays, subDays } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -10,6 +10,7 @@ import { appointmentAPI, orderAPI, authAPI } from '../services/api';
 import { Badge, Spinner, EmptyState, Modal } from '../components/common/UI';
 import ProductManagement from '../components/admin/ProductManagement';
 import ArticleManagement from '../components/admin/ArticleManagement';
+import RevenueChart from '../components/admin/RevenueChart';
 import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
@@ -24,12 +25,12 @@ const AdminDashboard = () => {
     const [isDateFilterActive, setIsDateFilterActive] = useState(false); // Whether date filter is being used
     const [appointments, setAppointments] = useState([]);
     const [todayAppointments, setTodayAppointments] = useState([]);
-    const [orderStats, setOrderStats] = useState({ today: {}, month: {}, pending: 0 });
+    const [orderStats, setOrderStats] = useState({ today: {}, month: {}, pending: 0, chartData: [] });
     const [recentOrders, setRecentOrders] = useState([]);
     const [allOrders, setAllOrders] = useState([]);
     const [doctors, setDoctors] = useState([]);
-    const [appointmentStats, setAppointmentStats] = useState({ total: 0, pending: 0, confirmed: 0, completed: 0 });
-    const [todayStats, setTodayStats] = useState({ total: 0, pending: 0, confirmed: 0, completed: 0 });
+    const [appointmentStats, setAppointmentStats] = useState({ total: 0, pending: 0, confirmed: 0, processing: 0, completed: 0 });
+    const [todayStats, setTodayStats] = useState({ total: 0, pending: 0, confirmed: 0, processing: 0, completed: 0 });
     const [appointmentFilter, setAppointmentFilter] = useState('all'); // 'all' or 'pending'
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -71,7 +72,8 @@ const AdminDashboard = () => {
             console.error('Error fetching appointments:', error);
             // Don't call setMockData() immediately if it's just a 404 or something, 
             // but for now, we'll keep it as a fallback if the API fails
-            if (!appointments.length) setMockData();
+            // Only use mock data if specifically requested or as a last resort in dev
+            // if (!appointments.length) setMockData();
         }
 
         // Fetch orders & stats
@@ -110,7 +112,7 @@ const AdminDashboard = () => {
         const mockAppointments = [
             { _id: '1', service: 'grooming', timeSlot: '09:00-10:00', status: 'confirmed', customer: { name: 'Nguyễn Văn A' }, pet: { name: 'Buddy', species: 'dog', avatar: 'https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg' }, staff: { _id: user?._id, name: 'BS. Nguyễn' }, date: selectedDate },
             { _id: '2', service: 'vaccination', timeSlot: '10:00-11:00', status: 'pending', customer: { name: 'Trần Thị B' }, pet: { name: 'Mèo Mun', species: 'cat', avatar: 'https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg' }, staff: { _id: user?._id, name: 'BS. Nguyễn' }, date: selectedDate },
-            { _id: '3', service: 'checkup', timeSlot: '14:00-15:00', status: 'confirmed', customer: { name: 'Lê Văn C' }, pet: { name: 'Lucky', species: 'dog', avatar: '' }, staff: { _id: '999', name: 'BS. Trần' }, date: selectedDate },
+            { _id: '3', service: 'checkup', timeSlot: '14:00-15:00', status: 'processing', customer: { name: 'Lê Văn C' }, pet: { name: 'Lucky', species: 'dog', avatar: '' }, staff: { _id: user?._id, name: 'BS. Trần' }, date: selectedDate },
         ];
 
         // Filter by role
@@ -119,9 +121,18 @@ const AdminDashboard = () => {
         setAppointmentStats(calculateStats(filtered));
 
         setOrderStats({
-            today: { orders: 5, revenue: 2500000 },
-            month: { orders: 120, revenue: 45000000 },
+            today: { orders: 5, appointments: 3, revenue: 2500000 },
+            month: { orders: 120, appointments: 45, revenue: 45000000 },
             pending: 12,
+            chartData: [
+                { date: '01/04', revenue: 1500000, orders: 1000000, services: 500000 },
+                { date: '02/04', revenue: 2100000, orders: 1200000, services: 900000 },
+                { date: '03/04', revenue: 1800000, orders: 800000, services: 1000000 },
+                { date: '04/04', revenue: 2500000, orders: 1500000, services: 1000000 },
+                { date: '05/04', revenue: 3200000, orders: 2000000, services: 1200000 },
+                { date: '06/04', revenue: 2800000, orders: 1600000, services: 1200000 },
+                { date: '07/04', revenue: 4200000, orders: 2500000, services: 1700000 },
+            ]
         });
         setRecentOrders([
             { _id: '1', orderNumber: 'PMS2601001', totalAmount: 650000, orderStatus: 'pending', paymentStatus: 'pending', customer: { name: 'Nguyễn Văn A' }, createdAt: new Date() },
@@ -163,6 +174,7 @@ const AdminDashboard = () => {
         total: apts.length,
         pending: apts.filter(a => a.status === 'pending').length,
         confirmed: apts.filter(a => a.status === 'confirmed').length,
+        processing: apts.filter(a => a.status === 'processing').length,
         completed: apts.filter(a => a.status === 'completed').length,
     });
 
@@ -300,7 +312,7 @@ const AdminDashboard = () => {
         const variants = {
             pending: 'warning',
             confirmed: 'primary',
-            processing: 'warning',
+            processing: 'secondary',
             completed: 'success',
             delivered: 'success',
             paid: 'success',
@@ -367,8 +379,8 @@ const AdminDashboard = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-300 ${activeTab === tab.id
-                                ? 'bg-gradient-primary text-white shadow-glow-sm'
-                                : `${isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`
+                                ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm'
+                                : `${isDark ? 'text-[#64748b] hover:text-[#1e293b] hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`
                                 }`}
                         >
                             <tab.icon className="w-4 h-4" />
@@ -392,8 +404,9 @@ const AdminDashboard = () => {
                                 <p className="text-theme-secondary mb-1">{language === 'en' ? "Today's Appointments" : 'Lịch hẹn hôm nay'}</p>
                                 <p className="text-3xl font-bold text-theme">{appointmentStats.total}</p>
                                 <div className="mt-4 flex flex-wrap gap-2 text-sm">
-                                    <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-lg">{appointmentStats.confirmed} {language === 'en' ? 'confirmed' : 'xác nhận'}</span>
-                                    <span className="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-lg">{appointmentStats.pending} {language === 'en' ? 'pending' : 'chờ'}</span>
+                                    <span className="bg-primary-500/20 text-primary-400 px-2 py-1 rounded-lg">{appointmentStats.confirmed} {language === 'en' ? 'confirmed' : 'xác nhận'}</span>
+                                    <span className="bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-lg">{appointmentStats.processing} {language === 'en' ? 'processing' : 'thực hiện'}</span>
+                                    <span className="bg-orange-500/20 text-orange-400 px-2 py-1 rounded-lg">{appointmentStats.pending} {language === 'en' ? 'pending' : 'chờ'}</span>
                                 </div>
                             </div>
 
@@ -407,28 +420,11 @@ const AdminDashboard = () => {
                                 <p className="text-theme-secondary mb-1">{language === 'en' ? 'Pending Orders' : 'Đơn chờ xử lý'}</p>
                                 <p className="text-3xl font-bold text-theme">{orderStats.pending}</p>
                             </div>
+                        </div>
 
-                            <div className="card-glass p-6 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
-                                        <FiDollarSign className="w-6 h-6 text-green-400" />
-                                    </div>
-                                    <span className="text-green-400 text-sm font-medium">+8%</span>
-                                </div>
-                                <p className="text-theme-secondary mb-1">{language === 'en' ? "Today's Revenue" : 'Doanh thu hôm nay'}</p>
-                                <p className="text-3xl font-bold text-gradient">{formatPrice(orderStats.today?.revenue || 0)}</p>
-                            </div>
-
-                            <div className="card-glass p-6 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="w-12 h-12 bg-secondary-500/20 rounded-xl flex items-center justify-center">
-                                        <FiTrendingUp className="w-6 h-6 text-secondary-400" />
-                                    </div>
-                                    <span className="text-green-400 text-sm font-medium">+23%</span>
-                                </div>
-                                <p className="text-theme-secondary mb-1">{language === 'en' ? 'Monthly Revenue' : 'Doanh thu tháng'}</p>
-                                <p className="text-3xl font-bold text-gradient">{formatPrice(orderStats.month?.revenue || 0)}</p>
-                            </div>
+                        {/* Revenue Section */}
+                        <div className="mb-8 overflow-hidden">
+                            <RevenueChart role={user?.role} />
                         </div>
 
                         {/* Recent Activity */}
@@ -438,14 +434,14 @@ const AdminDashboard = () => {
                                 <div className="p-6 border-b border-theme flex justify-between items-center">
                                     <h2 className="text-xl font-semibold text-theme flex items-center">
                                         <FiClock className="mr-2 text-primary-400" />
-                                        {language === 'en' ? "Pending Appointments" : 'Lịch hẹn cần xử lý'}
+                                        {language === 'en' ? "Today's Tasks" : 'Công việc cần làm'}
                                     </h2>
                                     <button onClick={() => { setActiveTab('appointments'); setAppointmentFilter('pending'); }} className="text-primary-400 hover:text-primary-300 text-sm">
                                         {language === 'en' ? 'View all' : 'Xem tất cả'}
                                     </button>
                                 </div>
                                 <div className="divide-y divide-theme">
-                                    {appointments.filter(a => a.status === 'pending').slice(0, 5).map((apt) => (
+                                    {appointments.filter(a => ['pending', 'confirmed', 'processing'].includes(a.status)).slice(0, 8).map((apt) => (
                                         <div
                                             key={apt._id}
                                             onClick={() => setSelectedAppointment(apt)}
@@ -469,11 +465,11 @@ const AdminDashboard = () => {
                                             {getStatusBadge(apt.status)}
                                         </div>
                                     ))}
-                                    {appointments.filter(a => a.status === 'pending').length === 0 && (
+                                    {appointments.filter(a => ['pending', 'confirmed', 'processing'].includes(a.status)).length === 0 && (
                                         <div className="p-8">
                                             <EmptyState
                                                 icon={<span className="text-4xl">📅</span>}
-                                                title={language === 'en' ? 'No pending appointments' : 'Không có lịch hẹn cần xử lý'}
+                                                title={language === 'en' ? 'No active appointments' : 'Không có lịch hẹn cần xử lý'}
                                             />
                                         </div>
                                     )}
@@ -588,8 +584,8 @@ const AdminDashboard = () => {
                             <button
                                 onClick={() => setAppointmentFilter('all')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${appointmentFilter === 'all'
-                                    ? 'bg-gradient-primary text-white shadow-glow-sm'
-                                    : `${isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`
+                                    ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm'
+                                    : `${isDark ? 'text-[#64748b] hover:text-[#1e293b] hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`
                                     }`}
                             >
                                 {language === 'en' ? 'All Appointments' : 'Toàn bộ'} ({appointments.length})
@@ -597,20 +593,29 @@ const AdminDashboard = () => {
                             <button
                                 onClick={() => setAppointmentFilter('pending')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${appointmentFilter === 'pending'
-                                    ? 'bg-gradient-primary text-white shadow-glow-sm'
-                                    : `${isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`
+                                    ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm'
+                                    : `${isDark ? 'text-[#64748b] hover:text-[#1e293b] hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`
                                     }`}
                             >
-                                {language === 'en' ? 'Pending' : 'Chờ xử lý'} ({appointments.filter(a => a.status === 'pending').length})
+                                {language === 'en' ? 'Pending' : 'Chờ xác nhận'} ({appointments.filter(a => a.status === 'pending').length})
                             </button>
                             <button
-                                onClick={() => setAppointmentFilter('processed')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${appointmentFilter === 'processed'
-                                    ? 'bg-gradient-primary text-white shadow-glow-sm'
-                                    : `${isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`
+                                onClick={() => setAppointmentFilter('processing')}
+                                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${appointmentFilter === 'processing'
+                                    ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm'
+                                    : `${isDark ? 'text-[#64748b] hover:text-[#1e293b] hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`
                                     }`}
                             >
-                                {language === 'en' ? 'History' : 'Đã xử lý'} ({appointments.filter(a => ['completed', 'rated'].includes(a.status)).length})
+                                {language === 'en' ? 'Processing' : 'Đang thực hiện'} ({appointments.filter(a => a.status === 'processing').length})
+                            </button>
+                            <button
+                                onClick={() => setAppointmentFilter('completed')}
+                                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${appointmentFilter === 'completed'
+                                    ? 'bg-gradient-primary text-[#1e293b] shadow-glow-sm'
+                                    : `${isDark ? 'text-[#64748b] hover:text-[#1e293b] hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`
+                                    }`}
+                            >
+                                {language === 'en' ? 'Completed' : 'Hoàn thành'} ({appointments.filter(a => ['completed', 'rated'].includes(a.status)).length})
                             </button>
                         </div>
 
@@ -626,7 +631,8 @@ const AdminDashboard = () => {
                                         ({(() => {
                                             if (appointmentFilter === 'all') return appointments.length;
                                             if (appointmentFilter === 'pending') return appointments.filter(a => a.status === 'pending').length;
-                                            if (appointmentFilter === 'processed') return appointments.filter(a => ['completed', 'rated'].includes(a.status)).length;
+                                            if (appointmentFilter === 'processing') return appointments.filter(a => a.status === 'processing').length;
+                                            if (appointmentFilter === 'completed') return appointments.filter(a => ['completed', 'rated'].includes(a.status)).length;
                                             return 0;
                                         })()})
                                     </span>
@@ -637,7 +643,9 @@ const AdminDashboard = () => {
                                     let filteredApts = appointments;
                                     if (appointmentFilter === 'pending') {
                                         filteredApts = appointments.filter(a => a.status === 'pending');
-                                    } else if (appointmentFilter === 'processed') {
+                                    } else if (appointmentFilter === 'processing') {
+                                        filteredApts = appointments.filter(a => a.status === 'processing');
+                                    } else if (appointmentFilter === 'completed') {
                                         filteredApts = appointments.filter(a => ['completed', 'rated'].includes(a.status));
                                     }
                                     return filteredApts.length > 0 ? filteredApts.map((apt) => (
@@ -695,10 +703,18 @@ const AdminDashboard = () => {
                                                 )}
                                                 {apt.status === 'confirmed' && (
                                                     <button
-                                                        onClick={() => updateAppointmentStatus(apt._id, 'completed')}
-                                                        className="btn-primary text-xs px-3 py-1"
+                                                        onClick={() => updateAppointmentStatus(apt._id, 'processing')}
+                                                        className="btn-primary text-xs px-3 py-1 bg-yellow-500 hover:bg-yellow-600 border-none"
                                                     >
-                                                        {language === 'en' ? 'Complete' : 'Hoàn thành'}
+                                                        {language === 'en' ? 'Start' : 'Thực hiện'}
+                                                    </button>
+                                                )}
+                                                {apt.status === 'processing' && (
+                                                    <button
+                                                        onClick={() => updateAppointmentStatus(apt._id, 'completed')}
+                                                        className="btn-primary text-xs px-3 py-1 bg-green-500 hover:bg-green-600 border-none"
+                                                    >
+                                                        {language === 'en' ? 'Finish' : 'Hoàn thành'}
                                                     </button>
                                                 )}
                                             </div>
@@ -750,10 +766,7 @@ const AdminDashboard = () => {
                                                 <td className="p-4 text-theme">{order.customer?.name}</td>
                                                 <td className="p-4 font-semibold text-gradient">{formatPrice(order.totalAmount)}</td>
                                                 <td className="p-4">
-                                                    <div className="flex gap-2">
-                                                        {getStatusBadge(order.orderStatus)}
-                                                        {getStatusBadge(order.paymentStatus)}
-                                                    </div>
+                                                    {getStatusBadge(order.orderStatus)}
                                                 </td>
                                                 <td className="p-4" onClick={(e) => e.stopPropagation()}>
                                                     <select
@@ -811,14 +824,14 @@ const AdminDashboard = () => {
                                             <div className="w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
                                                 {doctor.avatar
                                                     ? <img src={doctor.avatar} alt={doctor.name} className="w-full h-full rounded-full object-cover" />
-                                                    : <span className="text-2xl text-white font-bold">{doctor.name?.charAt(0)}</span>}
+                                                    : <span className="text-2xl text-[#1e293b] font-bold">{doctor.name?.charAt(0)}</span>}
                                             </div>
                                             <div className="min-w-0">
                                                 <h3 className="font-semibold text-theme truncate">{doctor.name}</h3>
                                                 <p className="text-sm text-theme-secondary truncate">{doctor.specialization || (language === 'en' ? 'No specialization' : 'Chưa có chuyên khoa')}</p>
                                                 <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${doctor.role === 'admin' ? 'bg-red-500/20 text-red-400' :
                                                     doctor.role === 'staff' ? 'bg-blue-500/20 text-blue-400' :
-                                                        'bg-gray-500/20 text-gray-400'
+                                                        'bg-gray-500/20 text-[#64748b]'
                                                     }`}>{doctor.role?.toUpperCase()}</span>
                                             </div>
                                         </div>
@@ -868,7 +881,7 @@ const AdminDashboard = () => {
                                                     className="w-24 h-24 rounded-full object-cover border-2 border-primary-500 shadow-glow-sm"
                                                 />
                                             ) : (
-                                                <div className="w-24 h-24 rounded-full bg-gradient-primary flex items-center justify-center text-4xl text-white font-bold border-2 border-white/10">
+                                                <div className="w-24 h-24 rounded-full bg-gradient-primary flex items-center justify-center text-4xl text-[#1e293b] font-bold border-2 border-white/10">
                                                     {doctorForm.name ? doctorForm.name.charAt(0).toUpperCase() : '👨‍⚕️'}
                                                 </div>
                                             )}
@@ -876,7 +889,7 @@ const AdminDashboard = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => setDoctorForm(p => ({ ...p, avatar: '' }))}
-                                                    className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 text-white text-xs flex items-center justify-center hover:bg-red-600 transition-colors shadow"
+                                                    className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 text-[#1e293b] text-xs flex items-center justify-center hover:bg-red-600 transition-colors shadow"
                                                     title={language === 'en' ? 'Remove photo' : 'Xóa ảnh'}
                                                 >✕</button>
                                             )}
@@ -892,44 +905,44 @@ const AdminDashboard = () => {
                                                 📷 {language === 'en' ? 'Choose Photo' : 'Chọn ảnh'}
                                             </span>
                                         </label>
-                                        <p className="text-xs text-gray-500">{language === 'en' ? 'JPG/PNG, max 3MB' : 'Định dạng JPG/PNG, tối đa 3MB'}</p>
+                                        <p className="text-xs text-[#64748b]">{language === 'en' ? 'JPG/PNG, max 3MB' : 'Định dạng JPG/PNG, tối đa 3MB'}</p>
                                     </div>
 
                                     <div className="col-span-2">
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Full Name' : 'Họ và tên'} *</label>
+                                        <label className="block text-sm font-medium text-[#64748b] mb-1">{language === 'en' ? 'Full Name' : 'Họ và tên'} *</label>
                                         <input required className="input" value={doctorForm.name} onChange={e => setDoctorForm(p => ({ ...p, name: e.target.value }))} placeholder="BS. Nguyễn Văn A" />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">Email *</label>
+                                        <label className="block text-sm font-medium text-[#64748b] mb-1">Email *</label>
                                         <input required type="email" className="input" value={doctorForm.email} onChange={e => setDoctorForm(p => ({ ...p, email: e.target.value }))} placeholder="doctor@clinic.com" />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Phone' : 'Số điện thoại'}</label>
+                                        <label className="block text-sm font-medium text-[#64748b] mb-1">{language === 'en' ? 'Phone' : 'Số điện thoại'}</label>
                                         <input className="input" value={doctorForm.phone} onChange={e => setDoctorForm(p => ({ ...p, phone: e.target.value }))} placeholder="0912345678" />
                                     </div>
                                     {!editingDoctor && (
                                         <div className="col-span-2">
-                                            <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Password' : 'Mật khẩu'}</label>
+                                            <label className="block text-sm font-medium text-[#64748b] mb-1">{language === 'en' ? 'Password' : 'Mật khẩu'}</label>
                                             <input type="password" className="input" value={doctorForm.password} onChange={e => setDoctorForm(p => ({ ...p, password: e.target.value }))} placeholder={language === 'en' ? 'Default: Doctor@123' : 'Mặc định: Doctor@123'} />
                                         </div>
                                     )}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Specialization' : 'Chuyên khoa'}</label>
+                                        <label className="block text-sm font-medium text-[#64748b] mb-1">{language === 'en' ? 'Specialization' : 'Chuyên khoa'}</label>
                                         <input className="input" value={doctorForm.specialization} onChange={e => setDoctorForm(p => ({ ...p, specialization: e.target.value }))} placeholder={language === 'en' ? 'e.g. Internal Medicine' : 'VD: Nội khoa thú cưng'} />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Years of Experience' : 'Năm kinh nghiệm'}</label>
+                                        <label className="block text-sm font-medium text-[#64748b] mb-1">{language === 'en' ? 'Years of Experience' : 'Năm kinh nghiệm'}</label>
                                         <input type="number" min="0" className="input" value={doctorForm.experience} onChange={e => setDoctorForm(p => ({ ...p, experience: e.target.value }))} placeholder="5" />
                                     </div>
                                     <div className="col-span-2">
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Role' : 'Quyền hạn'}</label>
+                                        <label className="block text-sm font-medium text-[#64748b] mb-1">{language === 'en' ? 'Role' : 'Quyền hạn'}</label>
                                         <select className="input" value={doctorForm.role} onChange={e => setDoctorForm(p => ({ ...p, role: e.target.value }))}>
                                             <option value="staff">{language === 'en' ? 'Staff / Doctor' : 'Nhân viên / Bác sĩ'}</option>
                                             <option value="admin">{language === 'en' ? 'Admin' : 'Quản trị viên'}</option>
                                         </select>
                                     </div>
                                     <div className="col-span-2">
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">{language === 'en' ? 'Bio / Description' : 'Giới thiệu'}</label>
+                                        <label className="block text-sm font-medium text-[#64748b] mb-1">{language === 'en' ? 'Bio / Description' : 'Giới thiệu'}</label>
                                         <textarea rows={3} className="input resize-none" value={doctorForm.bio} onChange={e => setDoctorForm(p => ({ ...p, bio: e.target.value }))} placeholder={language === 'en' ? 'Short bio...' : 'Giới thiệu ngắn...'} />
                                     </div>
                                 </div>
@@ -987,7 +1000,7 @@ const AdminDashboard = () => {
                                                         disabled={u._id === user?.id}
                                                         value={u.role}
                                                         onChange={(e) => updateUserRole(u._id, e.target.value)}
-                                                        className={`input py-1.5 px-3 text-sm font-medium ${u.role === 'admin' ? 'text-red-400' : u.role === 'staff' ? 'text-primary-400' : 'text-gray-400'
+                                                        className={`input py-1.5 px-3 text-sm font-medium ${u.role === 'admin' ? 'text-red-400' : u.role === 'staff' ? 'text-primary-400' : 'text-[#64748b]'
                                                             }`}
                                                     >
                                                         <option value="customer">{language === 'en' ? 'Customer' : 'Khách hàng'}</option>
@@ -1030,7 +1043,7 @@ const AdminDashboard = () => {
                                 {getServiceIcon(selectedAppointment.service)}
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-white mb-1">
+                                <h3 className="text-2xl font-bold text-[#1e293b] mb-1">
                                     {t(`services.${selectedAppointment.service}`)}
                                 </h3>
                                 {getStatusBadge(selectedAppointment.status)}
@@ -1039,8 +1052,8 @@ const AdminDashboard = () => {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Customer' : 'Khách hàng'}</p>
-                                <p className="font-semibold text-white">{selectedAppointment.customer?.name}</p>
+                                <p className="text-sm text-[#64748b] mb-1">{language === 'en' ? 'Customer' : 'Khách hàng'}</p>
+                                <p className="font-semibold text-[#1e293b]">{selectedAppointment.customer?.name}</p>
                             </div>
                             <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center space-x-4">
                                 <div className="w-12 h-12 rounded-lg overflow-hidden bg-primary-500/20 flex items-center justify-center text-2xl">
@@ -1051,14 +1064,14 @@ const AdminDashboard = () => {
                                     )}
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-400 mb-0.5">{language === 'en' ? 'Pet Name' : 'Tên thú cưng'}</p>
-                                    <p className="font-semibold text-white">
+                                    <p className="text-sm text-[#64748b] mb-0.5">{language === 'en' ? 'Pet Name' : 'Tên thú cưng'}</p>
+                                    <p className="font-semibold text-[#1e293b]">
                                         {selectedAppointment.pet?.name} ({selectedAppointment.pet?.species})
                                     </p>
                                     <p className="text-xs text-primary-400">
                                         {selectedAppointment.pet?.breed} • {selectedAppointment.pet?.age} {language === 'en' ? 'years' : 'tuổi'}
                                     </p>
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-xs text-[#64748b]">
                                         {selectedAppointment.pet?.weight}kg • {selectedAppointment.pet?.gender === 'male' ? (language === 'en' ? 'Male' : 'Đực') : (language === 'en' ? 'Female' : 'Cái')}
                                     </p>
                                 </div>
@@ -1066,37 +1079,42 @@ const AdminDashboard = () => {
                             {selectedAppointment.pet?.notes && (
                                 <div className="col-span-2 p-4 rounded-xl bg-primary-500/10 border border-primary-500/20">
                                     <p className="text-sm text-primary-400 mb-1">{language === 'en' ? 'Pet Special Notes' : 'Lưu ý đặc biệt về thú cưng'}</p>
-                                    <p className="text-gray-200 italic text-sm">"{selectedAppointment.pet.notes}"</p>
+                                    <p className="text-[#1e293b] italic text-sm">"{selectedAppointment.pet.notes}"</p>
                                 </div>
                             )}
                             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Date' : 'Ngày hẹn'}</p>
-                                <p className="font-semibold text-white">
+                                <p className="text-sm text-[#64748b] mb-1">{language === 'en' ? 'Date' : 'Ngày hẹn'}</p>
+                                <p className="font-semibold text-[#1e293b]">
                                     {selectedAppointment.date ? format(new Date(selectedAppointment.date), 'dd/MM/yyyy') : '---'}
                                 </p>
                             </div>
                             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Time Box' : 'Khung giờ'}</p>
-                                <p className="font-semibold text-white">{selectedAppointment.timeSlot}</p>
+                                <p className="text-sm text-[#64748b] mb-1">{language === 'en' ? 'Time Box' : 'Khung giờ'}</p>
+                                <p className="font-semibold text-[#1e293b]">{selectedAppointment.timeSlot}</p>
                             </div>
                         </div>
 
                         {selectedAppointment.staff && (
                             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Doctor/Staff' : 'Bác sĩ/Nhân viên'}</p>
+                                <p className="text-sm text-[#64748b] mb-1">{language === 'en' ? 'Doctor/Staff' : 'Bác sĩ/Nhân viên'}</p>
                                 <div className="flex items-center space-x-3">
                                     <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center text-xs text-primary-400 font-bold">
                                         {selectedAppointment.staff.name?.charAt(0)}
                                     </div>
-                                    <p className="font-semibold text-white">{selectedAppointment.staff.name}</p>
+                                    <p className="font-semibold text-[#1e293b]">{selectedAppointment.staff.name}</p>
                                 </div>
                             </div>
                         )}
 
                         {selectedAppointment.notes && (
-                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <p className="text-sm text-gray-400 mb-1">{language === 'en' ? 'Notes' : 'Ghi chú'}</p>
-                                <p className="text-gray-200">{selectedAppointment.notes}</p>
+                            <div className="p-4 rounded-xl bg-orange-50 border border-orange-200">
+                                <p className="text-sm font-bold text-orange-700 mb-2 flex items-center">
+                                    <FiFileText className="mr-1.5" />
+                                    {language === 'en' ? 'Notes' : 'Ghi chú'}
+                                </p>
+                                <p className="text-[#1e293b] font-medium leading-relaxed italic">
+                                    "{selectedAppointment.notes}"
+                                </p>
                             </div>
                         )}
 
@@ -1113,11 +1131,11 @@ const AdminDashboard = () => {
                                     </div>
                                 </div>
                                 {selectedAppointment.feedback ? (
-                                    <p className="text-white italic leading-relaxed">
+                                    <p className="text-[#1e293b] italic leading-relaxed">
                                         "{selectedAppointment.feedback}"
                                     </p>
                                 ) : (
-                                    <p className="text-gray-400 italic text-sm">
+                                    <p className="text-[#64748b] italic text-sm">
                                         {language === 'en' ? 'No written feedback' : 'Không có nhận xét bằng văn bản'}
                                     </p>
                                 )}
@@ -1187,8 +1205,8 @@ const AdminDashboard = () => {
                                     <FiPackage className="text-yellow-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-white mb-0.5">#{selectedOrder.orderNumber}</h3>
-                                    <p className="text-sm text-gray-400">{format(new Date(selectedOrder.createdAt), 'dd/MM/yyyy HH:mm')}</p>
+                                    <h3 className="text-xl font-bold text-[#1e293b] mb-0.5">#{selectedOrder.orderNumber}</h3>
+                                    <p className="text-sm text-[#64748b]">{format(new Date(selectedOrder.createdAt), 'dd/MM/yyyy HH:mm')}</p>
                                 </div>
                             </div>
                             <div className="flex gap-2">
@@ -1205,9 +1223,9 @@ const AdminDashboard = () => {
                                     {language === 'en' ? 'Customer Info' : 'Thông tin khách hàng'}
                                 </h4>
                                 <div className="space-y-2">
-                                    <p className="text-white font-medium">{selectedOrder.customer?.name}</p>
-                                    <p className="text-sm text-gray-400">📧 {selectedOrder.customer?.email}</p>
-                                    <p className="text-sm text-gray-400">📱 {selectedOrder.customer?.phone}</p>
+                                    <p className="text-[#1e293b] font-medium">{selectedOrder.customer?.name}</p>
+                                    <p className="text-sm text-[#64748b]">📧 {selectedOrder.customer?.email}</p>
+                                    <p className="text-sm text-[#64748b]">📱 {selectedOrder.customer?.phone}</p>
                                 </div>
                             </div>
                             {/* Shipping Info */}
@@ -1216,21 +1234,21 @@ const AdminDashboard = () => {
                                     {language === 'en' ? 'Shipping & Payment' : 'Giao hàng & Thanh toán'}
                                 </h4>
                                 <div className="space-y-2 text-sm">
-                                    <div className="text-gray-200">
-                                        <span className="text-gray-500">📍 {language === 'en' ? 'Addr:' : 'Đ/C:'}</span>
+                                    <div className="text-[#1e293b]">
+                                        <span className="text-[#64748b]">📍 {language === 'en' ? 'Addr:' : 'Đ/C:'}</span>
                                         {typeof selectedOrder.shippingAddress === 'object' ? (
                                             <div className="ml-5 mt-1 space-y-1">
                                                 <p>{selectedOrder.shippingAddress.address}, {selectedOrder.shippingAddress.city}</p>
-                                                {selectedOrder.shippingAddress.fullName && <p className="text-xs text-gray-400">Người nhận: {selectedOrder.shippingAddress.fullName}</p>}
-                                                {selectedOrder.shippingAddress.phone && <p className="text-xs text-gray-400">SĐT: {selectedOrder.shippingAddress.phone}</p>}
+                                                {selectedOrder.shippingAddress.fullName && <p className="text-xs text-[#64748b]">Người nhận: {selectedOrder.shippingAddress.fullName}</p>}
+                                                {selectedOrder.shippingAddress.phone && <p className="text-xs text-[#64748b]">SĐT: {selectedOrder.shippingAddress.phone}</p>}
                                                 {selectedOrder.shippingAddress.notes && <p className="text-xs italic text-yellow-400/70">Lưu ý: {selectedOrder.shippingAddress.notes}</p>}
                                             </div>
                                         ) : (
                                             <span className="ml-1">{selectedOrder.shippingAddress}</span>
                                         )}
                                     </div>
-                                    <p className="text-gray-200">
-                                        <span className="text-gray-500">💳 {language === 'en' ? 'Method:' : 'P/T:'}</span>
+                                    <p className="text-[#1e293b]">
+                                        <span className="text-[#64748b]">💳 {language === 'en' ? 'Method:' : 'P/T:'}</span>
                                         <span className="uppercase ml-1">{selectedOrder.paymentMethod}</span>
                                     </p>
                                 </div>
@@ -1242,10 +1260,10 @@ const AdminDashboard = () => {
                             <table className="w-full text-sm">
                                 <thead className="bg-white/5">
                                     <tr>
-                                        <th className="text-left p-3 text-gray-400 font-medium">{language === 'en' ? 'Product' : 'Sản phẩm'}</th>
-                                        <th className="text-center p-3 text-gray-400 font-medium">{language === 'en' ? 'Qty' : 'SL'}</th>
-                                        <th className="text-right p-3 text-gray-400 font-medium">{language === 'en' ? 'Price' : 'Giá'}</th>
-                                        <th className="text-right p-3 text-gray-400 font-medium">{language === 'en' ? 'Subtotal' : 'Thành tiền'}</th>
+                                        <th className="text-left p-3 text-[#64748b] font-medium">{language === 'en' ? 'Product' : 'Sản phẩm'}</th>
+                                        <th className="text-center p-3 text-[#64748b] font-medium">{language === 'en' ? 'Qty' : 'SL'}</th>
+                                        <th className="text-right p-3 text-[#64748b] font-medium">{language === 'en' ? 'Price' : 'Giá'}</th>
+                                        <th className="text-right p-3 text-[#64748b] font-medium">{language === 'en' ? 'Subtotal' : 'Thành tiền'}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/10">
@@ -1260,12 +1278,12 @@ const AdminDashboard = () => {
                                                             <div className="w-full h-full flex items-center justify-center text-xs">📦</div>
                                                         )}
                                                     </div>
-                                                    <span className="text-white font-medium line-clamp-1">{item.name || item.product?.name}</span>
+                                                    <span className="text-[#1e293b] font-medium line-clamp-1">{item.name || item.product?.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="p-3 text-center text-gray-300">x{item.quantity}</td>
-                                            <td className="p-3 text-right text-gray-300">{formatPrice(item.price)}</td>
-                                            <td className="p-3 text-right text-white font-semibold">{formatPrice(item.price * item.quantity)}</td>
+                                            <td className="p-3 text-center text-[#475569]">x{item.quantity}</td>
+                                            <td className="p-3 text-right text-[#475569]">{formatPrice(item.price)}</td>
+                                            <td className="p-3 text-right text-[#1e293b] font-semibold">{formatPrice(item.price * item.quantity)}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -1276,15 +1294,15 @@ const AdminDashboard = () => {
                         <div className="flex justify-end pt-4 border-t border-white/10">
                             <div className="text-right space-y-2">
                                 <div className="flex justify-between w-64 text-sm">
-                                    <span className="text-gray-400">{language === 'en' ? 'Items Total' : 'Tiền hàng'}</span>
-                                    <span className="text-white">{formatPrice(selectedOrder.totalAmount || 0)}</span>
+                                    <span className="text-[#64748b]">{language === 'en' ? 'Items Total' : 'Tiền hàng'}</span>
+                                    <span className="text-[#1e293b]">{formatPrice(selectedOrder.totalAmount || 0)}</span>
                                 </div>
                                 <div className="flex justify-between w-64 text-sm">
-                                    <span className="text-gray-400">{language === 'en' ? 'Shipping' : 'Phí giao hàng'}</span>
-                                    <span className="text-white">0₫</span>
+                                    <span className="text-[#64748b]">{language === 'en' ? 'Shipping' : 'Phí giao hàng'}</span>
+                                    <span className="text-[#1e293b]">0₫</span>
                                 </div>
                                 <div className="flex justify-between w-64 pt-2 border-t border-white/5">
-                                    <span className="text-lg font-bold text-white">{language === 'en' ? 'Total' : 'Tổng cộng'}</span>
+                                    <span className="text-lg font-bold text-[#1e293b]">{language === 'en' ? 'Total' : 'Tổng cộng'}</span>
                                     <span className="text-2xl font-bold text-gradient">{formatPrice(selectedOrder.totalAmount || 0)}</span>
                                 </div>
                             </div>
@@ -1301,12 +1319,45 @@ const AdminDashboard = () => {
                             {selectedOrder.orderStatus === 'pending' && (
                                 <button
                                     onClick={() => {
-                                        updateOrderStatus(selectedOrder._id, 'processing');
+                                        updateOrderStatus(selectedOrder._id, 'confirmed');
                                         setSelectedOrder(null);
                                     }}
                                     className="btn-primary px-6 border-none shadow-glow-sm"
                                 >
-                                    {language === 'en' ? 'Process Order' : 'Xác nhận đơn'}
+                                    {language === 'en' ? 'Confirm Order' : 'Xác nhận đơn'}
+                                </button>
+                            )}
+                            {selectedOrder.orderStatus === 'confirmed' && (
+                                <button
+                                    onClick={() => {
+                                        updateOrderStatus(selectedOrder._id, 'processing');
+                                        setSelectedOrder(null);
+                                    }}
+                                    className="btn-primary px-6 bg-yellow-500 hover:bg-yellow-600 border-none shadow-glow-sm"
+                                >
+                                    {language === 'en' ? 'Process' : 'Thực hiện'}
+                                </button>
+                            )}
+                            {selectedOrder.orderStatus === 'processing' && (
+                                <button
+                                    onClick={() => {
+                                        updateOrderStatus(selectedOrder._id, 'shipped');
+                                        setSelectedOrder(null);
+                                    }}
+                                    className="btn-primary px-6 bg-blue-500 hover:bg-blue-600 border-none shadow-glow-sm"
+                                >
+                                    {language === 'en' ? 'Ship Order' : 'Gửi hàng'}
+                                </button>
+                            )}
+                            {selectedOrder.orderStatus === 'shipped' && (
+                                <button
+                                    onClick={() => {
+                                        updateOrderStatus(selectedOrder._id, 'delivered');
+                                        setSelectedOrder(null);
+                                    }}
+                                    className="btn-primary px-6 bg-green-500 hover:bg-green-600 border-none shadow-glow-sm"
+                                >
+                                    {language === 'en' ? 'Delivered' : 'Hoàn thành'}
                                 </button>
                             )}
                         </div>

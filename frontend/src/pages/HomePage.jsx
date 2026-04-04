@@ -111,7 +111,7 @@ const HomePage = () => {
 
                             {/* Main Heading */}
                             <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-tight animate-fade-in-up">
-                                <span className="text-white">{language === 'en' ? 'Your Pet' : 'Thú Cưng'}</span>
+                                <span className="text-[#1e293b]">{language === 'en' ? 'Your Pet' : 'Thú Cưng'}</span>
                                 <br />
                                 <span className="text-gradient">{language === 'en' ? 'Deserves The Best' : 'Xứng Đáng Điều Tốt Nhất'}</span>
                             </h1>
@@ -170,7 +170,7 @@ const HomePage = () => {
                                             <FiCheck className="w-5 h-5 text-green-400" />
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-white text-sm">{language === 'en' ? 'Verified' : 'Đã xác thực'}</p>
+                                            <p className="font-semibold text-[#1e293b] text-sm">{language === 'en' ? 'Verified' : 'Đã xác thực'}</p>
                                             <p className="text-xs text-gray-400">5.0 ⭐ Rating</p>
                                         </div>
                                     </div>
@@ -182,7 +182,7 @@ const HomePage = () => {
                                             <FiHeart className="w-5 h-5 text-pink-400" />
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-white text-sm">10,000+</p>
+                                            <p className="font-semibold text-[#1e293b] text-sm">10,000+</p>
                                             <p className="text-xs text-gray-400">{language === 'en' ? 'Happy Clients' : 'Khách hài lòng'}</p>
                                         </div>
                                     </div>
@@ -216,7 +216,7 @@ const HomePage = () => {
                 <div className="container-custom relative z-10">
                     <div className="text-center max-w-3xl mx-auto mb-16">
                         <span className="badge-primary mb-4">{language === 'en' ? 'Our Services' : 'Dịch vụ'}</span>
-                        <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+                        <h2 className="text-4xl md:text-5xl font-display font-bold text-[#1e293b] mb-4">
                             {t('home.featuredServices')}
                         </h2>
                         <p className="text-xl text-gray-400">{t('home.featuredServicesDesc')}</p>
@@ -233,7 +233,7 @@ const HomePage = () => {
                                 <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center text-3xl mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}>
                                     {service.icon}
                                 </div>
-                                <h3 className="text-xl font-semibold text-white mb-3">
+                                <h3 className="text-xl font-semibold text-[#1e293b] mb-3">
                                     {t(`services.${service.id}`)}
                                 </h3>
                                 <p className="text-gray-400 mb-4 line-clamp-2">
@@ -269,7 +269,7 @@ const HomePage = () => {
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
                         <div>
                             <span className="badge-primary mb-4">{language === 'en' ? 'Shop' : 'Cửa hàng'}</span>
-                            <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-2">
+                            <h2 className="text-4xl md:text-5xl font-display font-bold text-[#1e293b] mb-2">
                                 {t('home.bestSelling')}
                             </h2>
                             <p className="text-xl text-gray-400">{t('home.bestSellingDesc')}</p>
@@ -312,7 +312,7 @@ const HomePage = () => {
                                     </div>
                                     <div className="p-4">
                                         <p className="text-xs text-primary-400 uppercase font-medium mb-1">{product.category}</p>
-                                        <h3 className="font-semibold text-white mb-3 line-clamp-2 group-hover:text-primary-400 transition-colors">
+                                        <h3 className="font-semibold text-[#1e293b] mb-3 line-clamp-2 group-hover:text-primary-400 transition-colors">
                                             {product.name}
                                         </h3>
                                         <div className="flex items-center justify-between">
@@ -346,7 +346,7 @@ const HomePage = () => {
                 <div className="container-custom relative z-10">
                     <div className="text-center mb-16">
                         <span className="badge-primary mb-4">{language === 'en' ? 'Why Us' : 'Tại sao chọn chúng tôi'}</span>
-                        <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+                        <h2 className="text-4xl md:text-5xl font-display font-bold text-[#1e293b] mb-4">
                             {t('home.whyChooseUs')}
                         </h2>
                     </div>
@@ -361,7 +361,7 @@ const HomePage = () => {
                                 <div className={`w-16 h-16 rounded-2xl glass mx-auto mb-6 flex items-center justify-center ${item.color}`}>
                                     <item.icon className="w-8 h-8" />
                                 </div>
-                                <h3 className="text-xl font-semibold text-white mb-2">
+                                <h3 className="text-xl font-semibold text-[#1e293b] mb-2">
                                     {item.title[language]}
                                 </h3>
                                 <p className="text-gray-400">
@@ -418,7 +418,7 @@ const HomePage = () => {
                 <div className="container-custom relative z-10">
                     <div className="text-center mb-16">
                         <span className="badge-primary mb-4">{language === 'en' ? 'Testimonials' : 'Đánh giá'}</span>
-                        <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+                        <h2 className="text-4xl md:text-5xl font-display font-bold text-[#1e293b] mb-4">
                             {t('home.testimonials')}
                         </h2>
                     </div>
@@ -448,7 +448,7 @@ const HomePage = () => {
                                         {testimonial.avatar}
                                     </div>
                                     <div>
-                                        <p className="font-semibold text-white">{testimonial.name}</p>
+                                        <p className="font-semibold text-[#1e293b]">{testimonial.name}</p>
                                         <p className="text-sm text-gray-500">{language === 'en' ? 'Verified Customer' : 'Khách hàng'}</p>
                                     </div>
                                 </div>
@@ -465,10 +465,10 @@ const HomePage = () => {
                 <div className="absolute inset-0 bg-[url('data:image/svg+xml,...')] opacity-10" />
 
                 <div className="container-custom relative z-10 text-center">
-                    <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-6 animate-fade-in-up">
+                    <h2 className="text-3xl md:text-5xl font-display font-bold text-[#1e293b] mb-6 animate-fade-in-up">
                         {language === 'en' ? 'Ready to Give Your Pet the Best Care?' : 'Sẵn sàng chăm sóc thú cưng của bạn?'}
                     </h2>
-                    <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto animate-fade-in-up delay-200">
+                    <p className="text-xl text-[#1e293b]/80 mb-10 max-w-2xl mx-auto animate-fade-in-up delay-200">
                         {language === 'en'
                             ? 'Book an appointment today and experience the difference!'
                             : 'Đặt lịch hẹn ngay hôm nay và trải nghiệm sự khác biệt!'}

@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Appointment = require('../models/Appointment');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -85,7 +86,7 @@ exports.getOrders = async (req, res) => {
         let query;
         const { status, page = 1, limit = 10 } = req.query;
 
-        if (req.user.role === 'admin' || req.user.role === 'staff') {
+        if (req.user.role === 'admin' || req.user.role === 'staff' || req.user.role === 'doctor') {
             query = Order.find();
         } else {
             query = Order.find({ customer: req.user.id });
@@ -367,14 +368,66 @@ exports.getOrderStats = async (req, res) => {
             createdAt: { $gte: thisMonth }
         });
 
-        // Revenue calculations
-        const todayRevenue = todayOrders
-            .filter(o => o.paymentStatus === 'paid')
-            .reduce((sum, o) => sum + o.totalAmount, 0);
+        // Today's appointments stats
+        const todayAppointments = await Appointment.find({
+            date: { $gte: today },
+            status: { $in: ['completed', 'rated'] }
+        });
 
-        const monthRevenue = monthOrders
+        // This month's appointments stats
+        const monthAppointments = await Appointment.find({
+            date: { $gte: thisMonth },
+            status: { $in: ['completed', 'rated'] }
+        });
+
+        // Revenue calculations
+        const todayOrderRevenue = todayOrders
             .filter(o => o.paymentStatus === 'paid')
-            .reduce((sum, o) => sum + o.totalAmount, 0);
+            .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+
+        const todayAppointmentRevenue = todayAppointments
+            .reduce((sum, a) => sum + (a.price || 0), 0);
+
+        const todayRevenue = todayOrderRevenue + todayAppointmentRevenue;
+
+        const monthOrderRevenue = monthOrders
+            .filter(o => o.paymentStatus === 'paid')
+            .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+
+        const monthAppointmentRevenue = monthAppointments
+            .reduce((sum, a) => sum + (a.price || 0), 0);
+
+        const monthRevenue = monthOrderRevenue + monthAppointmentRevenue;
+
+        // Daily chart data for last 7 days
+        const last7Days = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() - i);
+            
+            const nextD = new Date(d);
+            nextD.setDate(nextD.getDate() + 1);
+
+            const dailyOrders = await Order.find({
+                createdAt: { $gte: d, $lt: nextD },
+                paymentStatus: 'paid'
+            });
+            const dailyApts = await Appointment.find({
+                date: { $gte: d, $lt: nextD },
+                status: { $in: ['completed', 'rated'] }
+            });
+
+            const orderRev = dailyOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+            const aptRev = dailyApts.reduce((sum, a) => sum + (a.price || 0), 0);
+
+            last7Days.push({
+                date: d.toLocaleDateString(req.headers['accept-language']?.includes('vi') ? 'vi-VN' : 'en-US', { day: '2-digit', month: '2-digit' }),
+                revenue: orderRev + aptRev,
+                orders: orderRev,
+                services: aptRev
+            });
+        }
 
         // Pending orders
         const pendingOrders = await Order.countDocuments({
@@ -386,13 +439,16 @@ exports.getOrderStats = async (req, res) => {
             stats: {
                 today: {
                     orders: todayOrders.length,
+                    appointments: todayAppointments.length,
                     revenue: todayRevenue
                 },
                 month: {
                     orders: monthOrders.length,
+                    appointments: monthAppointments.length,
                     revenue: monthRevenue
                 },
-                pending: pendingOrders
+                pending: pendingOrders,
+                chartData: last7Days
             }
         });
     } catch (error) {
